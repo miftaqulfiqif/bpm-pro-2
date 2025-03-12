@@ -1,0 +1,18 @@
+{
+  "name": "backend-bpm-pro-2",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Miftaqul Fiqi Firmansyah",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "ws": "^8.18.1"
+  },
+  "keywords": []
+}
