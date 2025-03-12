@@ -1,7 +1,16 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import mqtt from 'mqtt'
 import './App.css'
+
+const mqttComponent = () => {
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const brokerUrl = "ws://localhost:3000";
+  })
+}
 
 function App() {
   const [count, setCount] = useState(0)
