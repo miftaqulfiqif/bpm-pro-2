@@ -340,7 +340,11 @@ def capture_serial_data():
 
                 if (attempts == max_attempts):
                     print(f"Port serial tidak ditemukan. Program dihentikan.")
-                    mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status",f"Port serial tidak ditemukan. Program dihentikan.")
+                    data = {
+                        "status": "error",
+                        "message": "Port serial tidak ditemukan. Program dihentikan."
+                    }
+                    mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/end", json.dumps(data))
                     break
                 continue
 

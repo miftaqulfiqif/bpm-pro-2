@@ -6,36 +6,19 @@ import {spawn} from "child_process";
 const app = express();
 const port = 3000;
 
-const wss = new WebSocketServer("wss://backend-bpm-pro-2.vercel.app/api/websocket");
-
-// const pythonProcess = spawn('python', ['blood_pressure_1.py']);
-// pythonProcess.stdout.on('data', (data) => {
-//     console.log(data.toString());
-//     // sendToClients(data.toString());
-// })
-
-let websocketClients = [];
-const sendToClients = (data) => {
-    websocketClients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN){
-            client.send(data);
-        }
-    });
-}
-
 // Menangani koneksi WebSocket
+const wss = new WebSocketServer({noServer: true});
+
 wss.on('connection', (ws) => {
-    
     console.log('WebSocket client connected');
 
-    const pythonProcess = spawn('python', ['blood_pressure_1.py']);
+    const pythonProcess = spawn('python', ['blood_pressure.py']);
     pythonProcess.stdout.on('data', (data) => {
-        console.log(data.toString());
+        // console.log(data.toString());
         // sendToClients(data.toString());
     })
-    
+
     websocketClients.push(ws);
-  
     ws.on('close', () => {
       websocketClients = websocketClients.filter(client => client !== ws);
       console.log('WebSocket client disconnected');
@@ -52,6 +35,7 @@ app.server.on("upgrade", (request, socket, head) => {
     });
 })
 
+// Membuat Koneksi MQTT
 const client = mqtt.connect('mqtt://broker.emqx.io:1883');
 
 client.on('connect', () => {
@@ -64,21 +48,55 @@ client.on('connect', () => {
         }
     });
 
-    client.subscribe('blood_pressure/realtime', (err) => {
+    client.subscribe('blood_pressure/realtime/end', (err) => {
         if (!err) {
             console.log(`Subscribe to topic realtime`)
         }
     });
 });
 
-
 client.on('message', (topic, message) => {
+    console.log(`Pesan di terima di topic ${topic} : ${message.toString()}`);
 
-    console.log(`Receive message: ${topic} = ${message.toString()}`);
-    if (topic === 'blood_pressure/realtime/status') {
+    if (topic == 'blood_pressure/realtime/status'){
         sendToClients(message.toString());
     } else {
-        sendToClients(message.toJSON());
+
+        const data = JSON.parse(message.toString());
+        console.log(data);
+
+        sendToClients(data);
+        websocketClients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN){
+                client.close();
+            }
+        });
+        websocketClients = [];
+        wss.on('disconnection', (ws) => {
+            ws.on('close', () => {
+              websocketClients = websocketClients.filter(client => client !== ws);
+              console.log('WebSocket client disconnected');
+            });
+        });
+
     }
 })
+
+// Mengirim data ke klien WebSocket
+let websocketClients = [];
+const sendToClients = (data) => {
+    if (typeof data === 'string') {
+        websocketClients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN){
+                client.send(data);
+            }
+        });
+    } else {
+        websocketClients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN){
+                client.send(JSON.stringify(data));
+            }
+        });
+    }
+}
 
