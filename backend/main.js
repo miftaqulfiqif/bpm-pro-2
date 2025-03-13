@@ -1,52 +1,99 @@
-import { spawn } from "child_process";
-import { WebSocket, WebSocketServer } from "ws";
 import express from "express";
-import cors from "cors"; //library untuk frontend agar dapat mengakses api
+import mqtt from "mqtt";
+import { WebSocket, WebSocketServer } from "ws";
+import { spawn } from "child_process";
 
 const app = express();
-app.use(cors());
+const port = 3000;
 
-const server = app.listen(3000, () => {
-  console.log("Server is running");
-});
+// Menangani koneksi WebSocket
+const wss = new WebSocketServer({ noServer: true });
 
-const wss = new WebSocketServer({ server });
-
-// Ketika frontend terhubung ke WebSocket
 wss.on("connection", (ws) => {
-  console.log("Frontend terhubung ke WebSocket");
+  console.log("WebSocket client connected");
 
-  ws.on("message", (message) => {
-    console.log(`Pesan dari frontend: ${message.toString()}`);
+  const pythonProcess = spawn("python3", ["blood_pressure.py"]);
+  pythonProcess.stdout.on("data", (data) => {
+    // console.log(data.toString());
+    // sendToClients(data.toString());
   });
 
+  websocketClients.push(ws);
   ws.on("close", () => {
-    console.log("Frontend terputus dari WebSocket");
+    websocketClients = websocketClients.filter((client) => client !== ws);
+    console.log("WebSocket client disconnected");
   });
 });
 
-// Fungsi untuk mengirim data dari Python ke frontend
-function broadcastToClients(data) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(data));
+app.server = app.listen(port, () => {
+  console.log(`Server is running`);
+});
+
+app.server.on("upgrade", (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit("connection", ws, request);
+  });
+});
+
+// Membuat Koneksi MQTT
+const client = mqtt.connect("mqtt://broker.emqx.io:1883");
+
+client.on("connect", () => {
+  console.log("Connect to MQTT broker");
+  console.log(`Open WebSocket client at ws://localhost:${port}`);
+
+  client.subscribe("blood_pressure/realtime/status", (err) => {
+    if (!err) {
+      console.log(`Subscribe to topic status`);
     }
   });
-}
 
-// Endpoint untuk menerima data dari Python
-app.post("/send-data", express.json(), (req, res) => {
-  const data = req.body;
-  console.log("Data dari Python:", data);
-
-  // Kirim ke semua client WebSocket (frontend)
-  broadcastToClients(data);
-
-  res.json({ status: "OK" });
+  client.subscribe("blood_pressure/realtime/end", (err) => {
+    if (!err) {
+      console.log(`Subscribe to topic realtime`);
+    }
+  });
 });
 
-const pythonProcess = spawn("python3", ["test.py"]);
-pythonProcess.stdout.on("data", (data) => {
-  console.log(typeof data);
-  console.log(data.toString());
+client.on("message", (topic, message) => {
+  console.log(`Pesan di terima di topic ${topic} : ${message.toString()}`);
+
+  if (topic == "blood_pressure/realtime/status") {
+    sendToClients(message.toString());
+  } else {
+    const data = JSON.parse(message.toString());
+    console.log(data);
+
+    sendToClients(data);
+    websocketClients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.close();
+      }
+    });
+    websocketClients = [];
+    wss.on("disconnection", (ws) => {
+      ws.on("close", () => {
+        websocketClients = websocketClients.filter((client) => client !== ws);
+        console.log("WebSocket client disconnected");
+      });
+    });
+  }
 });
+
+// Mengirim data ke klien WebSocket
+let websocketClients = [];
+const sendToClients = (data) => {
+  if (typeof data === "string") {
+    websocketClients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  } else {
+    websocketClients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(data));
+      }
+    });
+  }
+};

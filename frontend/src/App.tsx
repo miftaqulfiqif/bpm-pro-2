@@ -1,23 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCounter } from "./hooks/Counter";
 
-export default function message() {
-  const [message, setMessage] = useState(null);
-
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080/send-data"); // Sesuaikan dengan alamat server
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setMessage(data);
-    };
-
-    return () => ws.close();
-  }, []);
+export const App = () => {
+  const { message, buttonLoading, buttonStart } = useCounter();
 
   return (
     <div>
       <h1>Live Sensor Data</h1>
-      {message ? <p>Message: {message}</p> : <p>Waiting for data...</p>}
+      <p>Message from WebSocket: </p>
+      <p>{message}</p>
+      <button disabled={buttonLoading} onClick={buttonStart}>
+        Start
+      </button>
     </div>
   );
-}
+};
