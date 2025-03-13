@@ -51,26 +51,6 @@ def on_publish(client, userdata, mid):
     # Callback publish (bisa diisi jika diperlukan)
     pass
 
-# async def send_data(data):
-#     try:
-#         async with websockets.connect("ws://localhost:3000") as websocket:
-#             message = data
-#             await websocket.send(message)
-#     except Exception as e:
-#         print(f"Error mengirim data ke websocket: {e}")
-
-
-async def send_data(message):
-    async with websockets.connect(WS_URI) as websocket:
-        for i in range(10):
-            data = {"message": f"Data ke-{i}", "value": i}
-            await websocket.send(json.dumps(data))
-            print(f"Data dikirim: {data}")
-            await asyncio.sleep(2)  # Simulasi pengiriman setiap 2 detik
-
-asyncio.run(send_data())
-
-
 # -------------------- DETEKSI PORT --------------------
 
 def detect_port(port_name, result_queue, stop_event):
@@ -81,7 +61,6 @@ def detect_port(port_name, result_queue, stop_event):
     try:
         ser = serial.Serial(port_name, BAUD_RATE, timeout=1)
         print(f"Mencoba port: {port_name}")
-        asyncio.run(send_data(f"Mencoba port: {port_name}"))
         start_time = time.time()
         while time.time() - start_time < 2 and not stop_event.is_set():
             data = ser.read(1)
@@ -332,7 +311,7 @@ def capture_serial_data():
         print(f"Topik Real-Time: {MQTT_TOPIC_REALTIME}")
         print(f"Topik Hasil: {MQTT_TOPIC_RESULT}")
         print(f"Topik Grafik: {MQTT_TOPIC_GRAPH}")
-        asyncio.run(send_data(f"Emergency stop akan terjadi jika tidak ada data selama {REALTIME_TIMEOUT} detik dalam mode realtime"))
+        print(f"Emergency stop akan terjadi jika tidak ada data selama {REALTIME_TIMEOUT} detik dalam mode realtime")
 
         # Loop utama: Pilih port dan baca data
         while True:

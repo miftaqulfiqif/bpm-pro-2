@@ -4,7 +4,7 @@ export default function message() {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080"); // Sesuaikan dengan alamat server
+    const ws = new WebSocket("ws://localhost:8080/send-data"); // Sesuaikan dengan alamat server
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
