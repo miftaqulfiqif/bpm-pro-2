@@ -162,7 +162,7 @@ def parse_packet(data_bytes):
             }
             mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
             # Publish data untuk grafik (hanya nilai tekanan)
-            mqtt_client.publish(MQTT_TOPIC_GRAPH, str(pressure))
+            # mqtt_client.publish(MQTT_TOPIC_GRAPH, str(pressure))
             
             return f"Tekanan Real-Time: {pressure} mmHg"
 

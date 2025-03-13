@@ -1,20 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function message() {
   const [message, setMessage] = useState(null);
   const [button, setButton] = useState(false)
-
-  // useEffect(() => {
-  //   const ws = new WebSocket("ws://localhost:3000");
-
-  //   ws.onmessage = (event) => {
-  //     console.log(typeof event.data);
-  //     const data = event.data;
-  //     setMessage(data);
-  //   };
-
-  //   return () => ws.close();
-  // }, []);
 
   const start = () => {
     const ws = new WebSocket("ws://localhost:3000");
@@ -22,7 +10,7 @@ export default function message() {
     ws.onmessage = (event) => {
       console.log(typeof event.data);
       const data = event.data;
-      setMessage(data);
+      setMessage(data); 
     };
     return () => ws.close();
   }
