@@ -6,7 +6,7 @@ import {spawn} from "child_process";
 const app = express();
 const port = 3000;
 
-const wss = new WebSocketServer({noServer: true});
+const wss = new WebSocketServer("wss://backend-bpm-pro-2.vercel.app/api/websocket");
 
 // const pythonProcess = spawn('python', ['blood_pressure_1.py']);
 // pythonProcess.stdout.on('data', (data) => {
