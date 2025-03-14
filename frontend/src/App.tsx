@@ -1,26 +1,24 @@
-import { useState } from "react";
+import { MessageResult } from "./components/MessageResult";
+import { useCounter } from "./hooks/Counter";
 
-export default function message() {
-  const [message, setMessage] = useState(null);
-  const [button, setButton] = useState(false)
-
-  const start = () => {
-    const ws = new WebSocket("ws://localhost:3000");
-
-    ws.onmessage = (event) => {
-      console.log(typeof event.data);
-      const data = event.data;
-      setMessage(data); 
-    };
-    return () => ws.close();
-  }
+export const App = () => {
+  const { message, buttonLoading, buttonStart } = useCounter();
 
   return (
     <div>
       <h1>Live Sensor Data</h1>
       <p>Message from WebSocket: </p>
-      {message ? <p>{message}</p> : <p>Waiting for data...</p>}
-      <button  disabled={button} onClick={start}>Start</button>
+      {
+        typeof message === "string" ? (
+          <p>{message}</p>
+        ) : (
+          <MessageResult message={message} />
+        )
+      }
+      {/* <p>{message}</p> */}
+      <button disabled={buttonLoading} onClick={buttonStart}>
+        Start
+      </button>
     </div>
   );
-}
+};

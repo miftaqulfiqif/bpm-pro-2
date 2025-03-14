@@ -13,8 +13,8 @@ wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
 
     const pythonProcess = spawn('python', ['blood_pressure.py']);
-    pythonProcess.stdout.on('data', (data) => {
-        // console.log(data.toString());
+    pythonProcess.stdout.on('result', (result) => {
+        console.log("Pesan dari python : ", result.toString());
         // sendToClients(data.toString());
     })
 
@@ -41,16 +41,29 @@ const client = mqtt.connect('mqtt://broker.emqx.io:1883');
 client.on('connect', () => {
     console.log("Connect to MQTT broker");
     console.log(`Open WebSocket client at ws://localhost:${port}`);
-
-    client.subscribe('blood_pressure/realtime/status', (err) => {
+    client.subscribe('blood_pressure/graph', (err) => {
         if (!err) {
-            console.log(`Subscribe to topic status`)
+            console.log(`Subscribe to topic status graph`)
         }
     });
-
-    client.subscribe('blood_pressure/realtime/end', (err) => {
+    client.subscribe('blood_pressure/realtime/status', (err) => {
+        if (!err) {
+            console.log(`Subscribe to topic status `)
+        }
+    });
+    client.subscribe('blood_pressure/realtime', (err) => {
         if (!err) {
             console.log(`Subscribe to topic realtime`)
+        }
+    });
+    client.subscribe('blood_pressure/realtime/result', (err) => {
+        if (!err) {
+            console.log(`Subscribe to topic result`)
+        }
+    })
+    client.subscribe('blood_pressure/realtime/end', (err) => {
+        if (!err) {
+            console.log(`Subscribe to topic end`)
         }
     });
 });
@@ -58,12 +71,11 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     console.log(`Pesan di terima di topic ${topic} : ${message.toString()}`);
 
-    if (topic == 'blood_pressure/realtime/status'){
+    if (topic != 'blood_pressure/realtime/result'){
         sendToClients(message.toString());
     } else {
-
         const data = JSON.parse(message.toString());
-        console.log(data);
+        console.log(data)
 
         sendToClients(data);
         websocketClients.forEach(client => {
@@ -94,7 +106,7 @@ const sendToClients = (data) => {
     } else {
         websocketClients.forEach(client => {
             if (client.readyState === WebSocket.OPEN){
-                client.send(JSON.stringify(data));
+                client.send(JSON.stringify(data));   
             }
         });
     }

@@ -18,6 +18,9 @@ MQTT_TOPIC_RESULT = "blood_pressure/result"
 MQTT_TOPIC_GRAPH = "blood_pressure/graph"  # Untuk grafik realtime
 MQTT_CLIENT_ID = f"bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
+# Konfigurasi websocket
+
+
 # Konstanta protokol
 START_BYTE = 0x5A
 PARAM_TYPE_BP = 0xF2
@@ -79,11 +82,13 @@ def select_serial_port():
     max_attempts = 10
 
     while attempts < max_attempts:
+    # while True:
         ports = list(serial.tools.list_ports.comports())    
         if not ports:
             print(f"Tidak ada port serial yang ditemukan. Coba lagi dalam 1 detik...")
             time.sleep(1)
             attempts += 1
+            # continue
 
             if attempts == max_attempts:
                 print("Tidak ada port serial yang ditemukan. Ulangi beberapa saat lagi.")
@@ -121,10 +126,9 @@ def select_serial_port():
             time.sleep(1)
 
 
-    print(f"Tidak ada port yang mendeteksi byte 0x5A dalam {max_attempts} percobaan.")
+        print(f"Tidak ada port yang mendeteksi byte 0x5A dalam {max_attempts} percobaan.")
 
 # -------------------- PEMROSESAN PAKET --------------------
-
 def parse_packet(data_bytes):
     """
     Mengonversi paket data menjadi informasi pengukuran.
@@ -160,9 +164,11 @@ def parse_packet(data_bytes):
                 "unit": "mmHg",
                 "timestamp": datetime.now().isoformat()
             }
-            mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
+            # mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
             # Publish data untuk grafik (hanya nilai tekanan)
             # mqtt_client.publish(MQTT_TOPIC_GRAPH, str(pressure))
+
+            mqtt_client.publish(MQTT_TOPIC_REALTIME, f"Tekanan Real-Time: {pressure} mmHg")
             
             return f"Tekanan Real-Time: {pressure} mmHg"
 
@@ -293,11 +299,11 @@ def read_serial_data(ser):
 
         full_packet = start_byte + length_byte + remaining_data
 
-        mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Mulai Menghitung.")
         result = parse_packet(full_packet)
 
         if result:
             print(result)
+            mqtt_client.publish("{MQTT_TOPIC_RESULT}", result)
 
             # Jika restart_detection diset (misalnya setelah mendapatkan hasil measurement),
             # tunggu 5 detik sebelum keluar untuk memberi waktu pemulihan.
@@ -330,6 +336,7 @@ def capture_serial_data():
         max_attempts = 3
         # Loop utama: Pilih port dan baca data
         while attempts < max_attempts:
+        # while True:
             print(f"\n--- Memulai deteksi port serial baru ---")
             mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Loading.") #Publish MQTT
             ser = select_serial_port()
@@ -337,14 +344,12 @@ def capture_serial_data():
                 print(f"Tidak dapat menemukan port yang valid. Mencoba lagi dalam 5 detik...")
                 time.sleep(5)
                 attempts += 1
+                # continue
 
                 if (attempts == max_attempts):
                     print(f"Port serial tidak ditemukan. Program dihentikan.")
-                    data = {
-                        "status": "error",
-                        "message": "Port serial tidak ditemukan. Program dihentikan."
-                    }
-                    mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/end", json.dumps(data))
+                    mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/end", f"Port serial tidak ditemukan. Program dihentikan.")
+
                     break
                 continue
 
