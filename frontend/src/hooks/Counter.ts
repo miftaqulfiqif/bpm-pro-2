@@ -7,13 +7,13 @@ export const useCounter = () => {
 
   const buttonStart = () => {
     if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-      setButtonLoading(false);
-      setMessage("Waiting for data...");
-    } else {
-      setButtonLoading(true);
+      console.log("WebSocket sudah berjalan.");
+      return;
+    }
 
+    setButtonLoading(true); // Set loading sebelum mulai koneksi
+
+    try {
       const ws = new WebSocket("ws://localhost:3000");
 
       ws.onopen = () => {
@@ -21,27 +21,25 @@ export const useCounter = () => {
       };
 
       ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log("Received:", data);
-          setMessage(data);
-        } catch (error) {
-          console.log("Received:", event.data);
-          setMessage(event.data);
-        }
+        console.log("Received:", event.data);
+        setMessage(event.data);
       };
 
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
-        setButtonLoading(false);
+        setButtonLoading(false); // Set false jika terjadi error
       };
 
       ws.onclose = () => {
         console.log("WebSocket closed");
-        setButtonLoading(false);
+        setButtonLoading(false); // Set false jika koneksi ditutup
+        wsRef.current = null;
       };
 
       wsRef.current = ws;
+    } catch (error) {
+      alert("Gagal :" + error);
+      setButtonLoading(false);
     }
   };
 

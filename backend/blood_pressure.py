@@ -164,7 +164,7 @@ def parse_packet(data_bytes):
                 "unit": "mmHg",
                 "timestamp": datetime.now().isoformat()
             }
-            # mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
+            mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
             # Publish data untuk grafik (hanya nilai tekanan)
             # mqtt_client.publish(MQTT_TOPIC_GRAPH, str(pressure))
 
