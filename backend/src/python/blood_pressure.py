@@ -9,14 +9,16 @@ import threading
 import queue
 
 # -------------------- KONFIGURASI --------------------
+DEVICE_ID = "bp_monitor_x001_"
 
 # Konfigurasi MQTT
 MQTT_BROKER = "broker.emqx.io"
 MQTT_PORT = 1883
 MQTT_TOPIC_REALTIME = "blood_pressure/realtime"
-MQTT_TOPIC_RESULT = "blood_pressure/result"
-MQTT_TOPIC_GRAPH = "blood_pressure/graph"  # Untuk grafik realtime
-MQTT_CLIENT_ID = f"bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+MQTT_TOPIC_RESULT = DEVICE_ID + "blood_pressure/result"
+MQTT_TOPIC_GRAPH = DEVICE_ID + "blood_pressure/graph"  # Untuk grafik realtime
+MQTT_CLIENT_ID = f"{DEVICE_ID}bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
 
 # Konstanta protokol
 START_BYTE = 0x5A
@@ -58,6 +60,7 @@ def detect_port(port_name, result_queue, stop_event):
     try:
         ser = serial.Serial(port_name, BAUD_RATE, timeout=1)
         print(f"Mencoba port: {port_name}")
+        mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Mencoba port: {port_name}.")
         start_time = time.time()
         while time.time() - start_time < 2 and not stop_event.is_set():
             data = ser.read(1)
