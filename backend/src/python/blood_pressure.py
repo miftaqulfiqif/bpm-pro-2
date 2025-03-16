@@ -7,17 +7,31 @@ from datetime import datetime
 import serial.tools.list_ports
 import threading
 import queue
+import socketio
+import sys
 
 # -------------------- KONFIGURASI --------------------
-DEVICE_ID = "bp_monitor_x001_"
+
+
+# Konfigurasi socket.io
+sio = socketio.Client()
+sio.connect("http://localhost:3000")
+
+# Dapatkan user_id dari argumen saat python dijalankan
+user_id = sys.argv[1] if len(sys.argv) > 1 else "default_user"
+data = {
+    "user_id": user_id,
+    "message": "Python terhubung ke server"
+}
+sio.emit("status", data)
 
 # Konfigurasi MQTT
 MQTT_BROKER = "broker.emqx.io"
 MQTT_PORT = 1883
 MQTT_TOPIC_REALTIME = "blood_pressure/realtime"
-MQTT_TOPIC_RESULT = DEVICE_ID + "blood_pressure/result"
-MQTT_TOPIC_GRAPH = DEVICE_ID + "blood_pressure/graph"  # Untuk grafik realtime
-MQTT_CLIENT_ID = f"{DEVICE_ID}bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+MQTT_TOPIC_RESULT = "blood_pressure/result"
+MQTT_TOPIC_GRAPH = "blood_pressure/graph"  # Untuk grafik realtime
+MQTT_CLIENT_ID = f"bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 
 # Konstanta protokol
@@ -60,7 +74,7 @@ def detect_port(port_name, result_queue, stop_event):
     try:
         ser = serial.Serial(port_name, BAUD_RATE, timeout=1)
         print(f"Mencoba port: {port_name}")
-        mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Mencoba port: {port_name}.")
+        sio.emit("data", {"userId": user_id, "data": f"Port {port_name} terhubung."})
         start_time = time.time()
         while time.time() - start_time < 2 and not stop_event.is_set():
             data = ser.read(1)
@@ -376,7 +390,17 @@ def capture_serial_data():
         if mqtt_client is not None:
             mqtt_client.loop_stop()
             mqtt_client.disconnect()
+            sio.disconnect()
             print(f"Koneksi MQTT ditutup.")
 
 if __name__ == "__main__":
-    capture_serial_data()
+    # capture_serial_data()
+
+    # Kirim data ke room user tertentu di server WebSocket
+    for i in range(5):  # Simulasi pengambilan data IoT 5 kali
+        data = f"Data IoT ke-{i+1} untuk user {user_id}"
+        sio.emit("data", {"userId": user_id, "data": data})
+        print(f"Pengambilan data ke-{i+1} selesai.")
+        time.sleep(1)  # Simulasi jeda pengambilan data
+    print("Pengambilan data selesai.")
+    sio.disconnect()
