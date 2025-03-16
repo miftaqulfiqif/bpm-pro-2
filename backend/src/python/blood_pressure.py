@@ -19,11 +19,15 @@ sio.connect("http://localhost:3000")
 
 # Dapatkan user_id dari argumen saat python dijalankan
 user_id = sys.argv[1] if len(sys.argv) > 1 else "default_user"
-data = {
-    "user_id": user_id,
-    "message": "Python terhubung ke server"
-}
-sio.emit("status", data)
+
+def send_data (event, message):
+    data = {
+        "user_id": user_id,
+        "message": message
+    }
+    sio.emit(event, data)
+
+send_data("status", "Python terhubung ke server")
 
 # Konfigurasi MQTT
 MQTT_BROKER = "broker.emqx.io"
