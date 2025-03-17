@@ -1,5 +1,5 @@
 import { io, server, port } from "./applications/app.js";
-import SocketHandler from "./applications/socketHandler.js";
+import SocketHandler from "./applications/socket-handler.js";
 
 const socketHandler = new SocketHandler();
 
