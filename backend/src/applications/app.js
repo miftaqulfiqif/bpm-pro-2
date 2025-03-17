@@ -2,6 +2,8 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
+import { publicRouter } from "../routes/public-api.js";
+import { errorMiddleware } from "../middleware/error-middleware.js";
 
 const port = 3000;
 
@@ -16,5 +18,7 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
+app.use(publicRouter);
+app.use(errorMiddleware);
 
 export { app, server, io, port };
