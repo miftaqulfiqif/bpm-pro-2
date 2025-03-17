@@ -1,51 +1,91 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
+  const [userId] = useState("user_123");
   const [message, setMessage] = useState("Waiting for data...");
   const [buttonLoading, setButtonLoading] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+
+  const stopProcess = () => {
+    if (socketRef.current) {
+      setButtonLoading(false);
+      socketRef.current.emit("stop", userId);
+      socketRef.current.disconnect();
+      socketRef.current = null;
+
+      if (message === "Pengambilan data selesai.") {
+        console.log(message);
+        setMessage(message);
+      } else {
+        console.log("Program berakhir");
+        setMessage("Program berakhir");
+      }
+    }
+  };
 
   const buttonStart = () => {
-    if (wsRef.current) {
-      console.log("WebSocket sudah berjalan.");
-      return;
+    if (socketRef.current) {
+      console.log("Socket sudah berjalan.");
+      return; // Jika socket sudah terhubung, tidak buat socket baru
     }
 
-    setButtonLoading(true); // Set loading sebelum mulai koneksi
+    setButtonLoading(true);
 
     try {
-      const ws = new WebSocket("ws://localhost:3000");
+      const socket = io("http://localhost:3000");
+      socketRef.current = socket;
 
-      ws.onopen = () => {
-        console.log("Connected to WebSocket");
-      };
+      socket.emit("join", userId);
+      socket.emit("start", userId);
 
-      ws.onmessage = (event) => {
-        console.log("Received:", event.data);
-        setMessage(event.data);
-      };
+      socket.on("status", (data) => {
+        console.log("Data status diterima:", data);
+        setMessage(data.data);
+      });
 
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        setButtonLoading(false); // Set false jika terjadi error
-      };
+      socket.on("realtime", (data) => {
+        console.log("Data realtime diterima:", data);
+        setMessage(data.data);
+      });
 
-      ws.onclose = () => {
-        console.log("WebSocket closed");
-        setButtonLoading(false); // Set false jika koneksi ditutup
-        wsRef.current = null;
-      };
+      socket.on("result", (data) => {
+        console.log("Data result diterima:", data);
+        setMessage("Pengambilan data selesai.");
+        stopProcess();
+      });
 
-      wsRef.current = ws;
+      socket.on("done", () => {
+        stopProcess();
+      });
     } catch (error) {
-      alert("Gagal :" + error);
+      alert("Gagal: " + error);
       setButtonLoading(false);
     }
   };
+
+  const buttonStop = () => {
+    stopProcess();
+  };
+
+  // Efek untuk membersihkan socket ketika komponen unmount
+  useEffect(() => {
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("status");
+        socketRef.current.off("realtime");
+        socketRef.current.off("result");
+        socketRef.current.off("stop");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
 
   return {
     message,
     buttonLoading,
     buttonStart,
+    buttonStop,
   };
 };

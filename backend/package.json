@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
+    "start": "node src/main.js",
     "test": "jest"
   },
   "author": "Miftaqul Fiqi Firmansyah",
@@ -10,9 +11,11 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "cors": "^2.8.5",
     "joi": "^17.13.3",
     "mqtt": "^5.10.4",
     "python-shell": "^5.0.0",
+    "socket.io": "^4.8.1",
     "ws": "^8.18.1"
   },
   "devDependencies": {

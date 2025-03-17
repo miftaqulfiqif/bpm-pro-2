@@ -1,0 +1,24 @@
+import express from "express";
+import http from "http";
+import cors from "cors";
+import { Server } from "socket.io";
+
+const port = 3000;
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+app.use(express.json());
+app.use(cors());
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+export { app, server, io, port };

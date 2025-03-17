@@ -1,24 +1,18 @@
-import { MessageResult } from "./components/MessageResult";
 import { useCounter } from "./hooks/Counter";
 
-export const App = () => {
-  const { message, buttonLoading, buttonStart } = useCounter();
-
+const App = () => {
+  const { message, buttonLoading, buttonStart, buttonStop } = useCounter();
   return (
     <div>
-      <h1>Live Sensor Data</h1>
-      <p>Message from WebSocket: </p>
-      {
-        typeof message === "string" ? (
-          <p>{message}</p>
-        ) : (
-          <MessageResult message={message} />
-        )
-      }
-      {/* <p>{message}</p> */}
+      <p>Live Sensor Data</p>
+      <p>Message from WebSocket:</p>
+      <p>{message}</p>
       <button disabled={buttonLoading} onClick={buttonStart}>
         Start
       </button>
+      <button onClick={buttonStop}> Stop </button>
     </div>
   );
 };
+
+export default App;
