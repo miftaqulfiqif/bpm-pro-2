@@ -1,5 +1,6 @@
 import { io } from "./app.js";
 import PythonProcessManager from "./python-process.js";
+import { prismaClient } from "./database.js";
 
 class SocketHandler {
   constructor() {
@@ -37,6 +38,31 @@ class SocketHandler {
   handleResult(socket, data) {
     console.log(`Received result from client ${data.user_id}:`, data);
     io.to(data.user_id).emit("result", data);
+
+    // Simpan hasil pengukuran ke database
+    const resultData = {
+      user_id: data.user_id,
+      systolic: data.data_measure.systolic,
+      diastolic: data.data_measure.diastolic,
+      mean: data.data_measure.mean,
+      heart_rate: data.data_measure.heartRate,
+      timestamp: data.data_measure.timestamp,
+    };
+
+    prismaClient.user
+      .upsert({
+        where: {
+          user_id: data.user_id,
+        },
+        update: resultData,
+        create: resultData,
+      })
+      .then(() => {
+        console.log(`Result data for ${data.user_id} saved successfully.`);
+      })
+      .catch((error) => {
+        console.error(`Error saving result data for ${data.user_id}:`, error);
+      });
   }
 
   startProcess(socket, userId) {

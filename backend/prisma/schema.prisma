@@ -29,8 +29,8 @@ model Measurement {
   systolic Float
   diastolic Float
   mean Float
-  heartRate Float
-  timestamp DateTime @default(now())
+  heart_rate Float
+  timestamp String @db.VarChar(100)
 
   @@map("measurements")
 }
