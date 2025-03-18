@@ -12,4 +12,6 @@ const login = Joi.object({
   password: Joi.string().max(20).required(),
 });
 
-export { register, login };
+const getUser = Joi.string().max(100).required();
+
+export { register, login, getUser };
