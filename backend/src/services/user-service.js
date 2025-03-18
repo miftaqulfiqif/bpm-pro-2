@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { login, register } from "../validation/user-validation.js";
+import { getUser, login, register } from "../validation/user-validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import { validate } from "../validation/validation.js";
@@ -18,7 +18,6 @@ const registerService = async (request) => {
       throw new ResponseError(400, "Username already exists");
     }
 
-    //Hashing password
     password = await bcrypt.hash(password, 10);
 
     return prismaClient.user.create({
@@ -41,13 +40,13 @@ const registerService = async (request) => {
 const loginService = async (request) => {
   try {
     const user = validate(login, request);
-    let { name, username, password } = user;
 
-    const userFound = await prismaClient.user.findUnique({
+    const userFound = await prismaClient.user.findFirst({
       where: {
-        username: username,
+        username: user.username,
       },
       select: {
+        id: true,
         username: true,
         password: true,
       },
@@ -57,7 +56,10 @@ const loginService = async (request) => {
       throw new ResponseError(400, "Username or password wrong");
     }
 
-    const isValidPassword = await bcrypt.compare(password, userFound.password);
+    const isValidPassword = await bcrypt.compare(
+      user.password,
+      userFound.password
+    );
 
     if (!isValidPassword) {
       throw new ResponseError(401, "Username or password wrong");
@@ -70,7 +72,7 @@ const loginService = async (request) => {
         token: token,
       },
       where: {
-        username: username,
+        id: userFound.id,
       },
       select: {
         token: true,
@@ -81,4 +83,28 @@ const loginService = async (request) => {
   }
 };
 
-export { registerService, loginService };
+const getCurrentUserService = async (username) => {
+  try {
+    username = validate(getUser, username);
+
+    const userFound = prismaClient.user.findFirst({
+      where: {
+        username: username,
+      },
+      select: {
+        name: true,
+        username: true,
+      },
+    });
+
+    if (!userFound) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    return userFound;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export { registerService, loginService, getCurrentUserService };

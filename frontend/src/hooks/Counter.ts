@@ -1,11 +1,15 @@
+import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
-  const [userId] = useState("user_123");
+  const [userId, setUserId] = useState("user_123");
   const [message, setMessage] = useState("Waiting for data...");
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
+  const token = localStorage.getItem("token");
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const stopProcess = () => {
     if (socketRef.current) {
@@ -22,7 +26,19 @@ export const useCounter = () => {
         setMessage("Program berakhir");
       }
     }
+    setIsOpen(true);
   };
+
+  // Fungsi untuk ambil user id
+  axios
+    .get("http://localhost:3000/api/user/current", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      setUserId(response.data.data.username);
+    });
 
   const buttonStart = () => {
     if (socketRef.current) {
@@ -52,6 +68,7 @@ export const useCounter = () => {
       socket.on("result", (data) => {
         console.log("Data result diterima:", data);
         setMessage("Pengambilan data selesai.");
+
         stopProcess();
       });
 
@@ -87,5 +104,8 @@ export const useCounter = () => {
     buttonLoading,
     buttonStart,
     buttonStop,
+    open,
+    isOpen,
+    setIsOpen,
   };
 };
