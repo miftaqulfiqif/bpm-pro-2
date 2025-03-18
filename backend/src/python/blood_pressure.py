@@ -43,7 +43,7 @@ def send_data_result(data):
                 "mean": data["mean"],
                 "heartRate": data["heart_rate"],
                 "timestamp": data["timestamp"]
-            }
+            } 
         }
         sio.emit("result", data)
     except Exception as e:
