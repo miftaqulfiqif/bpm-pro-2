@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
-import { getUser, login, register } from "../validation/user-validation.js";
+import {
+  getUserValidation,
+  loginValidation,
+  registerValidation,
+} from "../validation/user-validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import { validate } from "../validation/validation.js";
@@ -7,7 +11,7 @@ import { v4 as uuid } from "uuid";
 
 const registerService = async (request) => {
   try {
-    const user = validate(register, request);
+    const user = validate(registerValidation, request);
     let { name, username, password } = user;
 
     const countUser = await prismaClient.user.count({
@@ -39,7 +43,7 @@ const registerService = async (request) => {
 
 const loginService = async (request) => {
   try {
-    const user = validate(login, request);
+    const user = validate(loginValidation, request);
 
     const userFound = await prismaClient.user.findFirst({
       where: {
@@ -85,7 +89,7 @@ const loginService = async (request) => {
 
 const getCurrentUserService = async (username) => {
   try {
-    username = validate(getUser, username);
+    username = validate(getUserValidation, username);
 
     const userFound = prismaClient.user.findFirst({
       where: {

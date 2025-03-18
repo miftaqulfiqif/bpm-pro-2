@@ -1,5 +1,8 @@
 import { io } from "./app.js";
 import PythonProcessManager from "./python-process.js";
+
+import { createValidation } from "../validation/measurement-validation.js";
+import { validate } from "../validation/validation.js";
 import { prismaClient } from "./database.js";
 
 class SocketHandler {
@@ -35,7 +38,7 @@ class SocketHandler {
     io.to(data.user_id).emit("realtime", data);
   }
 
-  handleResult(socket, data) {
+  async handleResult(socket, data) {
     console.log(`Received result from client ${data.user_id}:`, data);
     io.to(data.user_id).emit("result", data);
 
@@ -46,23 +49,20 @@ class SocketHandler {
       diastolic: data.data_measure.diastolic,
       mean: data.data_measure.mean,
       heart_rate: data.data_measure.heartRate,
-      timestamp: data.data_measure.timestamp,
     };
 
-    prismaClient.user
-      .upsert({
-        where: {
-          user_id: data.user_id,
-        },
-        update: resultData,
-        create: resultData,
-      })
-      .then(() => {
-        console.log(`Result data for ${data.user_id} saved successfully.`);
-      })
-      .catch((error) => {
-        console.error(`Error saving result data for ${data.user_id}:`, error);
+    try {
+      const measurement = validate(createValidation, resultData);
+      localStorage.setItem("resultData", JSON.stringify(resultData));
+
+      await prismaClient.measurement.create({
+        data: measurement,
       });
+
+      console.log("Measurement saved successfully:", measurement);
+    } catch (error) {
+      console.error("Error occurred during processing:", error);
+    }
   }
 
   startProcess(socket, userId) {
