@@ -20,6 +20,7 @@ sio.connect("http://localhost:3000")
 # Dapatkan user_id dari argumen saat python dijalankan
 user_id = sys.argv[1] if len(sys.argv) > 1 else "default_user"
 
+# Fungsi untuk mengirim data menggunakan websocket
 def send_data (event, message):
     data = {
         "user_id": user_id,
