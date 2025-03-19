@@ -3,8 +3,9 @@ import { useState, useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
-  const [userId, setUserId] = useState("user_123");
+  const [userId, setUserId] = useState("defaul_user_id");
   const [message, setMessage] = useState("Waiting for data...");
+  const [result, setResult] = useState();
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
@@ -29,18 +30,20 @@ export const useCounter = () => {
     setIsOpen(true);
   };
 
-  // Fungsi untuk ambil user id
-  axios
-    .get("http://localhost:3000/api/user/current", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      setUserId(response.data.data.username);
-    });
+  const buttonStart = async () => {
+    // Fungsi untuk ambil user id
+    const userId = await axios
+      .get("http://localhost:3000/api/user/current", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        return response.data.data.username;
+      });
 
-  const buttonStart = () => {
+    setUserId(userId);
+
     if (socketRef.current) {
       console.log("Socket sudah berjalan.");
       return; // Jika socket sudah terhubung, tidak buat socket baru
@@ -68,6 +71,8 @@ export const useCounter = () => {
       socket.on("result", (data) => {
         console.log("Data result diterima:", data);
         setMessage("Pengambilan data selesai.");
+
+        setResult(data);
 
         stopProcess();
       });
@@ -107,5 +112,7 @@ export const useCounter = () => {
     open,
     isOpen,
     setIsOpen,
+    result,
+    setResult,
   };
 };

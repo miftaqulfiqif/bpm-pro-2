@@ -2,6 +2,8 @@ import { createValidation } from "../validation/measurement-validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import { validate } from "../validation/validation.js";
+import { getUserValidation } from "../validation/user-validation.js";
+import { logger } from "../applications/logging.js";
 
 const createService = async (request) => {
   try {
@@ -34,4 +36,31 @@ const createService = async (request) => {
   }
 };
 
-export { createService };
+const getMeasurementService = async (username) => {
+  try {
+    username = validate(getUserValidation, username);
+
+    const data = await prismaClient.measurement.findFirst({
+      where: {
+        user_id: username,
+      },
+      select: {
+        user_id: true,
+        systolic: true,
+        diastolic: true,
+        mean: true,
+        heart_rate: true,
+        timestamp: true,
+      },
+    });
+
+    if (!data) {
+      throw new ResponseError(404, "User not found");
+    }
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { createService, getMeasurementService };

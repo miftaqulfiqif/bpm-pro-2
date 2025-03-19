@@ -1,7 +1,6 @@
 # PEMILIHAN PORT SECARA OTOMATIS, PENGULANGAN KETIKA PENGUKURAN SUDAH SELESAI, GRAFIK MQTT, STOP JIKA SELAMA REAL TIME TIDAK ADA RESPON 5 DETIK KEMBALI LOOPING.
 import serial
 import time
-import paho.mqtt.client as mqtt
 import json
 from datetime import datetime
 import serial.tools.list_ports
@@ -12,40 +11,32 @@ import sys
 
 # -------------------- KONFIGURASI --------------------
 
-# Konfigurasi MQTT
-MQTT_BROKER = "broker.emqx.io"
-MQTT_PORT = 1883
-MQTT_TOPIC_REALTIME = "blood_pressure/realtime"
-MQTT_TOPIC_RESULT = "blood_pressure/result"
-MQTT_TOPIC_GRAPH = "blood_pressure/graph"  # Untuk grafik realtime
-MQTT_CLIENT_ID = f"bp_monitor_{datetime.now().strftime('%Y%m%d%H%M%S')}"
-
 # Konfigurasi Socket.IO
 sio = socketio.Client()
 sio.connect("http://localhost:3000")
 
 user_id = sys.argv[1] if len(sys.argv) > 1 else "default_user"
 
-def send_data(event, data):
+def send_data(event, message):
     try:
-        data = { "user_id": user_id, "data": data }
-        sio.emit(event, data)
+        receive = { "user_id": user_id, "data": message }
+        sio.emit(event, receive)
     except Exception as e:
-        print(f"Error sending data : {e}")
+        print(f"Error sending data for event {event}: {e}")
 
 def send_data_result(data):
+    print(f"result : {data}")
     try:
-        data = {
+        result = {
             "user_id": user_id,
             "data_measure": {
                 "systolic": data["systolic"],
                 "diastolic": data["diastolic"],
                 "mean": data["mean"],
-                "heartRate": data["heart_rate"],
-                "timestamp": data["timestamp"]
+                "heart_rate": data["heart_rate"],
             } 
         }
-        sio.emit("result", data)
+        sio.emit("result", result)
     except Exception as e:
         print(f"Error sending data : {e}")
 
@@ -56,9 +47,6 @@ def send_done_event(user_id):
         })
     except Exception as e:
         print(f"Error sending data : {e}")
-
-send_data("status", "Python terhubung ke server")
-
 
 # Konstanta protokol
 START_BYTE = 0x5A
@@ -72,23 +60,10 @@ REALTIME_TIMEOUT = 5
 
 # -------------------- VARIABEL GLOBAL --------------------
 
-mqtt_client = None                # Klien MQTT global
 port_queue = queue.Queue()          # Queue untuk port yang valid
 restart_detection = threading.Event()  # Event untuk restart loop pembacaan
 in_realtime_mode = False           # Flag apakah sedang dalam mode realtime
 last_realtime_data = 0             # Timestamp data realtime terakhir
-
-# -------------------- MQTT CALLBACK --------------------
-
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print(f"Terhubung ke broker MQTT: {MQTT_BROKER}:{MQTT_PORT}")
-    else:
-        print(f"Gagal terhubung ke MQTT, kode: {rc}")
-
-def on_publish(client, userdata, mid):
-    # Callback publish (bisa diisi jika diperlukan)
-    pass
 
 # -------------------- DETEKSI PORT --------------------
 
@@ -120,18 +95,18 @@ def select_serial_port():
     attempts = 0
     max_attempts = 10
 
-    while attempts < max_attempts:
-    # while True:
+    # while attempts < max_attempts:
+    while True:
         ports = list(serial.tools.list_ports.comports())    
         if not ports:
             print(f"Tidak ada port serial yang ditemukan. Coba lagi dalam 1 detik...")
             time.sleep(1)
             attempts += 1
-            # continue
+            continue
 
             if attempts == max_attempts:
                 print("Tidak ada port serial yang ditemukan. Ulangi beberapa saat lagi.")
-                mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status",f"Tidak ada port serial yang ditemukan. Ulangi beberapa saat lagi.")
+                # mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status",f"Tidak ada port serial yang ditemukan. Ulangi beberapa saat lagi.")
                 return None
             continue
         
@@ -201,13 +176,8 @@ def parse_packet(data_bytes):
                 "type": "realtime",
                 "pressure": pressure,
                 "unit": "mmHg",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": int(time.time())
             }
-            mqtt_client.publish(MQTT_TOPIC_REALTIME, json.dumps(data))
-            # Publish data untuk grafik (hanya nilai tekanan)
-            mqtt_client.publish(MQTT_TOPIC_GRAPH, str(pressure))
-
-            mqtt_client.publish(MQTT_TOPIC_REALTIME, f"Tekanan Real-Time: {pressure} mmHg")
             
             send_data("realtime", f"Tekanan Real-Time: {pressure} mmHg")
 
@@ -238,12 +208,12 @@ def parse_packet(data_bytes):
                 "systolic": systolic,
                 "diastolic": diastolic,
                 "mean": mean,
-                "heartRate": heart_rate,
+                "heart_rate": heart_rate,
                 "unit": "mmHg",
                 "timestamp": timestamp
             }
             send_data_result(data)
-            mqtt_client.publish(MQTT_TOPIC_RESULT, json.dumps(data))
+            # mqtt_client.publish(MQTT_TOPIC_RESULT, json.dumps(data))
 
             # Setelah mendapatkan hasil lengkap, set restart detection
             restart_detection.set()
@@ -347,9 +317,7 @@ def read_serial_data(ser):
         result = parse_packet(full_packet)
 
         if result:
-            print(result)
-            send_data("result", result)
-            mqtt_client.publish("{MQTT_TOPIC_RESULT}", result)
+            print("Result data:", result)
 
             # Jika restart_detection diset (misalnya setelah mendapatkan hasil measurement),
             # tunggu 5 detik sebelum keluar untuk memberi waktu pemulihan.
@@ -363,42 +331,26 @@ def read_serial_data(ser):
 # -------------------- LOOP UTAMA --------------------
 
 def capture_serial_data():
-    global mqtt_client
+    # global mqtt_client
 
     try:
-        # Setup MQTT client
-        mqtt_client = mqtt.Client(client_id=MQTT_CLIENT_ID)
-        mqtt_client.on_connect = on_connect
-        mqtt_client.on_publish = on_publish
-        mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-        mqtt_client.loop_start()
-
-        print(f"Topik Real-Time: {MQTT_TOPIC_REALTIME}")
-        print(f"Topik Hasil: {MQTT_TOPIC_RESULT}")
-        print(f"Topik Grafik: {MQTT_TOPIC_GRAPH}")
+        send_data("status", f"Memulai proses python dengan user {user_id}")
         print(f"Emergency stop akan terjadi jika tidak ada data selama {REALTIME_TIMEOUT} detik dalam mode realtime")
 
         attempts = 0
         max_attempts = 3
         # Loop utama: Pilih port dan baca data
-        while attempts < max_attempts:
-        # while True:
+        # while attempts < max_attempts:
+        while True:
             print(f"\n--- Memulai deteksi port serial baru ---")
             send_data("status", "Mencari port serial...")
-            mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Loading.") #Publish MQTT
+            # mqtt_client.publish(f"{MQTT_TOPIC_REALTIME}/status", f"Loading.") #Publish MQTT
             ser = select_serial_port()
             if ser is None:
                 print(f"Tidak dapat menemukan port yang valid. Mencoba lagi dalam 5 detik...")
                 send_data("status", "Tidak dapat menemukan port yang valid. Mencoba lagi dalam 5 detik...")
                 time.sleep(5)
                 attempts += 1
-                # continue
-
-                if (attempts == max_attempts):
-                    send_done_event(user_id)
-                    print(f"Port serial tidak ditemukan. Program dihentikan.")
-                    send_data("status", "Port serial tidak ditemukan. Program dihentikan.")
-                    break
                 continue
 
             # Baca data dari port hingga selesai atau terjadi error
@@ -423,10 +375,10 @@ def capture_serial_data():
                 print(f"Port serial ditutup.")
         except Exception:
             pass
-        if mqtt_client is not None:
-            mqtt_client.loop_stop()
-            mqtt_client.disconnect()
-            print(f"Koneksi MQTT ditutup.")
+        # if mqtt_client is not None:
+            # mqtt_client.loop_stop()
+            # mqtt_client.disconnect()
+            # print(f"Koneksi MQTT ditutup.")
 
 if __name__ == "__main__":
     capture_serial_data()

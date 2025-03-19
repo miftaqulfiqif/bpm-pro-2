@@ -2,8 +2,16 @@ import { MessageResult } from "./components/MessageResult";
 import { useCounter } from "./hooks/Counter";
 
 const App = () => {
-  const { message, buttonLoading, buttonStart, buttonStop, isOpen, setIsOpen } =
-    useCounter();
+  const {
+    message,
+    buttonLoading,
+    buttonStart,
+    buttonStop,
+    isOpen,
+    setIsOpen,
+    result,
+    setResult,
+  } = useCounter();
 
   const closeModal = () => setIsOpen(false);
   return (
@@ -30,6 +38,7 @@ const App = () => {
           stateModel={isOpen}
           closeModal={closeModal}
           message={message}
+          result={result}
         />
       </div>
     </div>

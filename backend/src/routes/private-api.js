@@ -6,7 +6,11 @@ import { authMiddleware } from "../middleware/auth-middleware.js";
 const privateRouter = new express.Router();
 privateRouter.use(authMiddleware);
 
+//User
 privateRouter.get("/api/user/current", userController.get);
-privateRouter.post("/api/user/measurement", measurementController.create);
+
+//Measurement
+privateRouter.post("/api/measurements", measurementController.create);
+privateRouter.get("/api/measurement/current", measurementController.get);
 
 export { privateRouter };
