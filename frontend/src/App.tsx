@@ -10,7 +10,6 @@ const App = () => {
     isOpen,
     setIsOpen,
     result,
-    setResult,
   } = useCounter();
 
   const closeModal = () => setIsOpen(false);
