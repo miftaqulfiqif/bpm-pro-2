@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 export const useCounter = () => {
   const [userId, setUserId] = useState("defaul_user_id");
   const [message, setMessage] = useState("Waiting for data...");
+  const [heartRps, setHeartRps] = useState(0);
   const [result, setResult] = useState();
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
@@ -68,6 +69,11 @@ export const useCounter = () => {
         setMessage(data.data);
       });
 
+      socket.on("heart_rate_rps", (data) => {
+        console.log("Data heart_rate diterima:", data);
+        setHeartRps(data.data);
+      });
+
       socket.on("result", (data) => {
         console.log("Data result diterima:", data);
         setMessage("Pengambilan data selesai.");
@@ -96,6 +102,7 @@ export const useCounter = () => {
       if (socketRef.current) {
         socketRef.current.off("status");
         socketRef.current.off("realtime");
+        socketRef.current.off("heart_rate_rps");
         socketRef.current.off("result");
         socketRef.current.off("stop");
         socketRef.current.disconnect();
@@ -114,5 +121,6 @@ export const useCounter = () => {
     setIsOpen,
     result,
     setResult,
+    heartRps,
   };
 };
