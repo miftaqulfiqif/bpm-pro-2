@@ -1,4 +1,7 @@
-import { createService } from "../services/measurement-service.js";
+import {
+  createService,
+  getMeasurementService,
+} from "../services/measurement-service.js";
 
 const create = async (req, res, next) => {
   try {
@@ -11,4 +14,16 @@ const create = async (req, res, next) => {
   }
 };
 
-export default { create };
+const get = async (req, res, next) => {
+  try {
+    const username = req.user.username;
+    const result = await getMeasurementService(username);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export default { create, get };

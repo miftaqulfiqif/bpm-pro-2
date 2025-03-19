@@ -48,15 +48,23 @@ class SocketHandler {
       systolic: data.data_measure.systolic,
       diastolic: data.data_measure.diastolic,
       mean: data.data_measure.mean,
-      heart_rate: data.data_measure.heartRate,
+      heart_rate: data.data_measure.heart_rate,
     };
 
     try {
       const measurement = validate(createValidation, resultData);
-      localStorage.setItem("resultData", JSON.stringify(resultData));
 
-      await prismaClient.measurement.create({
-        data: measurement,
+      await prismaClient.measurement.upsert({
+        where: {
+          user_id: measurement.user_id,
+        },
+        update: {
+          ...measurement,
+        },
+        create: {
+          // Data yang akan dibuat jika data belum ada
+          ...measurement,
+        },
       });
 
       console.log("Measurement saved successfully:", measurement);
