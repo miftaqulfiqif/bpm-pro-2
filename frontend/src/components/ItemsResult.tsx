@@ -1,6 +1,6 @@
 type ItemsResultProps = {
   title: string;
-  value: string;
+  value: number;
   unit: string;
 };
 
@@ -11,7 +11,7 @@ export const ItemsResult = (props: ItemsResultProps) => {
       <div className="flex items-center gap-1">
         <svg
           fill="#000000"
-          width="3 4px"
+          width="34px"
           height="34px"
           viewBox="0 0 24 24"
           id="blood-drop"
@@ -19,11 +19,11 @@ export const ItemsResult = (props: ItemsResultProps) => {
           xmlns="http://www.w3.org/2000/svg"
           className="icon flat-color"
         >
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
           <g
             id="SVGRepo_tracerCarrier"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           ></g>
           <g id="SVGRepo_iconCarrier">
             <path
@@ -41,8 +41,8 @@ export const ItemsResult = (props: ItemsResultProps) => {
         <p className="font-bold">{title}</p>
       </div>
       <div className="flex items-end w-fit mx-auto gap-1">
-        <p className="text-4xl">{value}</p>
-        <p className="text-xs pb-1">{value === "--" ? "" : `${unit}`}</p>
+        <p className="text-4xl">{value === 0 ? "--" : `${value}`}</p>
+        <p className="text-xs pb-1">{value === 0 ? "" : `${unit}`}</p>
       </div>
     </div>
   );

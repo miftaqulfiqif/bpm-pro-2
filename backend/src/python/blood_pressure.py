@@ -168,7 +168,7 @@ def parse_packet(data_bytes):
                 }
                 
                 send_data("realtime", f"Tekanan Real-Time: {pressure} mmHg")
-                send_data("heart_per_second", pressure)
+                send_data("heart_rate_rps", pressure)
 
                 return f"Tekanan Real-Time: {pressure} mmHg"
             else:

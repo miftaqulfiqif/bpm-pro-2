@@ -6,7 +6,12 @@ export const useCounter = () => {
   const [userId, setUserId] = useState("defaul_user_id");
   const [message, setMessage] = useState("Waiting for data...");
   const [items, setItems] = useState<{ id: number; value: number }[]>([]);
-  const [result, setResult] = useState();
+  const [result, setResult] = useState({
+    systolic: 0,
+    diastolic: 0,
+    mean: 0,
+    heart_rate: 0,
+  });
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
@@ -82,9 +87,9 @@ export const useCounter = () => {
       });
 
       socket.on("result", (data) => {
-        console.log("Data result diterima:", data);
+        console.log("Data result diterima:", data.data_measure);
         setMessage("Pengambilan data selesai.");
-        setResult(data);
+        setResult(data.data_measure);
 
         stopProcess();
       });

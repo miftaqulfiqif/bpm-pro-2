@@ -62,10 +62,10 @@ export const MessageResult: FC<MessageResultProps> = ({
               {result ? (
                 <div className="p-4 md:p-5 space-y-4 text-white">
                   <p>Data Measure</p>
-                  <p>Systolic : {result.data_measure.systolic}</p>
-                  <p>Diastolic : {result.data_measure.diastolic}</p>
-                  <p>Mean : {result.data_measure.mean}</p>
-                  <p>Heart Rate : {result.data_measure.heart_rate}</p>
+                  <p>Systolic : {result.systolic}</p>
+                  <p>Diastolic : {result.diastolic}</p>
+                  <p>Mean : {result.mean}</p>
+                  <p>Heart Rate : {result.heart_rate}</p>
                 </div>
               ) : (
                 <div className="p-4 md:p-5 space-y-4 text-white">

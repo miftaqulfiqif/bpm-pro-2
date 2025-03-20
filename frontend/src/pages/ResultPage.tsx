@@ -7,21 +7,30 @@ export const ResultPage = () => {
   const { buttonStart, buttonStop, buttonLoading, items, result } =
     useCounter();
 
-  const [systolic, setSystolic] = useState("--");
-  const [diastolic, setDiastolic] = useState("--");
-  const [mean, setMean] = useState("--");
-  const [heartRate, setHeartRate] = useState("--");
+  const [systolic, setSystolic] = useState<number>(0);
+  const [diastolic, setDiastolic] = useState<number>(0);
+  const [mean, setMean] = useState<number>(0);
+  const [heartRate, setHeartRate] = useState<number>(0);
 
-  console.log(result);
-
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (result) {
+      setSystolic(result.systolic);
+      setDiastolic(result.diastolic);
+      setMean(result.mean);
+      setHeartRate(result.heart_rate);
+    }
+  }, [result]);
 
   return (
     <div className="h-screen w-screen bg-gray-500 px-20">
       <div className="flex flex-col bg-white rounded-xl p-4 gap-8">
         <p className="font-bold">Your healt statistic</p>
         <div className="bg-gray-200 h-[200px] w-[200px] mx-auto"></div>
-        <div className="flex justify-between mx-10">
+
+        {buttonLoading && (
+          <p className="text-center font-bold ">MEASURING ..... </p>
+        )}
+        <div className="flex justify-between mx-20">
           <ItemsResult title="Systolic" value={systolic} unit="mmHg" />
           <ItemsResult title="Diastolic" value={diastolic} unit="mmHg" />
           <ItemsResult title="Mean" value={mean} unit="mmHg" />
