@@ -68,10 +68,14 @@ export const useCounter = () => {
         setMessage(data.data);
       });
 
+      socket.on("heart_per_second", (data) => {
+        console.log("Data heart/s diterima:", data);
+        
+      });
+
       socket.on("result", (data) => {
         console.log("Data result diterima:", data);
         setMessage("Pengambilan data selesai.");
-
         setResult(data);
 
         stopProcess();
@@ -96,6 +100,7 @@ export const useCounter = () => {
       if (socketRef.current) {
         socketRef.current.off("status");
         socketRef.current.off("realtime");
+        socketRef.current.off("heart_per_second");
         socketRef.current.off("result");
         socketRef.current.off("stop");
         socketRef.current.disconnect();

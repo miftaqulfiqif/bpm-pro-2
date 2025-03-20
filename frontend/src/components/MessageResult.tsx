@@ -58,13 +58,20 @@ export const MessageResult: FC<MessageResultProps> = ({
               </div>
 
               {/* Body Modal */}
-              <div className="p-4 md:p-5 space-y-4 text-white">
-                <p>Data Measure</p>
-                <p>Systolic : {result.data_measure.systolic}</p>
-                <p>Diastolic : {result.data_measure.diastolic}</p>
-                <p>Mean : {result.data_measure.mean}</p>
-                <p>Heart Rate : {result.data_measure.heart_rate}</p>
-              </div>
+
+              {result ? (
+                <div className="p-4 md:p-5 space-y-4 text-white">
+                  <p>Data Measure</p>
+                  <p>Systolic : {result.data_measure.systolic}</p>
+                  <p>Diastolic : {result.data_measure.diastolic}</p>
+                  <p>Mean : {result.data_measure.mean}</p>
+                  <p>Heart Rate : {result.data_measure.heart_rate}</p>
+                </div>
+              ) : (
+                <div className="p-4 md:p-5 space-y-4 text-white">
+                  <p>{message}</p>
+                </div>
+              )}
 
               {/* Footer Modal */}
               <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
