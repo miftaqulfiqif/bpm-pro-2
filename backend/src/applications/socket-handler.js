@@ -16,6 +16,9 @@ class SocketHandler {
     socket.on("join", (userId) => this.joinRoom(socket, userId));
     socket.on("status", (data) => this.handleStatus(socket, data));
     socket.on("realtime", (data) => this.handleRealtime(socket, data));
+    socket.on("heart_rate_rps", (data) =>
+      this.handleHeartRateRps(socket, data)
+    );
     socket.on("result", (data) => this.handleResult(socket, data));
     socket.on("start", (userId) => this.startProcess(socket, userId));
     socket.on("stop", (userId) => this.stopProcess(socket, userId));
@@ -36,6 +39,11 @@ class SocketHandler {
   handleRealtime(socket, data) {
     console.log(`Received realtime data from client ${data.user_id}:`, data);
     io.to(data.user_id).emit("realtime", data);
+  }
+
+  handleHeartRateRps(socket, data) {
+    console.log(`Received heart_rate data from client ${data.user_id}:`, data);
+    io.to(data.user_id).emit("heart_rate_rps", data);
   }
 
   async handleResult(socket, data) {

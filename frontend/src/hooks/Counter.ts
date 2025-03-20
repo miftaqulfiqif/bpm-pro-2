@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 export const useCounter = () => {
   const [userId, setUserId] = useState("defaul_user_id");
   const [message, setMessage] = useState("Waiting for data...");
+  const [items, setItems] = useState<{ id: number; value: number }[]>([]);
   const [result, setResult] = useState();
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
@@ -44,9 +45,10 @@ export const useCounter = () => {
 
     setUserId(userId);
 
+    // Jika socket sudah terhubung, tidak buat socket baru
     if (socketRef.current) {
       console.log("Socket sudah berjalan.");
-      return; // Jika socket sudah terhubung, tidak buat socket baru
+      return;
     }
 
     setButtonLoading(true);
@@ -68,9 +70,15 @@ export const useCounter = () => {
         setMessage(data.data);
       });
 
-      socket.on("heart_per_second", (data) => {
-        console.log("Data heart/s diterima:", data);
-        
+      socket.on("heart_rate_rps", (data) => {
+        console.log("Data heart_rate diterima:", data);
+        setItems((prevItems) => [
+          ...prevItems,
+          {
+            id: prevItems.length,
+            value: data.data,
+          },
+        ]);
       });
 
       socket.on("result", (data) => {
@@ -100,7 +108,7 @@ export const useCounter = () => {
       if (socketRef.current) {
         socketRef.current.off("status");
         socketRef.current.off("realtime");
-        socketRef.current.off("heart_per_second");
+        socketRef.current.off("heart_rate_rps");
         socketRef.current.off("result");
         socketRef.current.off("stop");
         socketRef.current.disconnect();
@@ -119,5 +127,6 @@ export const useCounter = () => {
     setIsOpen,
     result,
     setResult,
+    items,
   };
 };
