@@ -269,7 +269,7 @@ def read_serial_data(ser):
     print(f"Terhubung ke {ser.port} pada {BAUD_RATE} bps")
     print(f"Menunggu data dari alat pengukur tekanan darah...")
 
-    send_data("status", "Terhubung ke alat pengukur tekanan darah silahkan menunggu data dari alat pengukur tekanan darah")
+    send_data("start_realtime", "Terhubung ke alat pengukur tekanan darah silahkan menunggu data dari alat pengukur tekanan darah")
     
     restart_detection.clear()
     in_realtime_mode = False

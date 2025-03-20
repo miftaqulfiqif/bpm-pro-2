@@ -16,6 +16,7 @@ export const useCounter = () => {
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
 
+  const [start, setStart] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const stopProcess = () => {
@@ -48,6 +49,7 @@ export const useCounter = () => {
         return response.data.data.username;
       });
 
+    setStart(true);
     setUserId(userId);
 
     // Jika socket sudah terhubung, tidak buat socket baru
@@ -68,6 +70,11 @@ export const useCounter = () => {
       socket.on("status", (data) => {
         console.log("Data status diterima:", data);
         setMessage(data.data);
+      });
+
+      socket.on("start_realtime", (data) => {
+        console.log("Data start_realtime diterima:", data);
+        setStart(false);
       });
 
       socket.on("realtime", (data) => {
@@ -128,6 +135,7 @@ export const useCounter = () => {
     buttonStart,
     buttonStop,
     open,
+    start,
     isOpen,
     setIsOpen,
     result,
