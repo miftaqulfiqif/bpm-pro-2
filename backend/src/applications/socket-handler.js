@@ -1,6 +1,5 @@
 import { io } from "./app.js";
 import PythonProcessManager from "./python-process.js";
-
 import { createValidation } from "../validation/measurement-validation.js";
 import { validate } from "../validation/validation.js";
 import { prismaClient } from "./database.js";
@@ -78,7 +77,6 @@ class SocketHandler {
           ...measurement,
         },
         create: {
-          // Data yang akan dibuat jika data belum ada
           ...measurement,
         },
       });

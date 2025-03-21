@@ -30,7 +30,7 @@ export const useCounter = () => {
         console.log(message);
         setMessage(message);
       } else {
-        console.log("Program berakhir");
+        // console.log("Program berakhir");
         setMessage("Program berakhir");
       }
     }
@@ -38,19 +38,22 @@ export const useCounter = () => {
   };
 
   const buttonStart = async () => {
-    // Fungsi untuk ambil user id
-    const userId = await axios
-      .get("http://localhost:3000/api/user/current", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        return response.data.data.username;
-      });
-
     setStart(true);
-    setUserId(userId);
+    // Fungsi untuk ambil user id
+    // const userId = await axios
+    //   .get("http://localhost:3000/api/user/current", {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     return response.data.data.username;
+    //   })
+    //   .catch(() => {
+    //     setMessage("Anda belum login. Silahkan login terlebih dahulu.");
+    //   });
+
+    // setUserId(userId);
 
     // Jika socket sudah terhubung, tidak buat socket baru
     if (socketRef.current) {
@@ -68,22 +71,22 @@ export const useCounter = () => {
       socket.emit("start", userId);
 
       socket.on("status", (data) => {
-        console.log("Data status diterima:", data);
+        // console.log("Data status diterima:", data);
         setMessage(data.data);
       });
 
       socket.on("start_realtime", (data) => {
-        console.log("Data start_realtime diterima:", data);
+        // console.log("Data start_realtime diterima:", data);
         setStart(false);
       });
 
       socket.on("realtime", (data) => {
-        console.log("Data realtime diterima:", data);
+        // console.log("Data realtime diterima:", data);
         setMessage(data.data);
       });
 
       socket.on("heart_rate_rps", (data) => {
-        console.log("Data heart_rate diterima:", data);
+        // console.log("Data heart_rate diterima:", data);
         setItems((prevItems) => [
           ...prevItems,
           {
@@ -94,7 +97,7 @@ export const useCounter = () => {
       });
 
       socket.on("result", (data) => {
-        console.log("Data result diterima:", data.data_measure);
+        // console.log("Data result diterima:", data.data_measure);
         setMessage("Pengambilan data selesai.");
         setResult(data.data_measure);
 
