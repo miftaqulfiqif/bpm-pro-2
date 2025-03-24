@@ -96,6 +96,7 @@ const getCurrentUserService = async (username) => {
         username: username,
       },
       select: {
+        id: true,
         name: true,
         username: true,
       },
@@ -111,4 +112,25 @@ const getCurrentUserService = async (username) => {
   }
 };
 
-export { registerService, loginService, getCurrentUserService };
+const getIdService = async (token) => {
+  try {
+    const userFound = await prismaClient.user.findFirst({
+      where: {
+        token: token,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!userFound) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    return userFound;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export { registerService, loginService, getCurrentUserService, getIdService };

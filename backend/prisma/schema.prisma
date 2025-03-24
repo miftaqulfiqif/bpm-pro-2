@@ -16,12 +16,14 @@ datasource db {
 
 model User {
   id       String   @id @default(uuid())
-  username String   @db.VarChar(100)
+  username String   @db.VarChar(100) @unique
   password String   @db.VarChar(100)
   name     String   @db.VarChar(255)
   token    String?  @db.VarChar(100)
 
   @@map("users")
+
+  patient Patient[]
 }
 
 model Measurement {
@@ -33,5 +35,21 @@ model Measurement {
   timestamp DateTime @default(now())
 
   @@map("measurements")
+}
+
+model Patient {
+  id Int @id @default(autoincrement())
+  user_id String @db.VarChar(100) @default("defaul_user_id")
+  name String @db.VarChar(255)
+  gender String @db.VarChar(20)
+  phone Int @db.Integer
+  work String @db.VarChar(50)
+  last_education String @db.VarChar(50)
+  place_of_birth String @db.VarChar(50)
+  date_of_birth DateTime
+
+  @@map("patients")
+
+  user User @relation(fields: [user_id], references: [id])
 }
 
