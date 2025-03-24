@@ -71,7 +71,7 @@ class SocketHandler {
 
       await prismaClient.measurement.upsert({
         where: {
-          user_id: measurement.user_id,
+          user_id: resultData.user_id,
         },
         update: {
           ...measurement,

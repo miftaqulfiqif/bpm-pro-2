@@ -27,7 +27,7 @@ model User {
 }
 
 model Measurement {
-  user_id  String   @db.VarChar(100) @unique
+  user_id  String   @db.VarChar(100) @unique @default("default_user_id")
   systolic Float
   diastolic Float
   mean Float

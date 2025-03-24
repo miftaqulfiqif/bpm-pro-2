@@ -5,13 +5,13 @@ import { validate } from "../validation/validation.js";
 import { getUserValidation } from "../validation/user-validation.js";
 import { logger } from "../applications/logging.js";
 
-const createService = async (request) => {
+const createService = async (body, user) => {
   try {
-    const measurement = validate(createValidation, request);
+    const measurement = validate(createValidation, body);
 
     const userFound = await prismaClient.measurement.findUnique({
       where: {
-        user_id: measurement.user_id,
+        user_id: user.id,
       },
       select: {
         user_id: true,
@@ -20,15 +20,21 @@ const createService = async (request) => {
 
     if (!userFound) {
       return prismaClient.measurement.create({
-        data: measurement,
+        data: {
+          user_id: user.id,
+          ...measurement,
+        },
       });
     } else {
       return prismaClient.measurement.upsert({
         where: {
-          user_id: measurement.user_id,
+          user_id: user.id,
         },
         update: measurement,
-        create: measurement,
+        create: {
+          user_id: user.id,
+          ...measurement,
+        },
       });
     }
   } catch (error) {
