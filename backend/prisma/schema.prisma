@@ -22,7 +22,6 @@ model User {
   token String? @db.VarChar(100)
 
   patient  Patient[]
-  measurement Measurement? @relation
 
   @@map("users")
 }
@@ -36,7 +35,6 @@ model Measurement {
   heart_rate Float
   timestamp DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
 
   @@map("measurements")
 }
