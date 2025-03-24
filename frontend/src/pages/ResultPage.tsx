@@ -9,6 +9,7 @@ import bloodIcon from "../assets/icons/blood-icon.jpg";
 import hyperTensionIcon from "../assets/icons/hypertension.png";
 import bloodPressureIcon from "../assets/icons/blood-pressure.png";
 import bloodPressure2Icon from "../assets/icons/blood-pressure-icon.png";
+import { CreateNewPatient } from "../components/Forms/CreateNewPatient";
 export const ResultPage = () => {
   const {
     buttonStart,
@@ -50,6 +51,7 @@ export const ResultPage = () => {
         <div className="flex-col text-4xl lg:w-1/2 gap-2">
           <p className="font-bold">Overview</p>
           <p className="">Patient Health</p>
+
           <img
             src={heartImg}
             alt=""
@@ -57,6 +59,7 @@ export const ResultPage = () => {
               isScaled ? "scale-105" : "scale-100"
             }`}
           />
+          {/* <CreateNewPatient /> */}
         </div>
         <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-10 rounded-4xl">
           <div className="flex flex-col bg-white rounded-3xl p-10 gap-10 shadow-xl">
