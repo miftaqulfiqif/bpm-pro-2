@@ -71,22 +71,18 @@ export const useCounter = () => {
       socket.emit("start", userId);
 
       socket.on("status", (data) => {
-        // console.log("Data status diterima:", data);
         setMessage(data.data);
       });
 
       socket.on("start_realtime", (data) => {
-        // console.log("Data start_realtime diterima:", data);
         setStart(false);
       });
 
       socket.on("realtime", (data) => {
-        // console.log("Data realtime diterima:", data);
         setMessage(data.data);
       });
 
       socket.on("heart_rate_rps", (data) => {
-        // console.log("Data heart_rate diterima:", data);
         setItems((prevItems) => [
           ...prevItems,
           {
@@ -97,7 +93,6 @@ export const useCounter = () => {
       });
 
       socket.on("result", (data) => {
-        // console.log("Data result diterima:", data.data_measure);
         setMessage("Pengambilan data selesai.");
         setResult(data.data_measure);
 
