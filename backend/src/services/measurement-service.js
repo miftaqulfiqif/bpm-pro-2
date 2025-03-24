@@ -3,7 +3,6 @@ import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import { validate } from "../validation/validation.js";
 import { getUserValidation } from "../validation/user-validation.js";
-import { logger } from "../applications/logging.js";
 
 const createService = async (body, user) => {
   try {

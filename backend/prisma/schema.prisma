@@ -15,18 +15,20 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  username String   @db.VarChar(100) @unique
-  password String   @db.VarChar(100)
-  name     String   @db.VarChar(255)
-  token    String?  @db.VarChar(100)
+  id String @id @default(uuid())
+  username String @db.VarChar(100) @unique
+  password String @db.VarChar(100)
+  name String @db.VarChar(255)
+  token String? @db.VarChar(100)
+
+  patient  Patient[]
+  measurement Measurement? @relation
 
   @@map("users")
-
-  patient Patient[]
 }
 
 model Measurement {
+  id Int @id @default(autoincrement())
   user_id  String   @db.VarChar(100) @unique @default("default_user_id")
   systolic Float
   diastolic Float
@@ -34,12 +36,14 @@ model Measurement {
   heart_rate Float
   timestamp DateTime @default(now())
 
+  user User @relation(fields: [user_id], references: [id])
+
   @@map("measurements")
 }
 
 model Patient {
   id Int @id @default(autoincrement())
-  user_id String @db.VarChar(100) @default("defaul_user_id")
+  user_id String @db.VarChar(100) @default("default_user_id")
   name String @db.VarChar(255)
   gender String @db.VarChar(20)
   phone Int @db.Integer
@@ -48,8 +52,25 @@ model Patient {
   place_of_birth String @db.VarChar(50)
   date_of_birth DateTime
 
-  @@map("patients")
-
   user User @relation(fields: [user_id], references: [id])
+  patient_measurement PatientMeasurement[]
+
+  @@map("patients")
+}
+
+model PatientMeasurement {
+  id Int @id @default(autoincrement())
+  patient_id Int
+  weight Float
+  systolic Float
+  diastolic Float
+  mean Float
+  heart_rate Float
+  timestamp DateTime @default(now())
+
+  @@map("patient_measurements")
+
+  patient Patient @relation(fields: [patient_id], references: [id])
+
 }
 

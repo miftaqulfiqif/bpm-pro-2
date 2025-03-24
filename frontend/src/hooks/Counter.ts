@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
-  const [userId, setUserId] = useState("defaul_user_id");
+  const [userId, setUserId] = useState("default_user_id");
   const [message, setMessage] = useState("Waiting for data...");
   const [items, setItems] = useState<{ id: number; value: number }[]>([]);
   const [result, setResult] = useState({
