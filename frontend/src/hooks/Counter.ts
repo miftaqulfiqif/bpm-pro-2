@@ -3,14 +3,20 @@ import { useState, useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
-  const [userId, setUserId] = useState("defaul_user_id");
+  const [userId, setUserId] = useState("default_user_id");
   const [message, setMessage] = useState("Waiting for data...");
   const [items, setItems] = useState<{ id: number; value: number }[]>([]);
-  const [result, setResult] = useState();
+  const [result, setResult] = useState({
+    systolic: 0,
+    diastolic: 0,
+    mean: 0,
+    heart_rate: 0,
+  });
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
 
+  const [start, setStart] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const stopProcess = () => {
@@ -24,7 +30,7 @@ export const useCounter = () => {
         console.log(message);
         setMessage(message);
       } else {
-        console.log("Program berakhir");
+        // console.log("Program berakhir");
         setMessage("Program berakhir");
       }
     }
@@ -32,18 +38,22 @@ export const useCounter = () => {
   };
 
   const buttonStart = async () => {
+    setStart(true);
     // Fungsi untuk ambil user id
-    const userId = await axios
-      .get("http://localhost:3000/api/user/current", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        return response.data.data.username;
-      });
+    // const userId = await axios
+    //   .get("http://localhost:3000/api/user/current", {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     return response.data.data.username;
+    //   })
+    //   .catch(() => {
+    //     setMessage("Anda belum login. Silahkan login terlebih dahulu.");
+    //   });
 
-    setUserId(userId);
+    // setUserId(userId);
 
     // Jika socket sudah terhubung, tidak buat socket baru
     if (socketRef.current) {
@@ -61,17 +71,18 @@ export const useCounter = () => {
       socket.emit("start", userId);
 
       socket.on("status", (data) => {
-        console.log("Data status diterima:", data);
         setMessage(data.data);
       });
 
+      socket.on("start_realtime", (data) => {
+        setStart(false);
+      });
+
       socket.on("realtime", (data) => {
-        console.log("Data realtime diterima:", data);
         setMessage(data.data);
       });
 
       socket.on("heart_rate_rps", (data) => {
-        console.log("Data heart_rate diterima:", data);
         setItems((prevItems) => [
           ...prevItems,
           {
@@ -82,10 +93,8 @@ export const useCounter = () => {
       });
 
       socket.on("result", (data) => {
-        console.log("Data result diterima:", data);
         setMessage("Pengambilan data selesai.");
-
-        setResult(data);
+        setResult(data.data_measure);
 
         stopProcess();
       });
@@ -124,6 +133,7 @@ export const useCounter = () => {
     buttonStart,
     buttonStop,
     open,
+    start,
     isOpen,
     setIsOpen,
     result,

@@ -6,31 +6,69 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       String   @id @default(uuid())
-  username String   @db.VarChar(100)
-  password String   @db.VarChar(100)
-  name     String   @db.VarChar(255)
-  token    String?  @db.VarChar(100)
+  id String @id @default(uuid())
+  username String @db.VarChar(100) @unique
+  password String @db.VarChar(100)
+  name String @db.VarChar(255)
+  token String? @db.VarChar(100)
+
+  patient  Patient[]
 
   @@map("users")
 }
 
 model Measurement {
-  user_id  String   @db.VarChar(100) @unique
+  id Int @id @default(autoincrement())
+  user_id  String   @db.VarChar(100) @unique @default("default_user_id")
   systolic Float
   diastolic Float
   mean Float
   heart_rate Float
   timestamp DateTime @default(now())
 
+
   @@map("measurements")
+}
+
+model Patient {
+  id Int @id @default(autoincrement())
+  user_id String @db.VarChar(100) @default("default_user_id")
+  name String @db.VarChar(255)
+  gender String @db.VarChar(20)
+  phone Int @db.Integer
+  work String @db.VarChar(50)
+  last_education String @db.VarChar(50)
+  place_of_birth String @db.VarChar(50)
+  date_of_birth DateTime
+
+  user User @relation(fields: [user_id], references: [id])
+  patient_measurement PatientMeasurement[]
+
+  @@map("patients")
+}
+
+model PatientMeasurement {
+  id Int @id @default(autoincrement())
+  patient_id Int
+  weight Float
+  systolic Float
+  diastolic Float
+  mean Float
+  heart_rate Float
+  timestamp DateTime @default(now())
+
+  @@map("patient_measurements")
+
+  patient Patient @relation(fields: [patient_id], references: [id])
+
 }
 

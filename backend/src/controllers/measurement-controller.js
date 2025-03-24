@@ -5,7 +5,7 @@ import {
 
 const create = async (req, res, next) => {
   try {
-    const result = await createService(req.body);
+    const result = await createService(req.body, req.user);
     res.status(200).json({
       data: result,
     });

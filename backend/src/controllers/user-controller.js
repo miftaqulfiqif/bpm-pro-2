@@ -1,7 +1,9 @@
+import { logger } from "../applications/logging.js";
 import {
   registerService,
   loginService,
   getCurrentUserService,
+  getIdService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -37,4 +39,17 @@ const get = async (req, res, next) => {
   }
 };
 
-export default { register, login, get };
+const getId = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    logger.info("TOKEN : " + token);
+    const result = await getIdService(token);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export default { register, login, get, getId };

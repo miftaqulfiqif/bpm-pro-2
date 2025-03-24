@@ -11,24 +11,23 @@ export default function BasicLineChart(props: ItemsResult) {
   const [width, setWidth] = React.useState<number>(0);
 
   React.useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth * 0.8);
+    const handleResize = () => setWidth(window.innerWidth * 0.4);
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <div className="mx-auto text-center">
-      <LineChart
-        xAxis={[{ data: items.map((item) => item.id) }]}
-        series={[
-          {
-            data: items.map((item) => item.value),
-          },
-        ]}
-        width={width}
-        height={300}
-      />
-    </div>
+    <LineChart
+      xAxis={[{ data: items.map((item) => item.id) }]}
+      series={[
+        {
+          data: items.map((item) => item.value),
+        },
+      ]}
+      width={width}
+      height={300}
+      colors={["#3016F1"]}
+    />
   );
 }
