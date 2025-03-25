@@ -43,7 +43,7 @@ model Patient {
   id Int @id @default(autoincrement())
   user_id String @db.VarChar(100) @default("default_user_id")
   name String @db.VarChar(255)
-  gender String @db.VarChar(20)
+  gender Gender
   phone Int @db.Integer
   work String @db.VarChar(50)
   last_education String @db.VarChar(50)
@@ -59,6 +59,7 @@ model Patient {
 model PatientMeasurement {
   id Int @id @default(autoincrement())
   patient_id Int
+  category_result_id Int
   weight Float
   systolic Float
   diastolic Float
@@ -69,6 +70,26 @@ model PatientMeasurement {
   @@map("patient_measurements")
 
   patient Patient @relation(fields: [patient_id], references: [id])
+  category_result CategoryResult @relation(fields: [category_result_id], references: [id])
+
 
 }
 
+model CategoryResult {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  min_systolic Int
+  max_systolic Int
+  min_diastolic Int
+  max_diastolic Int
+  description String @db.VarChar(255)
+
+  patient_measurement PatientMeasurement[]
+
+  @@map("category_results")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
