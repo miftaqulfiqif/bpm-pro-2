@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Johnson",
+    "systolic": "120",
+    "diastolic": "80",
+    "mean": "56",
+    "heart_rate": "67",
+    "weight": "95",
+    "category_result": "Normal",
+    "gender": "FEMALE",
+    "phone": "102391231",
+    "work": "Petani",
+    "last_education": "SMA",
+    "place_of_birth": "Surabaya",
+    "date_of_birth": "0013-03-12 00:00:00"
+  }
+]

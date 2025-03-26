@@ -55,8 +55,8 @@ export const useCounter = () => {
 
     // setUserId(userId);
 
+    console.log(message);
     // Jika socket sudah terhubung, tidak buat socket baru
-
     if (socketRef.current) {
       console.log("Socket sudah berjalan.");
       return;
