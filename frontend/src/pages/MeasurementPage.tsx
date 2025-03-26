@@ -173,8 +173,8 @@ export default function MeasurementPage(props: PatientProps) {
               />
             </div>
           </div>
-          <div className="bg-white rounded-3xl p-8 shadow-xl">
-            <div className="w-fit">
+          <div className="bg-white rounded-3xl p-2 shadow-xl ">
+            <div className="w-fit mx-auto">
               <ChartHeartRate items={items} />
             </div>
           </div>

@@ -172,7 +172,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "header",
+    accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />;
@@ -180,114 +180,62 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "type",
+    accessorKey: "systolic",
     header: "Systolic",
     cell: ({ row }) => (
-      <div className="w-32">
+      <div className="flex w-fit items-center gap-1">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.type}
+          {row.original.systolic}
         </Badge>
+        <p className="text-xs">mmHg</p>
       </div>
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "diastolic",
     header: "Diastolic",
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
-      >
-        {row.original.status === "Done" ? (
-          <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
-        ) : (
-          <LoaderIcon />
-        )}
-        {row.original.status}
-      </Badge>
+      <div className="flex w-fit items-center gap-1">
+        <Badge variant="outline" className="px-1.5 text-muted-foreground">
+          {row.original.diastolic}
+        </Badge>
+        <p className="text-xs">mmHg</p>
+      </div>
     ),
   },
   {
-    accessorKey: "target",
-    header: () => <div className="w-full text-right">Mean</div>,
+    accessorKey: "mean",
+    header: "Mean",
     cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          });
-        }}
-      >
-        <Label htmlFor={`${row.original.id}-target`} className="sr-only">
-          Target
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background"
-          defaultValue={row.original.target}
-          id={`${row.original.id}-target`}
-        />
-      </form>
+      <div className="flex w-fit items-center gap-1">
+        <Badge variant="outline" className="px-1.5 text-muted-foreground">
+          {row.original.diastolic}
+        </Badge>
+        <p className="text-xs">mmHg</p>
+      </div>
     ),
   },
   {
-    accessorKey: "limit",
-    header: () => <div className="w-full text-right">Heart rate</div>,
+    accessorKey: "heart_rate",
+    header: "Heart rate",
     cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          });
-        }}
-      >
-        <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
-          Limit
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background"
-          defaultValue={row.original.limit}
-          id={`${row.original.id}-limit`}
-        />
-      </form>
+      <div className="flex w-fit items-center gap-1">
+        <Badge variant="outline" className="px-1.5 text-muted-foreground">
+          {row.original.heart_rate}
+        </Badge>
+        <p className="text-xs">bpm</p>
+      </div>
     ),
   },
   {
-    accessorKey: "reviewer",
-    header: "Category ",
+    accessorKey: "category_result",
+    header: "Category",
     cell: ({ row }) => {
-      const isAssigned = row.original.reviewer !== "Assign reviewer";
+      const isAssigned = row.original.category_result !== "Assign";
 
       if (isAssigned) {
-        return row.original.reviewer;
+        return row.original.category_result;
       }
-
-      return (
-        <>
-          <Label htmlFor={`${row.original.id}-reviewer`} className="sr-only">
-            Reviewer
-          </Label>
-          <Select>
-            <SelectTrigger
-              className="h-8 w-40"
-              id={`${row.original.id}-reviewer`}
-            >
-              <SelectValue placeholder="Assign reviewer" />
-            </SelectTrigger>
-            <SelectContent align="end">
-              <SelectItem value="Eddie Lake">Eddie Lake</SelectItem>
-              <SelectItem value="Jamik Tashpulatov">
-                Jamik Tashpulatov
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </>
-      );
     },
   },
   {
@@ -306,8 +254,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
           <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Delete</DropdownMenuItem>
         </DropdownMenuContent>
@@ -430,7 +376,7 @@ export function DataTable({
           </SelectContent>
         </Select>
         <TabsList className="@4xl/main:flex hidden">
-          <TabsTrigger value="outline">Outline</TabsTrigger>
+          {/* <TabsTrigger value="outline">Outline</TabsTrigger>
           <TabsTrigger value="past-performance" className="gap-1">
             Past Performance{" "}
             <Badge
@@ -449,7 +395,7 @@ export function DataTable({
               2
             </Badge>
           </TabsTrigger>
-          <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
+          <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger> */}
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -487,7 +433,7 @@ export function DataTable({
           </DropdownMenu>
           <Button variant="outline" size="sm">
             <PlusIcon />
-            <span className="hidden lg:inline">Add Section</span>
+            <span className="hidden lg:inline">Add Patient</span>
           </Button>
         </div>
       </div>
