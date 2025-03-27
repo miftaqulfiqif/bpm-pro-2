@@ -22,26 +22,26 @@ model User {
   token String? @db.VarChar(100)
 
   patient  Patient[]
+  category_result CategoryResult[]
 
   @@map("users")
 }
 
 model Measurement {
   id Int @id @default(autoincrement())
-  user_id  String   @db.VarChar(100) @unique @default("default_user_id")
+  user_id  String   @db.VarChar(100) @unique
   systolic Float
   diastolic Float
   mean Float
   heart_rate Float
   timestamp DateTime @default(now())
 
-
   @@map("measurements")
 }
 
 model Patient {
   id Int @id @default(autoincrement())
-  user_id String @db.VarChar(100) @default("default_user_id")
+  user_id String @db.VarChar(100)
   name String @db.VarChar(255)
   gender Gender
   phone Int
@@ -59,12 +59,12 @@ model Patient {
 model PatientMeasurement {
   id Int @id @default(autoincrement())
   patient_id Int
-  category_result String?
   weight Float
   systolic Float
   diastolic Float
   mean Float
   heart_rate Float
+  category_result String?
   timestamp DateTime @default(now())
 
   @@map("patient_measurements")
@@ -75,17 +75,20 @@ model PatientMeasurement {
 
 model CategoryResult {
   id Int @id @default(autoincrement())
-  name String @db.VarChar(100)
-  min_systolic Int
-  max_systolic Int
-  min_diastolic Int
-  max_diastolic Int
-  description String @db.VarChar(255)
+  user_id String 
+  name String @db.VarChar(255) @unique
+  min_systolic Int @unique
+  max_systolic Int @unique
+  min_diastolic Int @unique
+  max_diastolic Int @unique
+  description String @db.VarChar(255) @unique
+
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("category_results")
 }
 
 enum Gender {
-  MALE
-  FEMALE
+  male
+  female
 }

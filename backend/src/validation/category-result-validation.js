@@ -6,8 +6,16 @@ const createValidation = Joi.object({
   max_systolic: Joi.number().required(),
   min_diastolic: Joi.number().required(),
   max_diastolic: Joi.number().required(),
-  gender: Joi.string().max(10).required(),
   description: Joi.string().max(255).required(),
 });
 
-export { createValidation };
+const updateValidation = Joi.object({
+  name: Joi.string().max(255).optional(),
+  min_systolic: Joi.number().optional(),
+  max_systolic: Joi.number().optional(),
+  min_diastolic: Joi.number().optional(),
+  max_diastolic: Joi.number().optional(),
+  description: Joi.string().max(255).optional(),
+});
+
+export { createValidation, updateValidation };
