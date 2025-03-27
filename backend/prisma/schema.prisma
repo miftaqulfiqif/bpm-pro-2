@@ -43,8 +43,8 @@ model Patient {
   id Int @id @default(autoincrement())
   user_id String @db.VarChar(100) @default("default_user_id")
   name String @db.VarChar(255)
-  gender String @db.VarChar(20)
-  phone Int @db.Integer
+  gender Gender
+  phone Int
   work String @db.VarChar(50)
   last_education String @db.VarChar(50)
   place_of_birth String @db.VarChar(50)
@@ -59,6 +59,7 @@ model Patient {
 model PatientMeasurement {
   id Int @id @default(autoincrement())
   patient_id Int
+  category_result String?
   weight Float
   systolic Float
   diastolic Float
@@ -72,3 +73,19 @@ model PatientMeasurement {
 
 }
 
+model CategoryResult {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  min_systolic Int
+  max_systolic Int
+  min_diastolic Int
+  max_diastolic Int
+  description String @db.VarChar(255)
+
+  @@map("category_results")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
