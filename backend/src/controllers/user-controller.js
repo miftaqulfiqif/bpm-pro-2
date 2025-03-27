@@ -4,6 +4,7 @@ import {
   loginService,
   getCurrentUserService,
   getIdService,
+  logOutService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -52,4 +53,16 @@ const getId = async (req, res, next) => {
   }
 };
 
-export default { register, login, get, getId };
+const logout = async (req, res, next) => {
+  try {
+    const username = req.user.username;
+    await logOutService(username);
+    res.status(200).json({
+      data: "OK",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, get, getId, logout };

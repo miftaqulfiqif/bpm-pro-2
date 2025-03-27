@@ -10,4 +10,14 @@ const createPatientValidation = Joi.object({
   date_of_birth: Joi.date().required(),
 });
 
-export { createPatientValidation };
+const updatePatientValidation = Joi.object({
+  name: Joi.string().max(255).optional(),
+  gender: Joi.string().max(20).optional(),
+  phone: Joi.number().optional(),
+  work: Joi.string().max(50).optional(),
+  last_education: Joi.string().max(50).optional(),
+  place_of_birth: Joi.string().max(50).optional(),
+  date_of_birth: Joi.date().optional(),
+});
+
+export { createPatientValidation, updatePatientValidation };

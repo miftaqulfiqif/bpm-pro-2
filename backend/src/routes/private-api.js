@@ -11,6 +11,7 @@ privateRouter.use(authMiddleware);
 
 //User
 privateRouter.get("/api/user/current", userController.get);
+privateRouter.delete("/api/user/logout", userController.logout);
 
 //Measurement
 privateRouter.post("/api/measurements", measurementController.create);
@@ -18,6 +19,8 @@ privateRouter.get("/api/measurement/current", measurementController.get);
 
 //Patient
 privateRouter.post("/api/patients", patientController.create);
+privateRouter.get("/api/patients", patientController.getAll);
+privateRouter.patch("/api/patients/:id", patientController.update);
 
 //Patient-Measurement
 privateRouter.post(
@@ -27,5 +30,14 @@ privateRouter.post(
 
 //Category Result
 privateRouter.post("/api/category-results", categoryResultController.create);
+privateRouter.get("/api/category-results", categoryResultController.getAll);
+privateRouter.get(
+  "/api/category-results/by-user",
+  categoryResultController.getAllByUserId
+);
+privateRouter.patch(
+  "/api/category-results/:id",
+  categoryResultController.update
+);
 
 export { privateRouter };

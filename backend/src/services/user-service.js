@@ -133,4 +133,28 @@ const getIdService = async (token) => {
   }
 };
 
-export { registerService, loginService, getCurrentUserService, getIdService };
+const logOutService = async (username) => {
+  try {
+    return prismaClient.user.update({
+      data: {
+        token: null,
+      },
+      where: {
+        username: username,
+      },
+      select: {
+        token: true,
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export {
+  registerService,
+  loginService,
+  getCurrentUserService,
+  getIdService,
+  logOutService,
+};
