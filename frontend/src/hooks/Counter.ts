@@ -37,7 +37,19 @@ export const useCounter = () => {
     setIsOpen(true);
   };
 
-  const buttonStart = async () => {
+  const buttonStart = () => {
+    const data = {
+      data_measure: {
+        systolic: 120,
+        diastolic: 130,
+        mean: 23,
+        heart_rate: 20,
+      },
+    };
+    setResult(data.data_measure);
+  };
+
+  const buttonStartTry = async () => {
     setStart(true);
     // Fungsi untuk ambil user id
     // const userId = await axios

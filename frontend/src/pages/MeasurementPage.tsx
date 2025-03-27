@@ -36,7 +36,7 @@ export default function MeasurementPage() {
   const [mean, setMean] = useState<number>(0);
   const [heartRate, setHeartRate] = useState<number>(0);
 
-  const token = "dbcd07c1-b64e-4e7a-ba48-814f3931c691";
+  const token = "63fed935-86dc-40d7-a023-6c121f799439";
 
   const [form, setForm] = useState(false);
 

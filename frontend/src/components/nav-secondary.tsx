@@ -31,7 +31,7 @@ export function NavSecondary({
                 className="hover:bg-blue-400"
               >
                 <a href={item.url}>
-                  <item.icon />
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>

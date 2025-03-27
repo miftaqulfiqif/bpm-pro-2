@@ -82,7 +82,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
                 label="Gender"
                 name="gender"
                 placeholder="Select gender"
-                option={["MALE", "FEMALE"]}
+                option={["male", "female"]}
                 onChange={formik.handleChange}
                 value={formik.values.gender}
                 onTouch={formik.touched.gender}

@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar
       collapsible="icon"
       {...props}
-      className="bg-blue-500 text-white rounded-xl m-2"
+      className="bg-blue-500 text-white rounded-xl m-1"
     >
       <SidebarHeader>
         <SidebarMenu>
