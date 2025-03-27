@@ -130,10 +130,10 @@ export const ResultPage = () => {
               </button>
             )}
           </div>
-          {/* <PressButtonModal start={start} message={message} /> */}
+          <PressButtonModal start={start} message={message} />
         </div>
-        <CreateNewPatient form={form} closeModal={closeForm} />
-      </div>  
+        {/* <CreateNewPatient  form={form} closeModal={closeForm} /> */}
+      </div>
     </div>
   );
 };

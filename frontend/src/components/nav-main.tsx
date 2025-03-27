@@ -28,7 +28,7 @@ export function NavMain({
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
+        <SidebarMenu className="flex flex-col gap-4 mt-10">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <a href={item.url}>

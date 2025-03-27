@@ -62,9 +62,9 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
-      collapsible="offcanvas"
+      collapsible="icon"
       {...props}
-      className="bg-blue-500 text-white"
+      className="bg-blue-500 text-white rounded-xl m-2"
     >
       <SidebarHeader>
         <SidebarMenu>
@@ -73,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/">
+              <a href="#">
                 <span className="text-2xl font-bold">BPM PRO 2</span>
               </a>
             </SidebarMenuButton>

@@ -183,11 +183,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "systolic",
     header: "Systolic",
     cell: ({ row }) => (
-      <div className="flex w-fit items-center gap-1">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.systolic}
-        </Badge>
-        <p className="text-xs">mmHg</p>
+      <div className="flex w-fit gap-3 items-end">
+        <TableCell className="text-xl">{row.original.systolic}</TableCell>
+        <p className="text-xs mb-2">mmHg</p>
       </div>
     ),
   },
@@ -195,11 +193,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "diastolic",
     header: "Diastolic",
     cell: ({ row }) => (
-      <div className="flex w-fit items-center gap-1">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.diastolic}
-        </Badge>
-        <p className="text-xs">mmHg</p>
+      <div className="flex w-fit gap-1 items-end">
+        <TableCell className="text-xl">{row.original.diastolic}</TableCell>
+        <p className="text-xs mb-2">mmHg</p>
       </div>
     ),
   },
@@ -207,11 +203,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "mean",
     header: "Mean",
     cell: ({ row }) => (
-      <div className="flex w-fit items-center gap-1">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.diastolic}
-        </Badge>
-        <p className="text-xs">mmHg</p>
+      <div className="flex w-fit gap-1 items-end">
+        <TableCell className="text-xl">{row.original.mean}</TableCell>
+        <p className="text-xs mb-2">mmHg</p>
       </div>
     ),
   },
@@ -219,11 +213,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "heart_rate",
     header: "Heart rate",
     cell: ({ row }) => (
-      <div className="flex w-fit items-center gap-1">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.heart_rate}
-        </Badge>
-        <p className="text-xs">bpm</p>
+      <div className="flex w-fit gap-1 items-end">
+        <TableCell className="text-xl">{row.original.heart_rate}</TableCell>
+        <p className="text-xs mb-2">bpm</p>
       </div>
     ),
   },
@@ -231,9 +223,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "category_result",
     header: "Category",
     cell: ({ row }) => {
-      const isAssigned = row.original.category_result !== "Assign";
+      const normal = row.original.category_result === "Normal";
 
-      if (isAssigned) {
+      if (normal) {
         return row.original.category_result;
       }
     },
@@ -433,7 +425,7 @@ export function DataTable({
           </DropdownMenu>
           <Button variant="outline" size="sm">
             <PlusIcon />
-            <span className="hidden lg:inline">Add Patient</span>
+            <span className="hidden lg:inline">Add Data</span>
           </Button>
         </div>
       </div>
@@ -619,7 +611,10 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
           {item.name}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="flex flex-col">
+      <SheetContent
+        side="right"
+        className="flex flex-col bg-blue-500 text-white px-4"
+      >
         <SheetHeader className="gap-1">
           <SheetTitle>{item.name}</SheetTitle>
           <SheetDescription>
@@ -750,7 +745,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
           </form>
         </div>
         <SheetFooter className="mt-auto flex gap-2 sm:flex-col sm:space-x-0">
-          <Button className="w-full">Submit</Button>
+          {/* <Button className="w-full">Submit</Button> */}
           <SheetClose asChild>
             <Button variant="outline" className="w-full">
               Done

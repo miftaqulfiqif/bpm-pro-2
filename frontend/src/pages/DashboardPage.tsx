@@ -1,9 +1,9 @@
-import Page from "@/components/layouts/main-layout.tsx";
+import MainLayout from "@/components/layouts/main-layout.tsx";
 
 export default function DashboardPage() {
   return (
-    <Page>
+    <MainLayout title="Dashboard">
       <p>Dashboard</p>
-    </Page>
+    </MainLayout>
   );
 }

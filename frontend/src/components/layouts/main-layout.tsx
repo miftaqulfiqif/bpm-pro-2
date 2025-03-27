@@ -4,16 +4,17 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 interface Props {
   children: React.ReactNode;
+  title: string;
 }
 
-export default function Page({ children }: Props) {
+export default function MainLayout({ children, title }: Props) {
   return (
     <SidebarProvider>
-      <AppSidebar variant="floating" className="bg-black" />
-      <SidebarInset className="bg-[#f9f9f9] ">
-        <SiteHeader />
+      <AppSidebar variant="inset" className="bg-black" />
+      <SidebarInset className="bg-[#e6e6e6] ">
+        <SiteHeader title={title} />
         <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2 p-4 m-2 rounded-xl shadow-2xl">
+          <div className="@container/main flex flex-1 flex-col gap-2 p-4 m-4 rounded-xl shadow-2xl">
             {children}
           </div>
         </div>

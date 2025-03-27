@@ -1,4 +1,5 @@
 import { prismaClient } from "./database.js";
+import { logger } from "./logging.js";
 
 export async function classifyBloodPressure(systolic, diastolic) {
   const categoryResults = await prismaClient.categoryResult.findMany();
@@ -17,24 +18,25 @@ export async function classifyBloodPressure(systolic, diastolic) {
     }
   }
 
-  // Pengkategorian Hard Code
-  if (!classification) {
-    if (systolic < 120 && diastolic < 80) {
-      classification = "Optimal";
-    } else if (
-      (systolic >= 120 && systolic <= 129) ||
-      (diastolic >= 80 && diastolic <= 84)
-    ) {
-      classification = "Normal";
-    } else if (
-      (systolic >= 130 && systolic <= 139) ||
-      (diastolic >= 85 && diastolic <= 89)
-    ) {
-      classification = "High Normal";
-    } else if (systolic > 140 || diastolic > 90) {
-      classification = "Hypertension";
-    }
-  }
+  logger.info(classification);
+  // // Pengkategorian Hard Code
+  // if (!classification) {
+  //   if (systolic < 120 && diastolic < 80) {
+  //     classification = "Optimal";
+  //   } else if (
+  //     (systolic >= 120 && systolic <= 129) ||
+  //     (diastolic >= 80 && diastolic <= 84)
+  //   ) {
+  //     classification = "Normal";
+  //   } else if (
+  //     (systolic >= 130 && systolic <= 139) ||
+  //     (diastolic >= 85 && diastolic <= 89)
+  //   ) {
+  //     classification = "High Normal";
+  //   } else if (systolic > 140 || diastolic > 90) {
+  //     classification = "Hypertension";
+  //   }
+  // }
 
   return classification;
 }

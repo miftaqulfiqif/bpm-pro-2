@@ -1,16 +1,26 @@
-import { useLoginForm } from "../hooks/UserLoginForm";
-
-export const LoginPage = () => {
-  const formik = useLoginForm();
+import { useRegisterForm } from "../../hooks/UserRegisterForm";
+export const RegisterPage = () => {
+  const formik = useRegisterForm();
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="border p-10">
-        <p className="text-3xl font-bold">Login Page</p>
-
-        <p className="text-sm text-red-500">{formik.status}</p>
+        <p className="text-3xl font-bold">Register Page</p>
 
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-2 mt-10">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Masukkan name"
+              className="border rounded pl-2"
+              onChange={formik.handleChange}
+              value={formik.values.name}
+            />
+            {formik.touched.name && formik.errors.name && (
+              <p className="text-sm text-red-500">{formik.errors.name}</p>
+            )}
+
             <label htmlFor="username">Username</label>
             <input
               type="text"
@@ -37,16 +47,13 @@ export const LoginPage = () => {
               <p className="text-sm text-red-500">{formik.errors.password}</p>
             )}
           </div>
-          <button
-            type="submit"
-            className="mt-2 flex items-center justify-center mx-auto bg-slate-800 text-white py-1 px-4 rounded-xl"
-          >
-            Login
-          </button>
+
+          <div className="flex flex-col mt-10 gap-2">
+            <button type="submit" className="border">
+              Register
+            </button>
+          </div>
         </form>
-        <a href="/register" className="mt-10">
-          Register
-        </a>
       </div>
     </div>
   );

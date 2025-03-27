@@ -1,12 +1,12 @@
 import { DataTable } from "@/components/data-table";
-import Page from "@/components/layouts/main-layout.tsx";
+import MainLayout from "@/components/layouts/main-layout.tsx";
 
 import data from "../assets/utils/data.json";
 
 export default function HistoryMeasurement() {
   return (
-    <Page>
+    <MainLayout title="History Measurement">
       <DataTable data={data} />
-    </Page>
+    </MainLayout>
   );
 }

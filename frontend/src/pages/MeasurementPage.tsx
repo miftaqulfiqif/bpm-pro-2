@@ -4,7 +4,7 @@ import { ItemsResult } from "../components/ItemsResult";
 import ChartHeartRate from "../components/ChartHeartRate";
 import { useCounter } from "../hooks/Counter";
 
-import heartImg from "../assets/images/heart.png";
+import bloodPressureImg from "../assets/images/blood_pressure.png";
 
 import bloodIcon from "../assets/icons/blood-icon.jpg";
 import hyperTensionIcon from "../assets/icons/hypertension.png";
@@ -25,7 +25,7 @@ type PatientProps = {
   date_of_birth: string;
 };
 
-export default function MeasurementPage(props: PatientProps) {
+export default function MeasurementPage() {
   const { start, buttonStart, buttonStop, buttonLoading, items, result } =
     useCounter();
 
@@ -105,32 +105,32 @@ export default function MeasurementPage(props: PatientProps) {
       setHeartRate(result.heart_rate);
     }
 
-    const interval = setInterval(() => {
-      setIsScaled(true);
-      setTimeout(() => {
-        setIsScaled(false);
-      }, 100);
-    }, 1000);
+    // const interval = setInterval(() => {
+    //   setIsScaled(true);
+    //   setTimeout(() => {
+    //     setIsScaled(false);
+    //   }, 100);
+    // }, 1000);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, [result, items]);
 
   return (
-    <Page>
+    <Page title="Measurement">
       <div className="flex flex-col lg:flex-row gap-2">
         <div className="flex-col text-4xl lg:w-1/2 gap-2">
           <p className="font-bold">Overview</p>
           <p className="">Patient Health</p>
           <img
-            src={heartImg}
+            src={bloodPressureImg}
             alt=""
             className={`transition-all duration-150 ${
               isScaled ? "scale-95" : "scale-90"
             }`}
           />
         </div>
-        <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-10 rounded-4xl">
-          <div className="flex flex-col bg-white rounded-3xl p-10 gap-10 shadow-xl">
+        <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
+          <div className="flex flex-col bg-white rounded-3xl p-6 gap-6 shadow-xl">
             <div className="relative">
               <div className="absolute h-10 w-10 bg-gray-900 rounded-full shadow-2xl overflow-hidden">
                 <img
