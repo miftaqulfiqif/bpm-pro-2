@@ -10,9 +10,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<App />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/measurement" element={<App />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/result" element={<ResultPage />} />
       </Routes>
     </Router>
