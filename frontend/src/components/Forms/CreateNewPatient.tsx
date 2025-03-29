@@ -3,6 +3,8 @@ import { InputText } from "./FormsInput/InputText";
 import { InputSelect } from "./FormsInput/InputSelect";
 
 import closeIcon from "@/assets/icons/close.png";
+import patients from "@/assets/icons/patients-icon.png";
+
 import { useFormik } from "formik";
 import * as yup from "yup";
 
@@ -18,6 +20,7 @@ type CreateNewPatientProps = {
 export const CreateNewPatient = (props: CreateNewPatientProps) => {
   const { form, setPatient, closeModal, buttonStart, buttonLoading, start } =
     props;
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -32,7 +35,10 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     validationSchema: yup.object().shape({
       name: yup.string().required("Name is required"),
       gender: yup.string().required("Gender is required"),
-      phone: yup.number().required("Phone is required"),
+      phone: yup
+        .number()
+        .typeError("Phone number must be a number")
+        .required("Phone number is required"),
       last_education: yup.string().required("Last education is required"),
       place_of_birth: yup.string().required("Place of birth is required"),
       date_of_birth: yup.string().required("Date of birth is required"),
@@ -54,17 +60,24 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
 
   return (
     <div
+      onClick={closeModal}
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
         form ? "" : "hidden"
       }`}
       style={{ backdropFilter: "blur(5px)" }}
     >
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 max-w-[900px]">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 max-w-[900px]"
+      >
         <div className="flex flex-row justify-between mb-8">
           <p className="text-2xl">Create new patient</p>
-          <button type="button" onClick={closeModal}>
-            <img src={closeIcon} alt="" srcSet="" className="w-5 " />
-          </button>
+          <a href="#">
+            <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#A4FFB1] px-4 py-2 rounded-3xl">
+              <img src={patients} alt="" className="w-5 h-5" />
+              <p>Select patient</p>
+            </div>
+          </a>
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-8">
@@ -78,12 +91,16 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
                 onTouch={formik.touched.name}
                 onError={formik.errors.name}
               />
+
               <InputSelect
                 label="Gender"
                 name="gender"
                 placeholder="Select gender"
-                option={["male", "female"]}
-                onChange={formik.handleChange}
+                option={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                ]}
+                onChange={(value) => formik.setFieldValue("gender", value)} // 🔥 Perbaikan di sini!
                 value={formik.values.gender}
                 onTouch={formik.touched.gender}
                 onError={formik.errors.gender}
@@ -157,7 +174,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
               <button
                 type="submit"
                 disabled={buttonLoading}
-                className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs shadow-xl mt-8 disabled:bg-red-500 "
+                className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
               >
                 Submit
               </button>

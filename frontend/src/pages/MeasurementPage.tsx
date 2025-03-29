@@ -14,6 +14,7 @@ import { CreateNewPatient } from "../components/Forms/CreateNewPatient";
 import { PressButtonModal } from "@/components/PressButtonModal";
 import axios from "axios";
 import { paginationClasses } from "@mui/material";
+import MainLayout from "@/components/layouts/main-layout.tsx";
 
 type PatientProps = {
   name: string;
@@ -116,37 +117,45 @@ export default function MeasurementPage() {
   }, [result, items]);
 
   return (
-    <Page title="Measurement">
-      <div className="flex flex-col lg:flex-row gap-2">
-        <div className="flex-col text-4xl lg:w-1/2 gap-2">
-          <p className="font-bold">Overview</p>
-          <p className="">Patient Health</p>
-          <img
-            src={bloodPressureImg}
-            alt=""
-            className={`transition-all duration-150 ${
-              isScaled ? "scale-95" : "scale-90"
-            }`}
-          />
+    <MainLayout title="Measurement">
+      <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col text-4xl lg:w-1/2 justify-between">
+          <div className="flex flex-col gap-2 bg-[rgba(13,0,255,0.54)] p-6 pb-20 rounded-3xl">
+            <p className="text-white font-bold">Have a good day</p>
+            <p className="text-white text-2xl ">Miftaqul Fiqi Firmansyah</p>
+          </div>
+          <div className="flex gap-4 font-bold tracking-wider justify-around">
+            {buttonLoading ? (
+              <button
+                onClick={buttonStop}
+                className="px-8 py-4 bg-red-500 text-white rounded-full w-xs shadow-xl"
+              >
+                STOP
+              </button>
+            ) : result.diastolic === 0 ? (
+              <button
+                disabled={buttonLoading}
+                onClick={openForm}
+                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+              >
+                START
+              </button>
+            ) : (
+              <button
+                onClick={handleSaveResult}
+                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+              >
+                SAVE
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
           <div className="flex flex-col bg-white rounded-3xl p-6 gap-6 shadow-xl">
-            <div className="relative">
-              <div className="absolute h-10 w-10 bg-gray-900 rounded-full shadow-2xl overflow-hidden">
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFx3lKwgA58n-EQE8MFAMkUSRW_3Ma6d22ww&s"
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div
-                className=" h-10 w-fit
-              pl-14 pr-8 bg-[#D9D9D9] rounded-full flex items-center text-center"
-              >
-                <p className="font-semibold">{patient?.name}</p>
-              </div>
+            <div className="">
+              <p className="text-2xl">Measurement Result</p>
             </div>
-            <div className="flex justify-between">
+            <div className="grid grid-cols-2 gap-4">
               <ItemsResult
                 icon={bloodIcon}
                 title="Systolic"
@@ -178,31 +187,6 @@ export default function MeasurementPage() {
               <ChartHeartRate items={items} />
             </div>
           </div>
-          <div className="flex gap-4 font-bold tracking-wider justify-around">
-            {buttonLoading ? (
-              <button
-                onClick={buttonStop}
-                className="px-8 py-4 bg-red-500 text-white rounded-full w-xs shadow-xl"
-              >
-                STOP
-              </button>
-            ) : result.diastolic === 0 ? (
-              <button
-                disabled={buttonLoading}
-                onClick={openForm}
-                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-              >
-                START
-              </button>
-            ) : (
-              <button
-                onClick={handleSaveResult}
-                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-              >
-                SAVE
-              </button>
-            )}
-          </div>
 
           {/* <PressButtonModal start={start} message={message} /> */}
         </div>
@@ -215,6 +199,6 @@ export default function MeasurementPage() {
           start={start}
         />
       </div>
-    </Page>
+    </MainLayout>
   );
 }
