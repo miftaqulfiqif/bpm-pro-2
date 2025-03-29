@@ -19,7 +19,7 @@ export function InputDate(props: InputDateProps) {
         name={name}
         onChange={onChange}
         value={value}
-        className="bg-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)] text-xl px-4 py-2 rounded-sm w-fit disabled:bg-slate-200"
+        className="bg-[#ECECEC] text-sm px-4 py-2 rounded-sm w-fit disabled:bg-slate-200"
       />
       {onTouch && onError && <p className="text-sm text-red-500">{onError}</p>}
     </label>
