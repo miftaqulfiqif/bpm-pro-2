@@ -59,7 +59,7 @@ const TableRow = React.forwardRef<
       data-slot="table-row"
       ref={ref}
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors ",
         className
       )}
       {...props}

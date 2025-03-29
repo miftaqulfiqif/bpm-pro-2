@@ -13,13 +13,21 @@ type CreateNewPatientProps = {
   setPatient: (e: any) => void;
   closeModal: () => void;
   buttonStart: () => void;
-  buttonLoading: boolean;
-  start: boolean;
+  openFormSelectPatient: () => void;
+  buttonLoading?: boolean;
+  start?: boolean;
 };
 
 export const CreateNewPatient = (props: CreateNewPatientProps) => {
-  const { form, setPatient, closeModal, buttonStart, buttonLoading, start } =
-    props;
+  const {
+    form,
+    setPatient,
+    closeModal,
+    buttonStart,
+    openFormSelectPatient,
+    buttonLoading,
+    start,
+  } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -68,13 +76,13 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 max-w-[900px]"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 w-4xl h-[600px]"
       >
         <div className="flex flex-row justify-between mb-8">
           <p className="text-2xl">Create new patient</p>
-          <a href="#">
+          <a onClick={openFormSelectPatient}>
             <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#A4FFB1] px-4 py-2 rounded-3xl">
-              <img src={patients} alt="" className="w-5 h-5" />
+              <img src={patients} alt="" className="w-6 h-6" />
               <p>Select patient</p>
             </div>
           </a>

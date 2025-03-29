@@ -15,6 +15,8 @@ import { PressButtonModal } from "@/components/PressButtonModal";
 import axios from "axios";
 import { paginationClasses } from "@mui/material";
 import MainLayout from "@/components/layouts/main-layout.tsx";
+import { SelectPatient } from "@/components/SelectPatient";
+import { set } from "date-fns";
 
 type PatientProps = {
   name: string;
@@ -40,11 +42,17 @@ export default function MeasurementPage() {
   const token = "63fed935-86dc-40d7-a023-6c121f799439";
 
   const [form, setForm] = useState(false);
+  const [formSelectPatient, setFormSelectPatient] = useState(false);
 
   const openForm = () => {
     setForm(true);
+    setFormSelectPatient(false);
   };
 
+  const openFormSelectPatient = () => {
+    setFormSelectPatient(true);
+    setForm(false);
+  };
   const closeForm = () => {
     setForm(false);
   };
@@ -195,8 +203,14 @@ export default function MeasurementPage() {
           closeModal={closeForm}
           setPatient={setPatient}
           buttonStart={buttonStart}
+          openFormSelectPatient={openFormSelectPatient}
           buttonLoading={buttonLoading}
           start={start}
+        />
+        <SelectPatient
+          formSelectPatient={formSelectPatient}
+          openForm={openForm}
+          closeModal={closeForm}
         />
       </div>
     </MainLayout>

@@ -29,8 +29,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CreateNewPatient } from "@/components/Forms/CreateNewPatient";
+import { useState } from "react";
+
+type PatientProps = {
+  name: string;
+  gender: string;
+  phone: string;
+  work: string;
+  last_education: string;
+  place_of_birth: string;
+  date_of_birth: string;
+};
 
 export const PatientPage = () => {
+  const [form, setForm] = useState(false);
+  const [patient, setPatient] = useState<PatientProps>();
+
+  const openForm = () => {
+    setForm(true);
+  };
+  const closeForm = () => {
+    setForm(false);
+  };
   const buttonAction = () => {
     alert("Button Clicked");
   };
@@ -71,7 +92,10 @@ export const PatientPage = () => {
               <img src={exportIcon} alt="" className="w-6 h-6" />
               <p>Export</p>
             </div>
-            <div className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] ">
+            <div
+              onClick={openForm}
+              className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] "
+            >
               <img src={addPatientIcon} alt="" className="w-6 h-6" />
               <p className="text-white">Add Patient</p>
             </div>
@@ -109,7 +133,7 @@ export const PatientPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="border-0">
+              <TableRow className="border-0 ">
                 <TableCell className="text-left pl-10">
                   Miftaqul Fiqi Firmansyah
                 </TableCell>
@@ -172,6 +196,12 @@ export const PatientPage = () => {
           </Table>
         </div>
       </div>
+      <CreateNewPatient
+        form={form}
+        closeModal={closeForm}
+        setPatient={setPatient}
+        buttonStart={buttonAction}
+      />
     </MainLayout>
   );
 };

@@ -61,10 +61,7 @@ export const PatientMeasurements = () => {
               <img src={exportIcon} alt="" className="w-6 h-6" />
               <p>Export</p>
             </div>
-            <div className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] ">
-              <img src={addPatientIcon} alt="" className="w-6 h-6" />
-              <p className="text-white">Add Patient</p>
-            </div>
+
             <div className=" bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
               <label
                 htmlFor="search"
