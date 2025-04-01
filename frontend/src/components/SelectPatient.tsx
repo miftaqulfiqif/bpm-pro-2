@@ -45,7 +45,9 @@ export const SelectPatient = ({
               />
             </label>
           </div>
-          <div className="relative flex flex-col bg-[#ECECEC] rounded-2xl w-full max-h-full p-4">
+
+          {/* List Patients */}
+          <div className="relative flex flex-col bg-white rounded-2xl w-full max-h-full p-4">
             <div className="absolute inset-0 rounded-2xl shadow-[inset_0px_4px_4px_rgba(0,0,0,0.3)]"></div>
             <table className="w-full font-normal relative z-10">
               <thead>
