@@ -9,9 +9,17 @@ generator client {
   binaryTargets = ["native", "windows"]
 }
 
+// DATABASE POSTGRESQL
+// datasource db {
+//   provider = "postgres"
+//   url      = env("DATABASE_URL")
+// }
+
+
+//DATABASE MYSQL
 datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url = env("DATABASE_URL")
 }
 
 model User {
