@@ -76,16 +76,16 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 w-4xl h-[600px]"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 z-50 w-4xl h-[600px]"
       >
         <div className="flex flex-row justify-between mb-8">
-          <p className="text-2xl">Create new patient</p>
-          <a onClick={openFormSelectPatient}>
-            <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#A4FFB1] px-4 py-2 rounded-3xl">
+          <p className="text-2xl font-semibold">Create new patient</p>
+          <button onClick={openFormSelectPatient}>
+            <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#14f536] hover:bg-[#A4FFB1] px-4 py-2 rounded-3xl">
               <img src={patients} alt="" className="w-6 h-6" />
               <p>Select patient</p>
             </div>
-          </a>
+          </button>
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-8">
@@ -108,7 +108,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
                 ]}
-                onChange={(value) => formik.setFieldValue("gender", value)} // 🔥 Perbaikan di sini!
+                onChange={(value) => formik.setFieldValue("gender", value)}
                 value={formik.values.gender}
                 onTouch={formik.touched.gender}
                 onError={formik.errors.gender}

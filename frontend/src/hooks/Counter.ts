@@ -52,20 +52,20 @@ export const useCounter = () => {
   const buttonStartTry = async () => {
     setStart(true);
     // Fungsi untuk ambil user id
-    // const userId = await axios
-    //   .get("http://localhost:3000/api/user/current", {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     return response.data.data.username;
-    //   })
-    //   .catch(() => {
-    //     setMessage("Anda belum login. Silahkan login terlebih dahulu.");
-    //   });
+    const userId = await axios
+      .get("http://localhost:3000/api/user/current", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        return response.data.data.username;
+      })
+      .catch(() => {
+        setMessage("Anda belum login. Silahkan login terlebih dahulu.");
+      });
 
-    // setUserId(userId);
+    setUserId(userId);
 
     console.log(message);
     // Jika socket sudah terhubung, tidak buat socket baru
@@ -153,5 +153,6 @@ export const useCounter = () => {
     result,
     setResult,
     items,
+    token,
   };
 };
