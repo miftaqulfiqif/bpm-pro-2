@@ -1,33 +1,90 @@
-import { useCreateNewPatient } from "@/hooks/UserCreateNewPatient";
 import { InputDate } from "./FormsInput/InputDate";
 import { InputText } from "./FormsInput/InputText";
 import { InputSelect } from "./FormsInput/InputSelect";
 
 import closeIcon from "@/assets/icons/close.png";
-import { useCounter } from "@/hooks/Counter";
+import patients from "@/assets/icons/patients-icon.png";
+
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 type CreateNewPatientProps = {
   form: boolean;
+  setPatient: (e: any) => void;
   closeModal: () => void;
+  buttonStart: () => void;
+  openFormSelectPatient: () => void;
+  buttonLoading?: boolean;
+  start?: boolean;
 };
 
 export const CreateNewPatient = (props: CreateNewPatientProps) => {
-  const { buttonLoading } = useCounter();
-  const { form, closeModal } = props;
-  const formik = useCreateNewPatient();
+  const {
+    form,
+    setPatient,
+    closeModal,
+    buttonStart,
+    openFormSelectPatient,
+    buttonLoading,
+    start,
+  } = props;
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      gender: "",
+      phone: "",
+      last_education: "",
+      place_of_birth: "",
+      date_of_birth: "",
+      address: "",
+      work: "",
+    },
+    validationSchema: yup.object().shape({
+      name: yup.string().required("Name is required"),
+      gender: yup.string().required("Gender is required"),
+      phone: yup
+        .number()
+        .typeError("Phone number must be a number")
+        .required("Phone number is required"),
+      last_education: yup.string().required("Last education is required"),
+      place_of_birth: yup.string().required("Place of birth is required"),
+      date_of_birth: yup.string().required("Date of birth is required"),
+      address: yup.string().required("Address is required"),
+      work: yup.string().required("Work is required"),
+    }),
+    // validate: (values) => {
+    //   const errors: any = {};
+    //   if (!values.name) {
+    //     errors.name = "Name is required";
+    //   }
+    //   return errors;
+    // },
+    onSubmit: (values) => {
+      setPatient(values);
+      buttonStart();
+    },
+  });
 
   return (
     <div
+      onClick={closeModal}
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
         form ? "" : "hidden"
       }`}
       style={{ backdropFilter: "blur(5px)" }}
     >
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 max-w-[900px]">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-8 z-50 w-4xl h-[600px]"
+      >
         <div className="flex flex-row justify-between mb-8">
-          <p className="text-2xl">Create new patient</p>
-          <button type="button" onClick={closeModal}>
-            <img src={closeIcon} alt="" srcSet="" className="w-5 " />
+          <p className="text-2xl font-semibold">Create new patient</p>
+          <button onClick={openFormSelectPatient}>
+            <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#14f536] hover:bg-[#A4FFB1] px-4 py-2 rounded-3xl">
+              <img src={patients} alt="" className="w-6 h-6" />
+              <p>Select patient</p>
+            </div>
           </button>
         </div>
         <form onSubmit={formik.handleSubmit}>
@@ -42,12 +99,16 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
                 onTouch={formik.touched.name}
                 onError={formik.errors.name}
               />
+
               <InputSelect
                 label="Gender"
                 name="gender"
                 placeholder="Select gender"
-                option={["Male", "Female"]}
-                onChange={formik.handleChange}
+                option={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                ]}
+                onChange={(value) => formik.setFieldValue("gender", value)}
                 value={formik.values.gender}
                 onTouch={formik.touched.gender}
                 onError={formik.errors.gender}
@@ -103,16 +164,29 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
                 onTouch={formik.touched.address}
                 onError={formik.errors.address}
               />
+              <InputText
+                name="work"
+                label="Work"
+                placeholder="Input work"
+                onChange={formik.handleChange}
+                value={formik.values.work}
+                onTouch={formik.touched.work}
+                onError={formik.errors.work}
+              />
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <button
-              type="submit"
-              disabled={buttonLoading}
-              className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs shadow-xl mt-8 disabled:bg-slate-300 "
-            >
-              Submit
-            </button>
+            {start ? (
+              <p>Press start button please</p>
+            ) : (
+              <button
+                type="submit"
+                disabled={buttonLoading}
+                className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
+              >
+                Submit
+              </button>
+            )}
           </div>
         </form>
       </div>

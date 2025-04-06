@@ -11,7 +11,7 @@ export default function BasicLineChart(props: ItemsResult) {
   const [width, setWidth] = React.useState<number>(0);
 
   React.useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth * 0.4);
+    const handleResize = () => setWidth(window.innerWidth * 0.3);
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
@@ -19,6 +19,7 @@ export default function BasicLineChart(props: ItemsResult) {
 
   return (
     <LineChart
+      className=""
       xAxis={[{ data: items.map((item) => item.id) }]}
       series={[
         {

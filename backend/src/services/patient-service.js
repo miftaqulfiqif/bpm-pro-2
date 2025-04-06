@@ -4,7 +4,7 @@ import {
 } from "../validation/patient-validation.js";
 import { validate } from "../validation/validation.js";
 import { prismaClient } from "../applications/database.js";
-import { logger } from "../applications/logging.js";
+import { ResponseError } from "../errors/response-error.js";
 
 const createPatientService = async (body, user) => {
   try {
@@ -26,6 +26,29 @@ const getAllPatientService = async () => {
     return prismaClient.patient.findMany({});
   } catch (error) {
     throw error;
+  }
+};
+
+const searchPatientService = async (query) => {
+  try {
+    if (!query) {
+      throw new ResponseError(400, "Query is required");
+    }
+    if (!query || typeof query !== "string") {
+      return []; // Jika query kosong atau bukan string, kembalikan array kosong
+    }
+
+    return await prismaClient.patient.findMany({
+      where: {
+        name: {
+          contains: query,
+        },
+      },
+      take: 10, // Batasi hasil pencarian maksimal 10 data
+    });
+  } catch (error) {
+    console.error("Error searching patients:", error);
+    throw new Error("Gagal mencari pasien");
   }
 };
 
@@ -92,4 +115,9 @@ const updatePatientService = async (patientId, body) => {
   }
 };
 
-export { createPatientService, getAllPatientService, updatePatientService };
+export {
+  createPatientService,
+  getAllPatientService,
+  searchPatientService,
+  updatePatientService,
+};

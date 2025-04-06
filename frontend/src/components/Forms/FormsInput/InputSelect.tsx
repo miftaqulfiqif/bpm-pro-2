@@ -1,14 +1,23 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 type InputSelectProps = {
   label: string;
   name: string;
   placeholder: string;
   disabled?: boolean;
-  option: string[];
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  option: { value: string; label: string }[];
+  onChange: (value: string) => void;
   value: string;
-  onTouch: any;
+  onTouch?: boolean;
   onError?: string;
 };
+
 export const InputSelect = (props: InputSelectProps) => {
   const {
     label,
@@ -24,23 +33,23 @@ export const InputSelect = (props: InputSelectProps) => {
 
   return (
     <label htmlFor={name} className="w-full">
-      <p className="text-lg ml-1">{label}</p>
-      <select
-        className="bg-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)] text-xl px-4 py-2 rounded-sm w-full"
-        disabled={disabled}
-        name={name}
-        onChange={onChange}
-        value={value}
-      >
-        <option value="" disabled>
-          {placeholder}
-        </option>
-        {option.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
+      <p className="text-lg ml-1 mb-2">{label}</p>
+      <Select onValueChange={onChange} disabled={disabled} value={value}>
+        <SelectTrigger className="h-full w-full rounded-lg bg-gray-100 border-0">
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent className="border-0">
+          {option.map((item) => (
+            <SelectItem
+              key={item.value}
+              value={item.value}
+              className="hover:bg-[#ECECEC]"
+            >
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {onTouch && onError && <p className="text-sm text-red-500">{onError}</p>}
     </label>
   );
