@@ -33,9 +33,9 @@ export const InputSelect = (props: InputSelectProps) => {
 
   return (
     <label htmlFor={name} className="w-full">
-      <p className="text-lg ml-1">{label}</p>
+      <p className="text-lg ml-1 mb-2">{label}</p>
       <Select onValueChange={onChange} disabled={disabled} value={value}>
-        <SelectTrigger className="h-full w-full rounded-sm bg-[#ECECEC] border-0">
+        <SelectTrigger className="h-full w-full rounded-lg bg-gray-100 border-0">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent className="border-0">

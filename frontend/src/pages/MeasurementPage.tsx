@@ -29,8 +29,15 @@ type PatientProps = {
 };
 
 export default function MeasurementPage() {
-  const { start, buttonStart, buttonStop, buttonLoading, items, result } =
-    useCounter();
+  const {
+    start,
+    buttonStart,
+    buttonStop,
+    buttonLoading,
+    items,
+    result,
+    token,
+  } = useCounter();
 
   const [patient, setPatient] = useState<PatientProps>();
   const [isScaled, setIsScaled] = useState(false);
@@ -39,10 +46,10 @@ export default function MeasurementPage() {
   const [mean, setMean] = useState<number>(0);
   const [heartRate, setHeartRate] = useState<number>(0);
 
-  const token = "63fed935-86dc-40d7-a023-6c121f799439";
-
   const [form, setForm] = useState(false);
   const [formSelectPatient, setFormSelectPatient] = useState(false);
+
+  console.log(patient);
 
   const openForm = () => {
     setForm(true);
@@ -55,6 +62,9 @@ export default function MeasurementPage() {
   };
   const closeForm = () => {
     setForm(false);
+  };
+  const closeFormSelectPatient = () => {
+    setFormSelectPatient(false);
   };
 
   const handleSaveResult = async () => {
@@ -210,7 +220,9 @@ export default function MeasurementPage() {
         <SelectPatient
           formSelectPatient={formSelectPatient}
           openForm={openForm}
-          closeModal={closeForm}
+          closeModal={closeFormSelectPatient}
+          token={token}
+          patientSelected={setPatient}
         />
       </div>
     </MainLayout>

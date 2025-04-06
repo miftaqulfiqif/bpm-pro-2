@@ -20,6 +20,7 @@ privateRouter.get("/api/measurement/current", measurementController.get);
 //Patient
 privateRouter.post("/api/patients", patientController.create);
 privateRouter.get("/api/patients", patientController.getAll);
+privateRouter.get("/api/patients/search", patientController.search);
 privateRouter.patch("/api/patients/:id", patientController.update);
 
 //Patient-Measurement
