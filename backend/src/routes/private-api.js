@@ -12,6 +12,7 @@ privateRouter.use(authMiddleware);
 //User
 privateRouter.get("/api/user/current", userController.get);
 privateRouter.delete("/api/user/logout", userController.logout);
+privateRouter.post("/api/user/delete", userController.deleteUser);
 
 //Measurement
 privateRouter.post("/api/measurements", measurementController.create);
@@ -19,26 +20,53 @@ privateRouter.get("/api/measurement/current", measurementController.get);
 
 //Patient
 privateRouter.post("/api/patients", patientController.create);
-privateRouter.get("/api/patients", patientController.getAll);
+privateRouter.get("/api/all-patients", patientController.getAll);
+privateRouter.get("/api/patients", patientController.getAllByUserId);
 privateRouter.get("/api/patients/search", patientController.search);
-privateRouter.patch("/api/patients/:id", patientController.update);
+privateRouter.patch("/api/patient/:id", patientController.update);
+privateRouter.delete("/api/patient/:id", patientController.deletePatient);
+privateRouter.get("/api/patients-pagination", patientController.pagination);
 
 //Patient-Measurement
 privateRouter.post(
-  "/api/patient-measurement",
+  "/api/patient-measurements",
   patientMeasurementController.create
+);
+privateRouter.get(
+  "/api/all-patient-measurements",
+  patientMeasurementController.getAll
+);
+privateRouter.get(
+  "/api/patient-measurements",
+  patientMeasurementController.getAllByUserId
+);
+privateRouter.delete(
+  "/api/patient-measurement/:id",
+  patientMeasurementController.deletePatientMeasurement
+);
+privateRouter.get(
+  "/api/patient-measurements/search",
+  patientMeasurementController.search
+);
+privateRouter.get(
+  "/api/patient-measurements-pagination",
+  patientMeasurementController.pagination
 );
 
 //Category Result
 privateRouter.post("/api/category-results", categoryResultController.create);
-privateRouter.get("/api/category-results", categoryResultController.getAll);
+privateRouter.get("/api/all-category-results", categoryResultController.getAll);
 privateRouter.get(
-  "/api/category-results/by-user",
+  "/api/category-results",
   categoryResultController.getAllByUserId
 );
 privateRouter.patch(
   "/api/category-results/:id",
   categoryResultController.update
+);
+privateRouter.delete(
+  "/api/category-results/:id",
+  categoryResultController.deleteCategoryResult
 );
 
 export { privateRouter };
