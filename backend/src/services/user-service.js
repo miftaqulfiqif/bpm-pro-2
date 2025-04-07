@@ -81,6 +81,8 @@ const loginService = async (request) => {
       },
       select: {
         token: true,
+        name: true,
+        username: true,
       },
     });
   } catch (e) {

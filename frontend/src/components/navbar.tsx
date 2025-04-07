@@ -8,6 +8,7 @@ import patientMeasurementIcon from "@/assets/icons/patient-measurements.png";
 import patientMeasurementIconActive from "@/assets/icons/patient-measurement-white.png";
 
 import { LayoutDashboardIcon, HeartPulse } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavbarProps {
   className?: string;
@@ -15,6 +16,7 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ className, title }: NavbarProps) => {
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState("");
   const [isActive, setIsActive] = useState(false);
@@ -67,10 +69,8 @@ export const Navbar = ({ className, title }: NavbarProps) => {
             <div className="bg-[#736DF6] w-16 h-16 rounded-full"></div>
             <div className="mr-4">
               <div className="flex flex-col gap-1">
-                <p className="font-semibold">Miftaqul Fiqi Firmansyah</p>
-                <p className="text-sm text-gray-500">
-                  miftaqulfiqiSinko@elitech.com
-                </p>
+                <p className="font-semibold">{user?.name}</p>
+                <p className="text-sm text-gray-500">{user?.username}</p>
               </div>
             </div>
             <button onClick={handleOption}>
@@ -84,7 +84,7 @@ export const Navbar = ({ className, title }: NavbarProps) => {
                   <p>Settings</p>
                 </a>
                 <a
-                  href="#"
+                  onClick={logout}
                   className="bg-red-500 px-6 py-2 rounded-xl text-white hover:underline"
                 >
                   Log out
