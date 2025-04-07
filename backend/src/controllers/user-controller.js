@@ -5,6 +5,7 @@ import {
   getCurrentUserService,
   getIdService,
   logOutService,
+  deleteService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -65,4 +66,15 @@ const logout = async (req, res, next) => {
   }
 };
 
-export default { register, login, get, getId, logout };
+const deleteUser = async (req, res, next) => {
+  try {
+    await deleteService(req.user.token, req.body.password);
+    res.status(200).json({
+      data: "OK",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, get, getId, logout, deleteUser };

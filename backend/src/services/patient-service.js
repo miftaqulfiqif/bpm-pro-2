@@ -29,13 +29,25 @@ const getAllPatientService = async () => {
   }
 };
 
+const getAllByUserIdService = async (userId) => {
+  try {
+    return prismaClient.patient.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const searchPatientService = async (query) => {
   try {
     if (!query) {
       throw new ResponseError(400, "Query is required");
     }
     if (!query || typeof query !== "string") {
-      return []; // Jika query kosong atau bukan string, kembalikan array kosong
+      return [];
     }
 
     return await prismaClient.patient.findMany({
@@ -44,11 +56,9 @@ const searchPatientService = async (query) => {
           contains: query,
         },
       },
-      take: 10, // Batasi hasil pencarian maksimal 10 data
     });
   } catch (error) {
-    console.error("Error searching patients:", error);
-    throw new Error("Gagal mencari pasien");
+    throw new Error("Error searching patients : ", error);
   }
 };
 
@@ -115,9 +125,75 @@ const updatePatientService = async (patientId, body) => {
   }
 };
 
+const deletePatientService = async (userId, patientId) => {
+  try {
+    const patientFound = await prismaClient.patient.findUnique({
+      where: {
+        id: parseInt(patientId),
+      },
+      select: {
+        id: true,
+        user_id: true,
+      },
+    });
+
+    if (!patientFound) {
+      throw new ResponseError(404, "Patient not found");
+    }
+
+    if (patientFound.user_id !== userId) {
+      throw new ResponseError(400, "Patient cannot be deleted");
+    }
+
+    return prismaClient.patient.delete({
+      where: {
+        id: parseInt(patientId),
+      },
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+        phone: true,
+        work: true,
+        last_education: true,
+        place_of_birth: true,
+        date_of_birth: true,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const paginationService = async (page, limit, skip) => {
+  try {
+    const total = await prismaClient.patient.count();
+
+    const patient = await prismaClient.patient.findMany({
+      skip: skip,
+      take: limit,
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    return {
+      total,
+      page,
+      limit,
+      data: patient,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   createPatientService,
   getAllPatientService,
   searchPatientService,
   updatePatientService,
+  getAllByUserIdService,
+  deletePatientService,
+  paginationService,
 };

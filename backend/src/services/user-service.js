@@ -3,6 +3,7 @@ import {
   getUserValidation,
   loginValidation,
   registerValidation,
+  deleteUserValidation,
 } from "../validation/user-validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
@@ -151,10 +152,41 @@ const logOutService = async (username) => {
   }
 };
 
+const deleteService = async (token, password) => {
+  try {
+    password = validate(deleteUserValidation, password);
+
+    const user = await prismaClient.user.findFirst({
+      where: {
+        token: token,
+      },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, "User not found");
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      throw new ResponseError(400, "Password wrong");
+    }
+
+    return prismaClient.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   registerService,
   loginService,
   getCurrentUserService,
   getIdService,
   logOutService,
+  deleteService,
 };

@@ -61,7 +61,7 @@ const getAllService = async () => {
   }
 };
 
-const getAllByUserId = async (userId) => {
+const getAllByUserIdService = async (userId) => {
   try {
     return await prismaClient.categoryResult.findMany({
       where: {
@@ -137,4 +137,40 @@ const updateService = async (userId, categoryId, body) => {
   }
 };
 
-export { createService, getAllService, getAllByUserId, updateService };
+const deleteService = async (userId, categoryId) => {
+  try {
+    const categoryFound = await prismaClient.categoryResult.findUnique({
+      where: {
+        id: parseInt(categoryId),
+      },
+      select: {
+        id: true,
+        user_id: true,
+      },
+    });
+
+    if (!categoryFound) {
+      throw new ResponseError(404, "Category not found");
+    }
+
+    if (categoryFound.user_id !== userId) {
+      throw new ResponseError(400, "Category cannot be deleted");
+    }
+
+    return await prismaClient.categoryResult.delete({
+      where: {
+        id: parseInt(categoryId),
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  createService,
+  getAllService,
+  getAllByUserIdService,
+  updateService,
+  deleteService,
+};

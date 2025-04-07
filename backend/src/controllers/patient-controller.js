@@ -1,8 +1,11 @@
 import {
   createPatientService,
+  deletePatientService,
   getAllPatientService,
+  getAllByUserIdService,
   searchPatientService,
   updatePatientService,
+  paginationService,
 } from "../services/patient-service.js";
 
 import { logger } from "../applications/logging.js";
@@ -31,6 +34,18 @@ const getAll = async (req, res, next) => {
   }
 };
 
+const getAllByUserId = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const result = await getAllByUserIdService(user.id);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const search = async (req, res, next) => {
   try {
     const { query } = req.query;
@@ -38,9 +53,6 @@ const search = async (req, res, next) => {
     if (!query) {
       throw new ResponseError(400, "Query is required");
     }
-
-    logger.info("Query yang diterima " + query);
-    console.log(query);
 
     const result = await searchPatientService(query.trim());
     res.status(200).json({
@@ -62,4 +74,45 @@ const update = async (req, res, next) => {
   }
 };
 
-export default { create, getAll, search, update };
+const deletePatient = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const patientId = req.params.id;
+    const result = await deletePatientService(user.id, patientId);
+    res.status(200).json({
+      data: result,
+      message: "Patient deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const pagination = async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const result = await paginationService(page, limit, skip);
+
+    res.status(200).json({
+      currentPage: page,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / limit),
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  create,
+  getAll,
+  getAllByUserId,
+  search,
+  update,
+  deletePatient,
+  pagination,
+};
