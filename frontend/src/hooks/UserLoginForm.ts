@@ -1,21 +1,25 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useLoginForm = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const loginUser = () => {
-    console.log(formik.values);
     axios
       .post("http://localhost:3000/api/users/login", formik.values)
-      .then(function (response) {
+      .then((response) => {
         if (response.status === 200) {
-          console.log(response.data.data.token);
-          localStorage.setItem("token", response.data.data.token);
-
-          window.location.href = "/measurement";
+          const token = response.data.data.token;
+          const user = response.data.data.user;
+          login(token, user);
+          navigate("/dashboard");
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error.response.data.errors);
         formik.setStatus(error.response.data.errors);
       });
