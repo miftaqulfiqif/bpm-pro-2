@@ -13,7 +13,7 @@ type CreateNewPatientProps = {
   setPatient: (e: any) => void;
   closeModal: () => void;
   buttonStart: () => void;
-  openFormSelectPatient: () => void;
+  openFormSelectPatient?: () => void;
   buttonLoading?: boolean;
   start?: boolean;
 };
@@ -80,12 +80,18 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       >
         <div className="flex flex-row justify-between mb-8">
           <p className="text-2xl font-semibold">Create new patient</p>
-          <button onClick={openFormSelectPatient}>
-            <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#14f536] hover:bg-[#A4FFB1] px-4 py-2 rounded-3xl">
-              <img src={patients} alt="" className="w-6 h-6" />
-              <p>Select patient</p>
-            </div>
-          </button>
+          {!openFormSelectPatient ? (
+            <button onClick={closeModal}>
+              <img src={closeIcon} alt="" className="w-5 h-5" />
+            </button>
+          ) : (
+            <button onClick={openFormSelectPatient}>
+              <div className="flex flex-row gap-2 items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)] bg-[#14f536] hover:bg-[#A4FFB1] px-4 py-2 rounded-3xl">
+                <img src={patients} alt="" className="w-6 h-6" />
+                <p>Select patient</p>
+              </div>
+            </button>
+          )}
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-8">
