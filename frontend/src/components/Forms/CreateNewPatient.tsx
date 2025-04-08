@@ -62,7 +62,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     // },
     onSubmit: (values) => {
       setPatient(values);
-      buttonStart();
+      closeModal();
     },
   });
 
@@ -182,17 +182,13 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            {start ? (
-              <p>Press start button please</p>
-            ) : (
-              <button
-                type="submit"
-                disabled={buttonLoading}
-                className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
-              >
-                Submit
-              </button>
-            )}
+            <button
+              type="submit"
+              disabled={buttonLoading}
+              className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>

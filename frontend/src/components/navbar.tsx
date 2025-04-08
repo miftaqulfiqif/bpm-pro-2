@@ -65,10 +65,13 @@ export const Navbar = ({ className, title }: NavbarProps) => {
               Measurement
             </a>
           </div>
-          <div className="flex flex-row gap-4 bg-white px-6 py-3 w-fit rounded-2xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] items-center">
+          <div
+            onClick={handleOption}
+            className="flex flex-row gap-4 bg-white px-6 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] items-center"
+          >
             <img
               src="https://i.pravatar.cc/150?img=1"
-              className="w-16 h-16 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)]"
+              className="w-14 h-14 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)]"
               alt=""
             />{" "}
             <div className="mr-4">
@@ -77,12 +80,12 @@ export const Navbar = ({ className, title }: NavbarProps) => {
                 <p className="text-sm text-gray-500">{user?.username}</p>
               </div>
             </div>
-            <button onClick={handleOption}>
-              <img src={arrowDownIcon} alt="" />
+            <button>
+              <img src={arrowDownIcon} alt="" className="w-4 h-4" />
             </button>
           </div>
           {isOpen && (
-            <div className=" absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl">
+            <div className="absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl">
               <div className="flex flex-col gap-2 text-center ">
                 <a href="/settings" className="hover:underline">
                   <p>Settings</p>

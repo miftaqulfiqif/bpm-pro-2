@@ -9,7 +9,7 @@ export const ItemsResult = (props: ItemsResultProps) => {
   const { icon, title, value, unit } = props;
   return (
     <div className="flex flex-row gap-3 bg-[#ECECEC] p-4 rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)] items-center">
-      <div className="flex items-center gap-2 w-1/3">
+      <div className="flex items-center gap-2 w-1/2">
         <img src={icon} className="w-20 h-20" alt="" />
       </div>
       <div className="flex flex-col w-full gap-1">

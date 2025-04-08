@@ -27,7 +27,7 @@ export const ListOfCategories = ({
     <div className="flex flex-col gap-2">
       <a
         href="#"
-        className="flex flex-row justify-between"
+        className="flex flex-row justify-between hover:underline"
         onClick={() => {
           categoryOpen(isOpen ? 0 : id);
         }}

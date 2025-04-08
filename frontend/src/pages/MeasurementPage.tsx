@@ -146,7 +146,16 @@ export default function MeasurementPage() {
             </p>
           </div>
           <div className="flex gap-4 font-bold tracking-wider justify-around">
-            {buttonLoading ? (
+            {!patient && (
+              <button
+                disabled={buttonLoading}
+                onClick={openForm}
+                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+              >
+                START
+              </button>
+            )}
+            {/* {buttonLoading ? (
               <button
                 onClick={buttonStop}
                 className="px-8 py-4 bg-red-500 text-white rounded-full w-xs shadow-xl"
@@ -168,7 +177,7 @@ export default function MeasurementPage() {
               >
                 SAVE
               </button>
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
