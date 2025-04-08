@@ -72,7 +72,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
         form ? "" : "hidden"
       }`}
-      style={{ backdropFilter: "blur(5px)" }}
+      style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}

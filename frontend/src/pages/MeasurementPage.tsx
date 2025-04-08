@@ -140,7 +140,10 @@ export default function MeasurementPage() {
         <div className="flex flex-col text-4xl lg:w-1/2 justify-between">
           <div className="flex flex-col gap-2 bg-[rgba(13,0,255,0.54)] p-6 pb-20 rounded-3xl">
             <p className="text-white font-bold">Have a good day</p>
-            <p className="text-white text-2xl ">Miftaqul Fiqi Firmansyah</p>
+            <p className="text-white text-2xl ">
+              {localStorage.getItem("user") &&
+                JSON.parse(localStorage.getItem("user")!).name}
+            </p>
           </div>
           <div className="flex gap-4 font-bold tracking-wider justify-around">
             {buttonLoading ? (

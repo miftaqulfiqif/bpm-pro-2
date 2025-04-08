@@ -72,7 +72,7 @@ export const PatientMeasurements = () => {
                   type="text"
                   id="search"
                   placeholder="Search"
-                  className="px-2"
+                  className="px-2 focus:outline-none"
                 />
               </label>
             </div>

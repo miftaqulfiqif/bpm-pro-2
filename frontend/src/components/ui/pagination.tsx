@@ -76,7 +76,7 @@ function PaginationPrevious({
       aria-label="Go to previous page"
       size="default"
       className={cn(
-        "gap-1 px-2.5 sm:pl-2.5 shadow-none hover:underline",
+        "gap-1 px-2.5 sm:pl-2.5 shadow-none hover:underline bg-white text-black",
         className
       )}
       {...props}
@@ -96,7 +96,7 @@ function PaginationNext({
       aria-label="Go to next page"
       size="default"
       className={cn(
-        "gap-1 px-2.5 sm:pr-2.5 shadow-none hover:underline",
+        "gap-1 px-2.5 sm:pr-2.5 shadow-none hover:underline bg-white text-black",
         className
       )}
       {...props}
