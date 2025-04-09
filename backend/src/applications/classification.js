@@ -18,25 +18,9 @@ export async function classifyBloodPressure(systolic, diastolic) {
     }
   }
 
-  logger.info(classification);
-  // // Pengkategorian Hard Code
-  // if (!classification) {
-  //   if (systolic < 120 && diastolic < 80) {
-  //     classification = "Optimal";
-  //   } else if (
-  //     (systolic >= 120 && systolic <= 129) ||
-  //     (diastolic >= 80 && diastolic <= 84)
-  //   ) {
-  //     classification = "Normal";
-  //   } else if (
-  //     (systolic >= 130 && systolic <= 139) ||
-  //     (diastolic >= 85 && diastolic <= 89)
-  //   ) {
-  //     classification = "High Normal";
-  //   } else if (systolic > 140 || diastolic > 90) {
-  //     classification = "Hypertension";
-  //   }
-  // }
+  if (!classification) {
+    classification = "Unknown";
+  }
 
   return classification;
 }

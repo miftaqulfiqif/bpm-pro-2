@@ -19,6 +19,8 @@ import { SelectPatient } from "@/components/SelectPatient";
 import { set } from "date-fns";
 
 type PatientProps = {
+  id?: number;
+  user_id?: string;
   name: string;
   gender: string;
   phone: string;
@@ -36,10 +38,12 @@ export default function MeasurementPage() {
     buttonLoading,
     items,
     result,
+    clearResult,
+    categoryResult,
     token,
   } = useCounter();
 
-  const [patient, setPatient] = useState<PatientProps>();
+  const [patient, setPatient] = useState<PatientProps | null>();
   const [isScaled, setIsScaled] = useState(false);
   const [systolic, setSystolic] = useState<number>(0);
   const [diastolic, setDiastolic] = useState<number>(0);
@@ -48,8 +52,6 @@ export default function MeasurementPage() {
 
   const [form, setForm] = useState(false);
   const [formSelectPatient, setFormSelectPatient] = useState(false);
-
-  console.log(patient);
 
   const openForm = () => {
     setForm(true);
@@ -87,11 +89,9 @@ export default function MeasurementPage() {
         }
       );
 
-      console.log(patientResponse);
-
       await axios
         .post(
-          "http://localhost:3000/api/patient-measurement",
+          "http://localhost:3000/api/patient-measurements",
           {
             patient_id: patientResponse.data.data.id,
             weight: 95,
@@ -99,6 +99,7 @@ export default function MeasurementPage() {
             diastolic: result.diastolic,
             mean: result.mean,
             heart_rate: result.heart_rate,
+            category_result: categoryResult,
           },
           {
             headers: {
@@ -107,10 +108,11 @@ export default function MeasurementPage() {
           }
         )
         .then((response) => {
+          if (response.status == 200) {
+            console.log("Data saved successfully");
+          }
           console.log(response);
         });
-
-      console.log("Data saved successfully");
     } catch (error) {
       throw error;
     }
@@ -138,12 +140,56 @@ export default function MeasurementPage() {
     <MainLayout title="Measurement">
       <div className="flex flex-col lg:flex-row gap-10">
         <div className="flex flex-col text-4xl lg:w-1/2 justify-between">
-          <div className="flex flex-col gap-2 bg-[rgba(13,0,255,0.54)] p-6 pb-20 rounded-3xl">
+          <div className="flex flex-col gap-2 bg-[#0767E2] p-6 pb-20 rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
             <p className="text-white font-bold">Have a good day</p>
-            <p className="text-white text-2xl ">Miftaqul Fiqi Firmansyah</p>
+            <p className="text-white text-2xl ">
+              {localStorage.getItem("user") &&
+                JSON.parse(localStorage.getItem("user")!).name}
+            </p>
+            {patient && (
+              <div className="">
+                <div className="w-full h-fit bg-white text-base p-2 rounded-lg">
+                  <p className="font-bold">Patient selected</p>
+                  <p>{patient?.name}</p>
+                </div>
+                <button
+                  className="text-white text-lg hover:underline"
+                  onClick={openForm}
+                >
+                  Change patient
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex gap-4 font-bold tracking-wider justify-around">
-            {buttonLoading ? (
+            {result.diastolic === 0 ? (
+              <button
+                disabled={buttonLoading}
+                onClick={patient ? buttonStart : openForm}
+                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+              >
+                START
+              </button>
+            ) : (
+              <div className="">
+                <button
+                  onClick={handleSaveResult}
+                  className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+                >
+                  SAVE
+                </button>
+                <button
+                  onClick={() => {
+                    clearResult();
+                  }}
+                  className="px-8 py-4 bg-white text-red-700 border-red-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+                >
+                  CANCEL
+                </button>
+              </div>
+            )}
+
+            {/* {buttonLoading ? (
               <button
                 onClick={buttonStop}
                 className="px-8 py-4 bg-red-500 text-white rounded-full w-xs shadow-xl"
@@ -165,13 +211,22 @@ export default function MeasurementPage() {
               >
                 SAVE
               </button>
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
           <div className="flex flex-col bg-white rounded-3xl p-6 gap-6 shadow-xl">
-            <div className="">
+            <div className="flex justify-between">
               <p className="text-2xl">Measurement Result</p>
+              <div
+                className={`px-8 py-2 rounded-full transition-opacity ${
+                  categoryResult ? "opacity-100" : "opacitiy-0 invisible"
+                } ${
+                  categoryResult === "Unknown" ? "bg-gray-300" : "bg-[#1EFE0A]"
+                }`}
+              >
+                <p className="text-2xl">{categoryResult}</p>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <ItemsResult
@@ -212,7 +267,6 @@ export default function MeasurementPage() {
           form={form}
           closeModal={closeForm}
           setPatient={setPatient}
-          buttonStart={buttonStart}
           openFormSelectPatient={openFormSelectPatient}
           buttonLoading={buttonLoading}
           start={start}

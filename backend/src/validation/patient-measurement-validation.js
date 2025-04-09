@@ -7,6 +7,7 @@ const createValidation = Joi.object({
   diastolic: Joi.number().required(),
   mean: Joi.number().required(),
   heart_rate: Joi.number().required(),
+  category_result: Joi.string().required(),
 });
 
 export { createValidation };

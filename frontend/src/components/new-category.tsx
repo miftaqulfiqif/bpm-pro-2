@@ -1,42 +1,81 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { InputText } from "./Forms/FormsInput/InputText";
+import axios from "axios";
 
 type NewCategoryProps = {
   form: boolean;
   closeModal: () => void;
+  fetchCategories: () => void;
 };
 
-export const NewCategory = ({ form, closeModal }: NewCategoryProps) => {
+export const NewCategory = ({
+  form,
+  closeModal,
+  fetchCategories,
+}: NewCategoryProps) => {
   const formik = useFormik({
     initialValues: {
+      name: "",
+      description: "",
       min_systolic: "",
       max_systolic: "",
       min_diastolic: "",
       max_diastolic: "",
     },
     validationSchema: yup.object().shape({
+      name: yup.string().required("Category name is required"),
+      description: yup.string().required("Description is required"),
       min_systolic: yup
         .number()
         .typeError("Min systolic must be a number")
         .required("Min systolic is required"),
       max_systolic: yup
         .number()
-        .typeError("Min systolic must be a number")
+        .typeError("Max systolic must be a number")
         .required("Max systolic is required"),
       min_diastolic: yup
         .number()
-        .typeError("Min systolic must be a number")
+        .typeError("Min diastolic must be a number")
         .required("Min diastolic is required"),
       max_diastolic: yup
         .number()
-        .typeError("Min systolic must be a number")
+        .typeError("Max diastolic must be a number")
         .required("Max diastolic is required"),
     }),
     onSubmit: (values) => {
-      alert(values);
+      handleSave(values);
     },
   });
+
+  const handleSave = async (values: any) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/category-results",
+        {
+          name: values.name,
+          description: values.description,
+          min_systolic: values.min_systolic,
+          max_systolic: values.max_systolic,
+          min_diastolic: values.min_diastolic,
+          max_diastolic: values.max_diastolic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        closeModal();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      fetchCategories();
+    }
+  };
 
   return (
     <div
@@ -44,7 +83,7 @@ export const NewCategory = ({ form, closeModal }: NewCategoryProps) => {
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
         form ? "" : "hidden"
       }`}
-      style={{ backdropFilter: "blur(5px)" }}
+      style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -54,6 +93,31 @@ export const NewCategory = ({ form, closeModal }: NewCategoryProps) => {
           <p className="text-2xl">Add New Category Result</p>
         </div>
         <form onSubmit={formik.handleSubmit}>
+          <div className="flex flex-col mb-4 ">
+            <p className="font-semibold">Category Name</p>
+            <InputText
+              name="name"
+              type="text"
+              placeholder="Input category name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onTouch={formik.touched.name}
+              onError={formik.errors.name}
+            />
+          </div>
+          <div className="flex flex-col mb-6 ">
+            <p className="font-semibold">Description</p>
+            <InputText
+              name="description"
+              type="text"
+              placeholder="Input description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              onTouch={formik.touched.description}
+              onError={formik.errors.description}
+              className="h-20 bg-gray-100"
+            />
+          </div>
           <p className="font-semibold mb-2">Systolic</p>
           <div className="flex flex-row justify-between gap-2 mb-6 items-center">
             <p>Min</p>
@@ -67,7 +131,7 @@ export const NewCategory = ({ form, closeModal }: NewCategoryProps) => {
               onTouch={formik.touched.min_systolic}
               onError={formik.errors.min_systolic}
             />
-            <p>Min</p>
+            <p>Max</p>
             <p>:</p>{" "}
             <InputText
               name="max_systolic"
@@ -92,7 +156,7 @@ export const NewCategory = ({ form, closeModal }: NewCategoryProps) => {
               onTouch={formik.touched.min_diastolic}
               onError={formik.errors.min_diastolic}
             />
-            <p>Min</p>
+            <p>Max</p>
             <p>:</p>{" "}
             <InputText
               name="max_diastolic"

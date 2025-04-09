@@ -92,14 +92,15 @@ const pagination = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+  const query = req.query.query || "";
 
   try {
-    const result = await paginationService(page, limit, skip);
+    const result = await paginationService(page, limit, skip, query);
 
     res.status(200).json({
-      currentPage: page,
-      totalItems: result.total,
-      totalPages: Math.ceil(result.total / limit),
+      current_page: page,
+      total_items: result.total,
+      total_pages: Math.ceil(result.total / limit),
       data: result.data,
     });
   } catch (error) {

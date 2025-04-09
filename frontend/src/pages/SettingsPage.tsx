@@ -13,10 +13,56 @@ import person from "@/assets/icons/profile-icon.png";
 import { MenuSettings } from "@/components/ui/MenuSettings";
 import { ListOfCategories } from "@/components/ui/list-of-categories";
 import { NewCategory } from "@/components/new-category";
+import axios from "axios";
 
+type Category = {
+  id: number;
+  user_id: string;
+  name: string;
+  min_systolic: number;
+  max_systolic: number;
+  min_diastolic: number;
+  max_diastolic: number;
+  description: string;
+};
 export default function SettingsPage() {
   const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryOpen, setCategoryOpen] = useState(0);
+
+  const fetchCategories = () => {
+    axios
+      .get("http://localhost:3000/api/category-results", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        setCategories(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const deleteCategory = (id: number) => {
+    axios
+      .delete(`http://localhost:3000/api/category-results/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data);
+          fetchCategories();
+        }
+      });
+  };
+
+  const openCategory = (id: number) => {
+    setCategoryOpen(id);
+  };
 
   const closeModal = () => {
     setForm(false);
@@ -36,6 +82,7 @@ export default function SettingsPage() {
 
   const handleCategory = () => {
     setState("Categories");
+    fetchCategories();
   };
 
   const handleDeleteUser = () => {
@@ -181,42 +228,32 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <p>List of categories</p>
-                  <hr className="border-t-2 border-[#ECECEC] my-4" />
-                  <div className="flex flex-col gap-10">
-                    <ListOfCategories
-                      title="Normal"
-                      values={{
-                        minSystolic: 80,
-                        maxSystolic: 119,
-                        minDiastolic: 60,
-                        maxDiastolic: 80,
-                      }}
-                    />
-                    <ListOfCategories
-                      title="High Noramal"
-                      values={{
-                        minSystolic: 120,
-                        maxSystolic: 119,
-                        minDiastolic: 60,
-                        maxDiastolic: 1231,
-                      }}
-                    />
-                    <ListOfCategories
-                      title="Hypertension"
-                      values={{
-                        minSystolic: 8123,
-                        maxSystolic: 119,
-                        minDiastolic: 60,
-                        maxDiastolic: 8123,
-                      }}
-                    />
+                  <hr className="border-t-2 border-[#ECECEC]" />
+                  <div className="flex flex-col gap-4">
+                    {categories?.map((category) => (
+                      <ListOfCategories
+                        key={category.id}
+                        id={category.id}
+                        title={category.name}
+                        values={{
+                          minSystolic: category.min_systolic,
+                          maxSystolic: category.max_systolic,
+                          minDiastolic: category.min_diastolic,
+                          maxDiastolic: category.max_diastolic,
+                        }}
+                        deleteCategory={deleteCategory}
+                        categoryOpen={openCategory}
+                        isOpen={categoryOpen === category.id}
+                      />
+                    ))}
                   </div>
                 </div>
-                <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-                  Save Changes
-                </button>
                 <div className="">
-                  <NewCategory closeModal={closeModal} form={form} />
+                  <NewCategory
+                    closeModal={closeModal}
+                    form={form}
+                    fetchCategories={fetchCategories}
+                  />
                 </div>
               </div>
             )}

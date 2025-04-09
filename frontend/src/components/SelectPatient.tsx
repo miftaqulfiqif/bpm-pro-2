@@ -75,7 +75,7 @@ export const SelectPatient = ({
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 flex justify-center items-center ${
         formSelectPatient ? "" : "hidden"
       }`}
-      style={{ backdropFilter: "blur(5px)" }}
+      style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
         className="bg-white rounded-xl p-8 z-50 w-4xl h-[600px] shadow-lg"

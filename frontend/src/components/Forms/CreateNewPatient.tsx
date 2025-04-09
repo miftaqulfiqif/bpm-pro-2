@@ -7,12 +7,13 @@ import patients from "@/assets/icons/patients-icon.png";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
 
 type CreateNewPatientProps = {
   form: boolean;
   setPatient: (e: any) => void;
   closeModal: () => void;
-  buttonStart: () => void;
+  fetchPatients?: () => void;
   openFormSelectPatient?: () => void;
   buttonLoading?: boolean;
   start?: boolean;
@@ -23,11 +24,40 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     form,
     setPatient,
     closeModal,
-    buttonStart,
+    fetchPatients,
     openFormSelectPatient,
     buttonLoading,
     start,
   } = props;
+
+  const savePatient = async (values: any) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/patients",
+        {
+          name: values.name,
+          gender: values.gender,
+          phone: values.phone,
+          last_education: values.last_education,
+          place_of_birth: values.place_of_birth,
+          date_of_birth: values.date_of_birth,
+          work: values.work,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        closeModal();
+        fetchPatients?.();
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -61,8 +91,13 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     //   return errors;
     // },
     onSubmit: (values) => {
-      setPatient(values);
-      buttonStart();
+      if (openFormSelectPatient) {
+        setPatient(values);
+      } else {
+        console.log("CREATED PATIENT");
+        savePatient(values);
+      }
+      closeModal();
     },
   });
 
@@ -72,7 +107,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
         form ? "" : "hidden"
       }`}
-      style={{ backdropFilter: "blur(5px)" }}
+      style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -182,17 +217,13 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            {start ? (
-              <p>Press start button please</p>
-            ) : (
-              <button
-                type="submit"
-                disabled={buttonLoading}
-                className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
-              >
-                Submit
-              </button>
-            )}
+            <button
+              type="submit"
+              disabled={buttonLoading}
+              className="px-4 py-2 bg-blue-white border-blue-700 text-blue-700 border-2 rounded-full w-xs mt-8 disabled:bg-red-500 "
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>

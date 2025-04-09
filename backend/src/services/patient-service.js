@@ -165,15 +165,18 @@ const deletePatientService = async (userId, patientId) => {
   }
 };
 
-const paginationService = async (page, limit, skip) => {
+const paginationService = async (page, limit, skip, query) => {
   try {
-    const total = await prismaClient.patient.count();
+    const total = await prismaClient.patient.count({
+      where: query ? { name: { contains: query } } : {},
+    });
 
     const patient = await prismaClient.patient.findMany({
+      where: query ? { name: { contains: query } } : {},
       skip: skip,
       take: limit,
       orderBy: {
-        id: "asc",
+        id: "desc",
       },
     });
 
