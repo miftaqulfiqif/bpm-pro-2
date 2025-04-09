@@ -5,7 +5,7 @@ import { useCounter } from "../hooks/Counter";
 
 import heartImg from "../assets/images/heart.png";
 
-import bloodIcon from "../assets/icons/blood-icon.jpg";
+import bloodIcon from "../assets/icons/blood-icon.png";
 import hyperTensionIcon from "../assets/icons/hypertension.png";
 import bloodPressureIcon from "../assets/icons/blood-pressure.png";
 import bloodPressure2Icon from "../assets/icons/blood-pressure-icon.png";

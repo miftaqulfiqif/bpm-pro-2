@@ -6,7 +6,7 @@ import { useCounter } from "../hooks/Counter";
 
 import bloodPressureImg from "../assets/images/blood_pressure.png";
 
-import bloodIcon from "../assets/icons/blood-icon.jpg";
+import bloodIcon from "../assets/icons/blood-icon.png";
 import hyperTensionIcon from "../assets/icons/hypertension.png";
 import bloodPressureIcon from "../assets/icons/blood-pressure.png";
 import bloodPressure2Icon from "../assets/icons/blood-pressure-icon.png";
@@ -163,13 +163,28 @@ export default function MeasurementPage() {
           </div>
           <div className="flex gap-4 font-bold tracking-wider justify-around">
             {result.diastolic === 0 ? (
-              <button
-                disabled={buttonLoading}
-                onClick={patient ? buttonStart : openForm}
-                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-              >
-                START
-              </button>
+              !buttonLoading ? (
+                <button
+                  disabled={buttonLoading}
+                  onClick={patient ? buttonStart : openForm}
+                  className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:bg-slate-200 hover:bg-slate-200"
+                >
+                  START
+                </button>
+              ) : (
+                <div className="mx-auto">
+                  <p className="w-fit mx-auto text-sm font-normal mb-10">
+                    Measuring ...
+                  </p>
+                  <button
+                    disabled={buttonLoading}
+                    onClick={patient ? buttonStart : openForm}
+                    className="px-8 py-4 bg-white text-red-700 border-red-700 border-2 rounded-full w-xs shadow-xl disabled:bg-slate-200 hover:bg-slate-200"
+                  >
+                    STOP
+                  </button>
+                </div>
+              )
             ) : (
               <div className="">
                 <button

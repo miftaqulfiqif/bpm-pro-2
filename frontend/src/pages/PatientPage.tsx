@@ -73,8 +73,8 @@ export const PatientPage = () => {
 
       setPatients(response.data.data);
       setCurrentPage(response.data.current_page);
-      setTotalItems(response.data.total_items); // Update totalItems
-      setTotalPage(response.data.total_pages); // Update totalPages
+      setTotalItems(response.data.total_items);
+      setTotalPage(response.data.total_pages);
     } catch (error) {
       console.error("Error fetching patients:", error);
     }
@@ -90,7 +90,7 @@ export const PatientPage = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           params: {
-            page: currentPage,
+            page: 1,
             limit: limit,
             query: search,
           },
@@ -146,7 +146,7 @@ export const PatientPage = () => {
     setForm(false);
   };
   const buttonAction = (id: number) => {
-    alert("Button Clicked" + id);
+    alert("Button Clicked " + id);
   };
   return (
     <MainLayout title="Patient">
@@ -163,7 +163,6 @@ export const PatientPage = () => {
                 onValueChange={handleLimitChange}
               >
                 {" "}
-                {/* Ganti onChange dengan onValueChange */}
                 <SelectTrigger className="w-fit bg-[rgba(117,195,255,0.5)] border-0">
                   <SelectValue placeholder="10" />
                 </SelectTrigger>

@@ -172,6 +172,27 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
       orderBy: {
         id: "desc",
       },
+      select: {
+        id: true,
+        patient_id: true,
+        patient: {
+          select: {
+            name: true,
+            gender: true,
+            phone: true,
+            work: true,
+            last_education: true,
+            place_of_birth: true,
+          },
+        },
+        user_id: true,
+        weight: true,
+        systolic: true,
+        diastolic: true,
+        mean: true,
+        heart_rate: true,
+        category_result: true,
+      },
     });
 
     return {
