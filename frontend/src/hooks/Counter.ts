@@ -69,35 +69,40 @@ export const useCounter = () => {
       heart_rate: 0,
     });
     setCategoryResult("");
+    setButtonLoading(false);
   };
 
   const buttonStart = () => {
-    const data = {
-      data_measure: {
-        systolic: 120,
-        diastolic: 80,
-        mean: 23,
-        heart_rate: 20,
-      },
-    };
-    setItems([
-      { id: 1, value: 120 },
-      { id: 2, value: 130 },
-      { id: 3, value: 68 },
-      { id: 4, value: 123 },
-      { id: 5, value: 80 },
-      { id: 6, value: 20 },
-      { id: 7, value: 200 },
-      { id: 8, value: 123 },
-      { id: 9, value: 80 },
-      { id: 10, value: 20 },
-      { id: 11, value: 200 },
-    ]);
-    calculationgCategoryResult(
-      data.data_measure.systolic,
-      data.data_measure.diastolic
-    );
-    setResult(data.data_measure);
+    setTimeout(() => {
+      setButtonLoading(false);
+      const data = {
+        data_measure: {
+          systolic: 120,
+          diastolic: 80,
+          mean: 23,
+          heart_rate: 20,
+        },
+      };
+      setItems([
+        { id: 1, value: 120 },
+        { id: 2, value: 130 },
+        { id: 3, value: 68 },
+        { id: 4, value: 123 },
+        { id: 5, value: 80 },
+        { id: 6, value: 20 },
+        { id: 7, value: 200 },
+        { id: 8, value: 123 },
+        { id: 9, value: 80 },
+        { id: 10, value: 20 },
+        { id: 11, value: 200 },
+      ]);
+      calculationgCategoryResult(
+        data.data_measure.systolic,
+        data.data_measure.diastolic
+      );
+      setResult(data.data_measure);
+    }, 5000);
+    setButtonLoading(true);
   };
 
   const buttonStartTry = async () => {
