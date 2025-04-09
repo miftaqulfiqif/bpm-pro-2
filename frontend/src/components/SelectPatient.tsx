@@ -147,7 +147,13 @@ export const SelectPatient = ({
                   >
                     <td className="p-2">{patient.name}</td>
                     <td className="p-2">{patient.place_of_birth}</td>
-                    <td className="p-2">{patient.date_of_birth}</td>
+                    <td className="p-2">
+                      {new Intl.DateTimeFormat("id-ID", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }).format(new Date(patient.date_of_birth))}
+                    </td>
                   </tr>
                 ))
               )}
