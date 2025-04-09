@@ -94,8 +94,6 @@ const pagination = async (req, res, next) => {
   const skip = (page - 1) * limit;
   const query = req.query.query || "";
 
-  logger.info("Query : " + query);
-
   try {
     const result = await paginationService(page, limit, skip, query);
 

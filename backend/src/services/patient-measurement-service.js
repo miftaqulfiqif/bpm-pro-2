@@ -8,8 +8,6 @@ const createService = async (user, body) => {
   try {
     const data = validate(createValidation, body);
 
-    const category = await classifyBloodPressure(data.systolic, data.diastolic);
-
     return await prismaClient.patientMeasurement.create({
       data: {
         patient_id: data.patient_id,
@@ -20,9 +18,21 @@ const createService = async (user, body) => {
         diastolic: data.diastolic,
         mean: data.mean,
         heart_rate: data.heart_rate,
-        category_result: category,
+        category_result: data.category_result,
       },
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const measurementResultService = async (body) => {
+  try {
+    const categoryResult = await classifyBloodPressure(
+      body.systolic,
+      body.diastolic
+    );
+    return categoryResult;
   } catch (error) {
     throw error;
   }
@@ -130,6 +140,7 @@ const paginationService = async (page, limit, skip) => {
 
 export {
   createService,
+  measurementResultService,
   getAllService,
   getAllByUserIdService,
   deletePatientMeasurementService,

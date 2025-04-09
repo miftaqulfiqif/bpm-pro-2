@@ -7,12 +7,13 @@ import patients from "@/assets/icons/patients-icon.png";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
 
 type CreateNewPatientProps = {
   form: boolean;
   setPatient: (e: any) => void;
   closeModal: () => void;
-  buttonStart: () => void;
+  fetchPatients?: () => void;
   openFormSelectPatient?: () => void;
   buttonLoading?: boolean;
   start?: boolean;
@@ -23,11 +24,40 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     form,
     setPatient,
     closeModal,
-    buttonStart,
+    fetchPatients,
     openFormSelectPatient,
     buttonLoading,
     start,
   } = props;
+
+  const savePatient = async (values: any) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/patients",
+        {
+          name: values.name,
+          gender: values.gender,
+          phone: values.phone,
+          last_education: values.last_education,
+          place_of_birth: values.place_of_birth,
+          date_of_birth: values.date_of_birth,
+          work: values.work,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        closeModal();
+        fetchPatients?.();
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -61,7 +91,12 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     //   return errors;
     // },
     onSubmit: (values) => {
-      setPatient(values);
+      if (openFormSelectPatient) {
+        setPatient(values);
+      } else {
+        console.log("CREATED PATIENT");
+        savePatient(values);
+      }
       closeModal();
     },
   });

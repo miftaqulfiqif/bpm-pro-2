@@ -32,6 +32,7 @@ privateRouter.post(
   "/api/patient-measurements",
   patientMeasurementController.create
 );
+privateRouter.post("/api/measurement-result", patientMeasurementController.measurementResult);
 privateRouter.get(
   "/api/all-patient-measurements",
   patientMeasurementController.getAll

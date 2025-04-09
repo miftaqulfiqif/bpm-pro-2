@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CreateNewPatient } from "@/components/Forms/CreateNewPatient";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
 
@@ -54,8 +54,34 @@ export const PatientPage = () => {
   const [totalPage, setTotalPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
+  const isFirstRender = useRef(true);
 
-  const fetchPatients = debounce(async (searchQuery: string) => {
+  const fetchPatients = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/patients-pagination",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          params: {
+            page: currentPage,
+            limit: limit,
+          },
+        }
+      );
+
+      setPatients(response.data.data);
+      setCurrentPage(response.data.current_page);
+      setTotalItems(response.data.total_items); // Update totalItems
+      setTotalPage(response.data.total_pages); // Update totalPages
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    }
+  };
+
+  const searchPatients = debounce(async (searchQuery: string) => {
+    // if (!searchQuery) return;
     try {
       const response = await axios.get(
         "http://localhost:3000/api/patients-pagination",
@@ -81,9 +107,13 @@ export const PatientPage = () => {
   }, 500);
 
   useEffect(() => {
-    fetchPatients(search);
-    return () => fetchPatients.cancel();
-  }, [currentPage, limit, search]);
+    if (search) {
+      searchPatients(search);
+    } else {
+      fetchPatients();
+    }
+    return () => searchPatients.cancel();
+  }, [search, currentPage, limit]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -115,8 +145,8 @@ export const PatientPage = () => {
   const closeForm = () => {
     setForm(false);
   };
-  const buttonAction = () => {
-    alert("Button Clicked");
+  const buttonAction = (id: number) => {
+    alert("Button Clicked" + id);
   };
   return (
     <MainLayout title="Patient">
@@ -222,7 +252,13 @@ export const PatientPage = () => {
                     }).format(new Date(item.date_of_birth))}
                   </TableCell>
                   <TableCell className="text-center pl-10 text-xl">
-                    <a href="" onClick={buttonAction}>
+                    <a
+                      href=""
+                      onClick={(e) => {
+                        e.preventDefault();
+                        buttonAction(item.id);
+                      }}
+                    >
                       <p>...</p>
                     </a>
                   </TableCell>
@@ -272,7 +308,7 @@ export const PatientPage = () => {
         form={form}
         closeModal={closeForm}
         setPatient={setPatients}
-        buttonStart={buttonAction}
+        fetchPatients={fetchPatients}
       />
     </MainLayout>
   );

@@ -58,7 +58,7 @@ export const Navbar = ({ className, title }: NavbarProps) => {
         <div className="flex flex-row items-center gap-10">
           <div className="">
             <a
-              className="flex gap-2 items-center bg-[#736DF6] px-10 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] text-white hover:underline"
+              className="flex gap-2 items-center bg-[#0767E2] px-10 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] text-white hover:underline"
               href="/measurement"
             >
               <HeartPulse className="w-8 h-8" />

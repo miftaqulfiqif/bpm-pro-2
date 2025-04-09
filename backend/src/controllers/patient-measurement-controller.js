@@ -1,6 +1,7 @@
 import { ResponseError } from "../errors/response-error.js";
 import {
   createService,
+  measurementResultService,
   getAllByUserIdService,
   getAllService,
   deletePatientMeasurementService,
@@ -12,6 +13,17 @@ const create = async (req, res, next) => {
   try {
     const user = req.user;
     const result = await createService(user, req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const measurementResult = async (req, res, next) => {
+  try {
+    const result = await measurementResultService(req.body);
     res.status(200).json({
       data: result,
     });
@@ -97,6 +109,7 @@ const pagination = async (req, res, next) => {
 
 export default {
   create,
+  measurementResult,
   getAll,
   getAllByUserId,
   deletePatientMeasurement,

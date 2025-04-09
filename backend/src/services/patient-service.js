@@ -176,7 +176,7 @@ const paginationService = async (page, limit, skip, query) => {
       skip: skip,
       take: limit,
       orderBy: {
-        id: "asc",
+        id: "desc",
       },
     });
 

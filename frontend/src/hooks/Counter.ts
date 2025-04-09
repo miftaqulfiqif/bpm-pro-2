@@ -12,6 +12,7 @@ export const useCounter = () => {
     mean: 0,
     heart_rate: 0,
   });
+  const [categoryResult, setCategoryResult] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
@@ -37,21 +38,69 @@ export const useCounter = () => {
     setIsOpen(true);
   };
 
+  const calculationgCategoryResult = async (
+    systolic: number,
+    diastolic: number
+  ) => {
+    await axios
+      .post(
+        "http://localhost:3000/api/measurement-result",
+        {
+          systolic: systolic,
+          diastolic: diastolic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setCategoryResult(res.data.data);
+        return res;
+      });
+  };
+
+  const clearResult = () => {
+    setResult({
+      systolic: 0,
+      diastolic: 0,
+      mean: 0,
+      heart_rate: 0,
+    });
+  };
+
   const buttonStart = () => {
     const data = {
       data_measure: {
         systolic: 120,
-        diastolic: 130,
+        diastolic: 80,
         mean: 23,
         heart_rate: 20,
       },
     };
+    setItems([
+      { id: 1, value: 120 },
+      { id: 2, value: 130 },
+      { id: 3, value: 68 },
+      { id: 4, value: 123 },
+      { id: 5, value: 80 },
+      { id: 6, value: 20 },
+      { id: 7, value: 200 },
+      { id: 8, value: 123 },
+      { id: 9, value: 80 },
+      { id: 10, value: 20 },
+      { id: 11, value: 200 },
+    ]);
+    calculationgCategoryResult(
+      data.data_measure.systolic,
+      data.data_measure.diastolic
+    );
     setResult(data.data_measure);
   };
 
   const buttonStartTry = async () => {
     setStart(true);
-    // Fungsi untuk ambil user id
     const userId = await axios
       .get("http://localhost:3000/api/user/current", {
         headers: {
@@ -60,17 +109,13 @@ export const useCounter = () => {
       })
       .then((response) => {
         return response.data.data.username;
-      })
-      .catch(() => {
-        setMessage("Anda belum login. Silahkan login terlebih dahulu.");
       });
 
     setUserId(userId);
 
     console.log(message);
-    // Jika socket sudah terhubung, tidak buat socket baru
     if (socketRef.current) {
-      console.log("Socket sudah berjalan.");
+      console.log("Socket already running.");
       return;
     }
 
@@ -106,9 +151,12 @@ export const useCounter = () => {
       });
 
       socket.on("result", (data) => {
-        setMessage("Pengambilan data selesai.");
+        setMessage("Catching data done.");
         setResult(data.data_measure);
-
+        calculationgCategoryResult(
+          data.data_measure.systolic,
+          data.data_measure.diastolic
+        );
         stopProcess();
       });
 
@@ -152,6 +200,8 @@ export const useCounter = () => {
     setIsOpen,
     result,
     setResult,
+    categoryResult,
+    clearResult,
     items,
     token,
   };
