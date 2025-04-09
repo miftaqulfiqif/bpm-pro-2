@@ -113,7 +113,7 @@ export const PatientPage = () => {
       fetchPatients();
     }
     return () => searchPatients.cancel();
-  }, [search, currentPage, limit]);
+  }, [currentPage, limit, search]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);

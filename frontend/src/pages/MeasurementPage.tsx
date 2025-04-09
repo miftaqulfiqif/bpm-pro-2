@@ -215,11 +215,11 @@ export default function MeasurementPage() {
           </div>
         </div>
         <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
-          <div className="flex flex-col bg-white rounded-3xl p-6 gap-6 shadow-xl">
-            <div className="flex justify-between">
+          <div className="flex flex-col bg-white rounded-3xl p-6 gap-2 shadow-xl">
+            <div className="flex justify-between h-14">
               <p className="text-2xl">Measurement Result</p>
               <div
-                className={`px-8 py-2 rounded-full transition-opacity ${
+                className={`px-8 py-2 rounded-full h-fit transition-opacity ${
                   categoryResult ? "opacity-100" : "opacitiy-0 invisible"
                 } ${
                   categoryResult === "Unknown" ? "bg-gray-300" : "bg-[#1EFE0A]"

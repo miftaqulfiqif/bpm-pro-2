@@ -68,6 +68,7 @@ export const useCounter = () => {
       mean: 0,
       heart_rate: 0,
     });
+    setCategoryResult("");
   };
 
   const buttonStart = () => {
