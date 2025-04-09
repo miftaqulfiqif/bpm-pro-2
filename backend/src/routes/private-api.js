@@ -26,13 +26,20 @@ privateRouter.get("/api/patients/search", patientController.search);
 privateRouter.patch("/api/patient/:id", patientController.update);
 privateRouter.delete("/api/patient/:id", patientController.deletePatient);
 privateRouter.get("/api/patients-pagination", patientController.pagination);
+privateRouter.get(
+  "/api/patients-pagination-by-user",
+  patientController.paginationByUser
+);
 
 //Patient-Measurement
 privateRouter.post(
   "/api/patient-measurements",
   patientMeasurementController.create
 );
-privateRouter.post("/api/measurement-result", patientMeasurementController.measurementResult);
+privateRouter.post(
+  "/api/measurement-result",
+  patientMeasurementController.measurementResult
+);
 privateRouter.get(
   "/api/all-patient-measurements",
   patientMeasurementController.getAll
@@ -52,6 +59,10 @@ privateRouter.get(
 privateRouter.get(
   "/api/patient-measurements-pagination",
   patientMeasurementController.pagination
+);
+privateRouter.get(
+  "/api/patient-measurements-pagination-by-user",
+  patientMeasurementController.paginationByUser
 );
 
 //Category Result
