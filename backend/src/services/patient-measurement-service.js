@@ -115,15 +115,62 @@ const searchPatientMeasurement = async (query) => {
   }
 };
 
-const paginationService = async (page, limit, skip) => {
+const paginationService = async (page, limit, skip, query) => {
   try {
-    const total = await prismaClient.patientMeasurement.count();
+    const total = await prismaClient.patientMeasurement.count({
+      where: query ? { patient: { name: { contains: query } } } : {},
+    });
 
     const patient = await prismaClient.patientMeasurement.findMany({
+      where: query ? { patient: { name: { contains: query } } } : {},
       skip: skip,
       take: limit,
       orderBy: {
-        id: "asc",
+        id: "desc",
+      },
+    });
+
+    return {
+      total,
+      page,
+      limit,
+      data: patient,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const paginationByUserService = async (userId, page, limit, skip, query) => {
+  try {
+    const searchConditions = query
+      ? {
+          OR: [
+            {
+              patient: {
+                name: { contains: query },
+              },
+            },
+            { category_result: { contains: query } },
+          ],
+        }
+      : {};
+
+    const whereConditions = {
+      user_id: userId,
+      ...searchConditions,
+    };
+
+    const total = await prismaClient.patientMeasurement.count({
+      where: whereConditions,
+    });
+
+    const patient = await prismaClient.patientMeasurement.findMany({
+      where: whereConditions,
+      skip: skip,
+      take: limit,
+      orderBy: {
+        id: "desc",
       },
     });
 
@@ -146,4 +193,5 @@ export {
   deletePatientMeasurementService,
   searchPatientMeasurement,
   paginationService,
+  paginationByUserService,
 };

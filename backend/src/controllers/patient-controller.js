@@ -6,6 +6,7 @@ import {
   searchPatientService,
   updatePatientService,
   paginationService,
+  paginationByUserService,
 } from "../services/patient-service.js";
 
 import { logger } from "../applications/logging.js";
@@ -107,6 +108,32 @@ const pagination = async (req, res, next) => {
     next(error);
   }
 };
+const paginationByUser = async (req, res, next) => {
+  const user = req.user;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+  const query = req.query.query || "";
+
+  try {
+    const result = await paginationByUserService(
+      user.id,
+      page,
+      limit,
+      skip,
+      query
+    );
+
+    res.status(200).json({
+      current_page: page,
+      total_items: result.total,
+      total_pages: Math.ceil(result.total / limit),
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {
   create,
@@ -116,4 +143,5 @@ export default {
   update,
   deletePatient,
   pagination,
+  paginationByUser,
 };
