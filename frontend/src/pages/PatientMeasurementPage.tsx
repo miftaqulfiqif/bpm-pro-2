@@ -266,13 +266,14 @@ export const PatientMeasurements = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div
+            <a
+              href="#"
               className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]"
               onClick={exportXML}
             >
               <img src={exportIcon} alt="" className="w-6 h-6" />
               <p>Export</p>
-            </div>
+            </a>
 
             <div className=" bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
               <label

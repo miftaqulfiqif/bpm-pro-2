@@ -229,7 +229,7 @@ export default function MeasurementPage() {
             )} */}
           </div>
         </div>
-        <div className="flex flex-col gap-8 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
+        <div className="flex flex-col gap-6 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
           <div className="flex flex-col bg-white rounded-3xl p-6 gap-2 shadow-xl">
             <div className="flex justify-between h-14">
               <p className="text-2xl">Measurement Result</p>
