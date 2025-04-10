@@ -3,6 +3,8 @@ import * as yup from "yup";
 import { InputText } from "./Forms/FormsInput/InputText";
 import axios from "axios";
 
+import closeIcon from "@/assets/icons/close.png";
+
 type NewCategoryProps = {
   form: boolean;
   closeModal: () => void;
@@ -80,17 +82,26 @@ export const NewCategory = ({
   return (
     <div
       onClick={closeModal}
-      className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 ${
-        form ? "" : "hidden"
+      className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 transition-opacity duration-300 ${
+        form ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-10 z-50 max-w-[900px]"
+        className={`fixed top-1/2 left-1/2 transform bg-white rounded-xl p-8 z-50 w-fit h-[600px] transition-all duration-300 ease-in-out
+    ${
+      form
+        ? "opacity-100 scale-100 translate-x-[-50%] translate-y-[-50%]"
+        : "opacity-0 scale-95 translate-x-[-50%] translate-y-[-40%]"
+    }
+  `}
       >
         <div className="flex flex-row justify-between mb-8">
           <p className="text-2xl">Add New Category Result</p>
+          <button onClick={closeModal}>
+            <img src={closeIcon} alt="" className="w-5 h-5" />
+          </button>
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col mb-4 ">

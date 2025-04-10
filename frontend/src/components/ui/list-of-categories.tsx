@@ -1,5 +1,4 @@
 import arrowDownIcon from "@/assets/icons/arrow-down-sign-to-navigate 2.svg";
-import { useState } from "react";
 
 type ListOfCategoriesProps = {
   id: number;
@@ -29,15 +28,27 @@ export const ListOfCategories = ({
         href="#"
         className="flex flex-row justify-between hover:underline"
         onClick={() => {
-          categoryOpen(isOpen ? 0 : id);
+          categoryOpen(id);
         }}
       >
         <p className="font-semibold">{title}</p>
         <button>
-          <img src={arrowDownIcon} alt="" className="w-4 h-4 rotate-[-90deg]" />
+          <img
+            src={arrowDownIcon}
+            alt=""
+            className={`w-4 h-4 transition-transform duration-300 ${
+              isOpen ? "rotate-0" : "rotate-[-90deg]"
+            }`}
+          />
         </button>
       </a>
-      <div className={isOpen ? "" : "hidden" + " flex-col mx-5"}>
+      <div
+        className={`transition-all duration-500 ease-in-out overflow-hidden ${
+          isOpen
+            ? "opacity-100 max-h-[1000px] scale-100"
+            : "opacity-0 max-h-0 scale-95 pointer-events-none"
+        } flex flex-col mx-5`}
+      >
         <div className="rounded-lg shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] p-4">
           <div className="flex flex-row justify-between">
             <p>Min Systolic</p>
