@@ -33,6 +33,7 @@ import { CreateNewPatient } from "@/components/Forms/CreateNewPatient";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
+import { Component } from "@/components/ui/ChartArea";
 
 type PatientProps = {
   id: number;
@@ -47,7 +48,11 @@ type PatientProps = {
 
 export const PatientPage = () => {
   const [form, setForm] = useState(false);
-  const [patient, setPatients] = useState<PatientProps[]>();
+  const [detail, setDetail] = useState(false);
+  const [patients, setPatients] = useState<PatientProps[]>();
+  const [patientId, setPatientId] = useState(0);
+  const [patient, setPatient] = useState<PatientProps[]>();
+  const selectedPatient = patients?.find((item) => item.id === patientId);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -55,6 +60,12 @@ export const PatientPage = () => {
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const isFirstRender = useRef(true);
+
+  const chartData = Array.from({ length: 6 }, (_, i) => ({
+    month: ["January", "February", "March", "April", "May", "June"][i],
+    systolic: Math.floor(Math.random() * 200) + 80,
+    diastolic: Math.floor(Math.random() * 120) + 60,
+  }));
 
   const fetchPatients = async () => {
     try {
@@ -72,6 +83,7 @@ export const PatientPage = () => {
       );
 
       setPatients(response.data.data);
+      setPatient(response.data.data.slice(1));
       setCurrentPage(response.data.current_page);
       setTotalItems(response.data.total_items);
       setTotalPage(response.data.total_pages);
@@ -81,7 +93,6 @@ export const PatientPage = () => {
   };
 
   const searchPatients = debounce(async (searchQuery: string) => {
-    // if (!searchQuery) return;
     try {
       const response = await axios.get(
         "http://localhost:3000/api/patients-pagination",
@@ -90,12 +101,16 @@ export const PatientPage = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           params: {
-            page: 1,
+            page: currentPage,
             limit: limit,
-            query: search,
+            query: searchQuery,
           },
         }
       );
+
+      if (response.data.total_pages < currentPage) {
+        setCurrentPage(response.data.total_pages);
+      }
 
       setPatients(response.data.data);
       setCurrentPage(response.data.current_page);
@@ -106,12 +121,38 @@ export const PatientPage = () => {
     }
   }, 500);
 
+  const exportXML = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/export-patients",
+        { patients },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "patients.xml");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    }
+  };
+
   useEffect(() => {
     if (search) {
       searchPatients(search);
     } else {
       fetchPatients();
     }
+    setDetail(false);
     return () => searchPatients.cancel();
   }, [currentPage, limit, search]);
 
@@ -144,6 +185,19 @@ export const PatientPage = () => {
   };
   const closeForm = () => {
     setForm(false);
+  };
+  const openDetail = (id: number) => {
+    if (detail && patientId === id) {
+      setDetail(false);
+    } else {
+      setPatientId(id);
+      setDetail(true);
+    }
+
+    setPatient(patients?.filter((patient) => patient.id === id));
+  };
+  const closeDetail = () => {
+    setDetail(false);
   };
   const buttonAction = (id: number) => {
     alert("Button Clicked " + id);
@@ -182,7 +236,10 @@ export const PatientPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
+            <div
+              className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]"
+              onClick={exportXML}
+            >
               <img src={exportIcon} alt="" className="w-6 h-6" />
               <p>Export</p>
             </div>
@@ -213,94 +270,152 @@ export const PatientPage = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="w-full bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
-          <Table>
-            <TableHeader>
-              <TableRow className="h-16">
-                <TableHead className="text-center pl-10">Name</TableHead>
-                <TableHead className="text-center pl-10">Work</TableHead>
-                <TableHead className="text-center pl-10">Phone</TableHead>
-                <TableHead className="text-center pl-10">Address</TableHead>
-                <TableHead className="text-center pl-10">Gender</TableHead>
-                <TableHead className="text-center pl-10">
-                  Date of Birth
-                </TableHead>
-                <TableHead className="text-center pl-10">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {patient?.map((item) => (
-                <TableRow key={item.id} className=" border-gray-300">
-                  <TableCell className="text-left pl-10">{item.name}</TableCell>
-                  <TableCell className="text-left pl-10">{item.work}</TableCell>
-                  <TableCell className="text-left pl-10">
-                    {item.phone}
-                  </TableCell>
-                  <TableCell className="text-left pl-10">
-                    {item.place_of_birth}
-                  </TableCell>
-                  <TableCell className="text-left pl-10">
-                    {item.gender}
-                  </TableCell>
-                  <TableCell className="text-left pl-10">
-                    {new Intl.DateTimeFormat("id-ID", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }).format(new Date(item.date_of_birth))}
-                  </TableCell>
-                  <TableCell className="text-center pl-10 text-xl">
-                    <a
-                      href=""
-                      onClick={(e) => {
-                        e.preventDefault();
-                        buttonAction(item.id);
-                      }}
-                    >
-                      <p>...</p>
-                    </a>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={7} className="p-4 text-center">
-                  <Pagination>
-                    <PaginationContent className="flex w-full justify-between">
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={goToPreviousPage}
-                          isActive={currentPage === 1}
-                          href="#"
-                        />
-                      </PaginationItem>
-                      <PaginationItem className="flex flex-row gap-2">
-                        {[...Array(totalPage)].map((_, index) => (
-                          <PaginationLink
-                            key={index}
-                            href="#"
-                            isActive={currentPage === index + 1}
-                            onClick={() => goToPage(index + 1)}
+        <div className="flex flex-row gap-4">
+          <div className="w-full">
+            {/* Table */}
+            <div className="w-full bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="h-16">
+                    <TableHead className="text-center pl-10">Name</TableHead>
+                    <TableHead className="text-center pl-10">Work</TableHead>
+                    <TableHead className="text-center pl-10">Phone</TableHead>
+                    <TableHead className="text-center pl-10">Address</TableHead>
+                    <TableHead className="text-center pl-10">Gender</TableHead>
+                    <TableHead className="text-center pl-10">
+                      Date of Birth
+                    </TableHead>
+                    <TableHead className="text-center pl-10">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {patients && patients.length > 0 ? (
+                    patients?.map((item) => (
+                      <TableRow
+                        key={item.id}
+                        className=" border-gray-300"
+                        onClick={() => {
+                          openDetail(item.id);
+                        }}
+                      >
+                        <TableCell className="text-left pl-10">
+                          {item.name}
+                        </TableCell>
+                        <TableCell className="text-left pl-10">
+                          {item.work}
+                        </TableCell>
+                        <TableCell className="text-left pl-10">
+                          {item.phone}
+                        </TableCell>
+                        <TableCell className="text-left pl-10">
+                          {item.place_of_birth}
+                        </TableCell>
+                        <TableCell className="text-left pl-10">
+                          {item.gender}
+                        </TableCell>
+                        <TableCell className="text-left pl-10">
+                          {new Intl.DateTimeFormat("id-ID", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }).format(new Date(item.date_of_birth))}
+                        </TableCell>
+                        <TableCell className="text-center pl-10 text-xl">
+                          <a
+                            href=""
+                            onClick={(e) => {
+                              e.preventDefault();
+                              buttonAction(item.id);
+                            }}
                           >
-                            {index + 1}
-                          </PaginationLink>
-                        ))}
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={goToNextPage}
-                          isActive={currentPage === totalPage}
-                          href="#"
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
+                            <p>...</p>
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center">
+                        No data
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={7} className="p-4 text-center">
+                      <Pagination>
+                        <PaginationContent className="flex w-full justify-between">
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={goToPreviousPage}
+                              isActive={currentPage === 1}
+                              href="#"
+                            />
+                          </PaginationItem>
+                          <PaginationItem className="flex flex-row gap-2">
+                            {[...Array(totalPage)].map((_, index) => (
+                              <PaginationLink
+                                key={index}
+                                href="#"
+                                isActive={currentPage === index + 1}
+                                onClick={() => goToPage(index + 1)}
+                              >
+                                {index + 1}
+                              </PaginationLink>
+                            ))}
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={goToNextPage}
+                              isActive={currentPage === totalPage}
+                              href="#"
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </div>
+          </div>
+          {detail && (
+            <div className="flex w-1/3 h-fit">
+              <div className="w-full h-full p-5 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)] flex flex-col gap-4">
+                <p>Detail Patient</p>
+                <Component chartData={chartData} />
+                <div>
+                  <p>Name</p>
+                  <p className="font-semibold">{selectedPatient?.name}</p>
+                  <p>Gender</p>
+                  <p className="font-semibold">{selectedPatient?.gender}</p>
+                  <p>Phone</p>
+                  <p className="font-semibold">{selectedPatient?.phone}</p>
+                  <p>Work</p>
+                  <p className="font-semibold">{selectedPatient?.work}</p>
+                  <p>Last Education</p>
+                  <p className="font-semibold">
+                    {selectedPatient?.last_education}
+                  </p>
+                  <p>Place of Birth</p>
+                  <p className="font-semibold">
+                    {selectedPatient?.place_of_birth}
+                  </p>
+                  <p>Date of Birth</p>
+                  <p className="font-semibold">
+                    {selectedPatient
+                      ? new Intl.DateTimeFormat("id-ID", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }).format(new Date(selectedPatient?.date_of_birth))
+                      : ""}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <CreateNewPatient

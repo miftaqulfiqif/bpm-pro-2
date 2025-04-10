@@ -5,6 +5,7 @@ import {
 import { validate } from "../validation/validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
+import { Builder } from "xml2js";
 
 const createPatientService = async (body, user) => {
   try {
@@ -244,6 +245,37 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
   }
 };
 
+const exportXMLService = async (patients) => {
+  try {
+    const formated = {
+      patients: {
+        patient: patients.map((p) => ({
+          id: p.id,
+          user_id: p.user_id,
+          name: p.name,
+          gender: p.gender,
+          phone: p.phone,
+          work: p.work,
+          last_education: p.last_education,
+          place_of_birth: p.place_of_birth,
+          date_of_birth: new Date(p.date_of_birth).toISOString().split("T")[0],
+        })),
+      },
+    };
+
+    const builder = new Builder({
+      xmldec: { version: "1.0", encoding: "UTF-8" },
+      renderOpts: { pretty: true },
+    });
+
+    const xml = builder.buildObject(formated);
+
+    return xml;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   createPatientService,
   getAllPatientService,
@@ -253,4 +285,5 @@ export {
   deletePatientService,
   paginationService,
   paginationByUserService,
+  exportXMLService,
 };

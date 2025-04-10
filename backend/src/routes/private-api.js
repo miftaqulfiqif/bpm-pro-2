@@ -30,6 +30,7 @@ privateRouter.get(
   "/api/patients-pagination-by-user",
   patientController.paginationByUser
 );
+privateRouter.post("/api/export-patients", patientController.exportXML);
 
 //Patient-Measurement
 privateRouter.post(

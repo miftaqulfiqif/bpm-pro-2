@@ -7,6 +7,7 @@ import {
   updatePatientService,
   paginationService,
   paginationByUserService,
+  exportXMLService,
 } from "../services/patient-service.js";
 
 import { logger } from "../applications/logging.js";
@@ -135,6 +136,21 @@ const paginationByUser = async (req, res, next) => {
   }
 };
 
+const exportXML = async (req, res, next) => {
+  try {
+    const patients = req.body.patients;
+
+    const result = await exportXMLService(patients);
+
+    res.set("Content-Type", "application/xml");
+    res.setHeader("Content-Disposition", 'attachment; filename="patients.xml"');
+    res.send(result);
+  } catch (error) {
+    console.error("Export XML error : ", error);
+    next(error);
+  }
+};
+
 export default {
   create,
   getAll,
@@ -144,4 +160,5 @@ export default {
   deletePatient,
   pagination,
   paginationByUser,
+  exportXML,
 };

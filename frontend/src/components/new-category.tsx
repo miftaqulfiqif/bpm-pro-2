@@ -3,6 +3,8 @@ import * as yup from "yup";
 import { InputText } from "./Forms/FormsInput/InputText";
 import axios from "axios";
 
+import closeIcon from "@/assets/icons/close.png";
+
 type NewCategoryProps = {
   form: boolean;
   closeModal: () => void;
@@ -91,6 +93,9 @@ export const NewCategory = ({
       >
         <div className="flex flex-row justify-between mb-8">
           <p className="text-2xl">Add New Category Result</p>
+          <button onClick={closeModal}>
+            <img src={closeIcon} alt="" className="w-5 h-5" />
+          </button>
         </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col mb-4 ">
