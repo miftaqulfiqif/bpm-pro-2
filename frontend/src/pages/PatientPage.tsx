@@ -49,6 +49,7 @@ type PatientProps = {
 export const PatientPage = () => {
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
+
   const [patients, setPatients] = useState<PatientProps[]>();
   const [patientId, setPatientId] = useState(0);
   const [patient, setPatient] = useState<PatientProps[]>();
@@ -60,6 +61,10 @@ export const PatientPage = () => {
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const isFirstRender = useRef(true);
+
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+  const [animateRows, setAnimateRows] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const chartData = Array.from({ length: 6 }, (_, i) => ({
     month: ["January", "February", "March", "April", "May", "June"][i],
@@ -147,12 +152,36 @@ export const PatientPage = () => {
   };
 
   useEffect(() => {
+    if (form) {
+      setShowModal(true);
+    } else {
+      setTimeout(() => setShowModal(false), 300);
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (detail) {
+      setTimeout(() => setIsDetailVisible(true), 10);
+    } else {
+      setIsDetailVisible(false);
+      setTimeout(() => setDetail(false), 300);
+    }
+  }, [detail]);
+
+  useEffect(() => {
     if (search) {
       searchPatients(search);
     } else {
       fetchPatients();
     }
+
     setDetail(false);
+
+    setAnimateRows(false);
+    setTimeout(() => {
+      setAnimateRows(true);
+    }, 50);
+
     return () => searchPatients.cancel();
   }, [currentPage, limit, search]);
 
@@ -188,17 +217,21 @@ export const PatientPage = () => {
   };
   const openDetail = (id: number) => {
     if (detail && patientId === id) {
-      setDetail(false);
+      setIsDetailVisible(false);
+      setTimeout(() => {
+        setDetail(false);
+      }, 300);
     } else {
       setPatientId(id);
       setDetail(true);
+      setTimeout(() => {
+        setIsDetailVisible(true);
+      }, 10);
     }
 
     setPatient(patients?.filter((patient) => patient.id === id));
   };
-  const closeDetail = () => {
-    setDetail(false);
-  };
+
   const buttonAction = (id: number) => {
     alert("Button Clicked " + id);
   };
@@ -236,13 +269,14 @@ export const PatientPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div
+            <a
+              href="#"
               className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]"
               onClick={exportXML}
             >
               <img src={exportIcon} alt="" className="w-6 h-6" />
               <p>Export</p>
-            </div>
+            </a>
             <a
               href="#"
               onClick={openForm}
@@ -290,10 +324,15 @@ export const PatientPage = () => {
                 </TableHeader>
                 <TableBody>
                   {patients && patients.length > 0 ? (
-                    patients?.map((item) => (
+                    patients?.map((item, index) => (
                       <TableRow
                         key={item.id}
-                        className=" border-gray-300"
+                        className={`border-gray-300 transition-all duration-500 ease-in-out ${
+                          animateRows
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2"
+                        }`}
+                        style={{ transitionDelay: `${index * 50}ms` }}
                         onClick={() => {
                           openDetail(item.id);
                         }}
@@ -381,7 +420,13 @@ export const PatientPage = () => {
             </div>
           </div>
           {detail && (
-            <div className="flex w-1/3 h-fit">
+            <div
+              className={`flex w-1/3 h-fit transform transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                isDetailVisible
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-full opacity-0"
+              }`}
+            >
               <div className="w-full h-full p-5 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)] flex flex-col gap-4">
                 <p>Detail Patient</p>
                 <Component chartData={chartData} />

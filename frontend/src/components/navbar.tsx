@@ -21,6 +21,9 @@ export const Navbar = ({ className, title }: NavbarProps) => {
   const [state, setState] = useState("");
   const [isActive, setIsActive] = useState(false);
 
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const handleOption = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -28,6 +31,18 @@ export const Navbar = ({ className, title }: NavbarProps) => {
   useEffect(() => {
     setState(title);
   }, [title]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+      // biar transition jalan setelah elemen ter-mount
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+      // delay unmount setelah animasi keluar selesai
+      setTimeout(() => setIsMounted(false), 300); // harus sama dgn transition duration
+    }
+  }, [isOpen]);
 
   return (
     <nav className={`bg-[#ECECEC] h-30 flex items-center px-10 ${className}`}>
@@ -84,15 +99,21 @@ export const Navbar = ({ className, title }: NavbarProps) => {
               <img src={arrowDownIcon} alt="" className="w-4 h-4" />
             </button>
           </div>
-          {isOpen && (
-            <div className="absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl">
-              <div className="flex flex-col gap-2 text-center ">
+          {isMounted && (
+            <div
+              className={`absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl transition-all duration-300 ease-out transform ${
+                isVisible
+                  ? "translate-y-0 scale-100 opacity-100"
+                  : "-translate-y-2 scale-95 opacity-0"
+              }`}
+            >
+              <div className="flex flex-col gap-2 text-center">
                 <a href="/settings" className="hover:underline">
                   <p>Settings</p>
                 </a>
                 <a
                   onClick={logout}
-                  className="bg-red-500 px-6 py-2 rounded-xl text-white hover:underline"
+                  className="bg-red-500 px-6 py-2 rounded-xl text-white hover:underline cursor-pointer"
                 >
                   Log out
                 </a>

@@ -8,6 +8,7 @@ import {
   searchPatientMeasurement,
   paginationService,
   paginationByUserService,
+  exportXMLService,
 } from "../services/patient-measurement-service.js";
 
 const create = async (req, res, next) => {
@@ -136,6 +137,25 @@ const paginationByUser = async (req, res, next) => {
   }
 };
 
+const exportXML = async (req, res, next) => {
+  try {
+    const patientMeasurements = req.body.patientMeasurements;
+
+    console.log("EXPORT : ", patientMeasurements);
+    const result = await exportXMLService(patientMeasurements);
+
+    res.set("Content-Type", "application/xml");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="patient-measurement.xml"'
+    );
+    res.send(result);
+  } catch (error) {
+    console.error("Export XML error : ", error);
+    next(error);
+  }
+};
+
 export default {
   create,
   measurementResult,
@@ -145,4 +165,5 @@ export default {
   search,
   pagination,
   paginationByUser,
+  exportXML,
 };

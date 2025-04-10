@@ -3,6 +3,7 @@ import { validate } from "../validation/validation.js";
 import { prismaClient } from "../applications/database.js";
 import { classifyBloodPressure } from "../applications/classification.js";
 import { ResponseError } from "../errors/response-error.js";
+import { Builder } from "xml2js";
 
 const createService = async (user, body) => {
   try {
@@ -183,6 +184,7 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
             work: true,
             last_education: true,
             place_of_birth: true,
+            date_of_birth: true,
           },
         },
         user_id: true,
@@ -206,6 +208,45 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
   }
 };
 
+const exportXMLService = async (patient_measurements) => {
+  try {
+    const formated = {
+      patient_measurements: {
+        patient_measurement: patient_measurements.map((p) => ({
+          id: p.id,
+          patient_id: p.patient_id,
+          user_id: p.user_id,
+          weight: p.weight,
+          systolic: p.systolic,
+          diastolic: p.diastolic,
+          mean: p.mean,
+          heart_rate: p.heart_rate,
+          category_result: p.category_result,
+          patient: {
+            name: p.patient.name,
+            gender: p.patient.gender,
+            phone: p.patient.phone,
+            work: p.patient.work,
+            last_education: p.patient.last_education,
+            place_of_birth: p.patient.place_of_birth,
+          },
+        })),
+      },
+    };
+
+    const builder = new Builder({
+      xmldec: { version: "1.0", encoding: "UTF-8" },
+      renderOpts: { pretty: true },
+    });
+
+    const xml = builder.buildObject(formated);
+
+    return xml;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   createService,
   measurementResultService,
@@ -215,4 +256,5 @@ export {
   searchPatientMeasurement,
   paginationService,
   paginationByUserService,
+  exportXMLService,
 };

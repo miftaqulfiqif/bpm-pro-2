@@ -65,6 +65,10 @@ privateRouter.get(
   "/api/patient-measurements-pagination-by-user",
   patientMeasurementController.paginationByUser
 );
+privateRouter.post(
+  "/api/export-patient-measurements",
+  patientMeasurementController.exportXML
+);
 
 //Category Result
 privateRouter.post("/api/category-results", categoryResultController.create);

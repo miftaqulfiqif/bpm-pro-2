@@ -6,7 +6,6 @@ import passwordIcon from "@/assets/icons/password-icon.png";
 import languageIcon from "@/assets/icons/language-icon.png";
 import categoryIcon from "@/assets/icons/category-icon.png";
 import deleteUserIcon from "@/assets/icons/delete-user-icon.png";
-import arrowDownIcon from "@/assets/icons/arrow-down-sign-to-navigate 2.svg";
 
 import person from "@/assets/icons/profile-icon.png";
 
@@ -29,7 +28,24 @@ export default function SettingsPage() {
   const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryOpen, setCategoryOpen] = useState(0);
+  const [categoryOpen, setCategoryOpen] = useState<number[]>([]);
+
+  const toggleCategory = (id: number) => {
+    setCategoryOpen((prevOpen) =>
+      prevOpen.includes(id)
+        ? prevOpen.filter((openId) => openId !== id)
+        : [...prevOpen, id]
+    );
+  };
+
+  const [animationKey, setAnimationKey] = useState(0);
+
+  const handleMenuChange = (menu: string, callback?: () => void) => {
+    setAnimationKey((prev) => prev + 1);
+    setState(menu);
+    if (menu === "Categories") fetchCategories();
+    if (callback) callback();
+  };
 
   const fetchCategories = () => {
     axios
@@ -59,37 +75,9 @@ export default function SettingsPage() {
         }
       });
   };
-
-  const openCategory = (id: number) => {
-    setCategoryOpen(id);
-  };
-
   const closeModal = () => {
     setForm(false);
   };
-
-  const handleEditProfile = () => {
-    setState("Edit Profile");
-  };
-
-  const handlePassword = () => {
-    setState("Password");
-  };
-
-  const handleLanguage = () => {
-    setState("Language");
-  };
-
-  const handleCategory = () => {
-    setState("Categories");
-    fetchCategories();
-  };
-
-  const handleDeleteUser = () => {
-    setState("Delete Account");
-  };
-
-  useEffect(() => {}, [state]);
 
   return (
     <MainLayout title="Settings">
@@ -105,161 +93,164 @@ export default function SettingsPage() {
               title="Edit Profile"
               icon={profileIcon}
               isActive={state === "Edit Profile"}
-              onClick={handleEditProfile}
+              onClick={() => handleMenuChange("Edit Profile")}
             />
             <MenuSettings
               title="Password"
               icon={passwordIcon}
               isActive={state === "Password"}
-              onClick={handlePassword}
+              onClick={() => handleMenuChange("Password")}
             />
             <MenuSettings
               title="Language"
               icon={languageIcon}
               isActive={state === "Language"}
-              onClick={handleLanguage}
+              onClick={() => handleMenuChange("Language")}
             />
             <MenuSettings
               title="Categories"
               icon={categoryIcon}
               isActive={state === "Categories"}
-              onClick={handleCategory}
+              onClick={() => handleMenuChange("Categories")}
             />
             <hr className="border-t-2 border-[#ECECEC] my-4" />
             <MenuSettings
               title="Delete account"
               icon={deleteUserIcon}
               isActive={state === "Delete Account"}
-              onClick={handleDeleteUser}
+              onClick={() => handleMenuChange("Delete account")}
               className="text-red-500 font-semibold"
             />
           </div>
           <div className="w-4xl p-2">
-            {/* Edit Profile */}
-            {state === "Edit Profile" && (
-              <div className="flex flex-col gap-8">
-                <p className="text-2xl font-bold">Edit Profile</p>
-                <div className="flex flex-col gap-2">
-                  <p>Avatar</p>
-                  <div className="flex flex-row gap-6">
-                    <img
-                      src="https://i.pravatar.cc/150?img=1"
-                      className="w-26 h-26 rounded-full"
-                      alt=""
-                    />
-                    <a href="">
-                      <div className="flex flex-col gap-2">
-                        <div className="border-2 border-[#ECECEC] rounded-xl px-6 py-2 w-fit">
-                          <p>Change new image</p>
+            <div
+              key={animationKey}
+              className="transition-all duration-500 ease-in-out animate-fade-slide"
+            >
+              {/* Edit Profile */}
+              {state === "Edit Profile" && (
+                <div className="flex flex-col gap-8">
+                  <p className="text-2xl font-bold">Edit Profile</p>
+                  <div className="flex flex-col gap-2">
+                    <p>Avatar</p>
+                    <div className="flex flex-row gap-6">
+                      <img
+                        src="https://i.pravatar.cc/150?img=1"
+                        className="w-26 h-26 rounded-full"
+                        alt=""
+                      />
+                      <a href="">
+                        <div className="flex flex-col gap-2">
+                          <div className="border-2 border-[#ECECEC] rounded-xl px-6 py-2 w-fit">
+                            <p>Change new image</p>
+                          </div>
+                          <p className="text-gray-400">
+                            At least 800 x 800 px recomended <br /> JPG, JPEG or
+                            PNG
+                          </p>
                         </div>
-                        <p className="text-gray-400">
-                          At least 800 x 800 px recomended <br /> JPG, JPEG or
-                          PNG
-                        </p>
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p>Name</p>
+                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
+                      <img src={person} className="w-8 h-8" alt="" />
+                      <input
+                        type="text"
+                        placeholder="Input your text name here"
+                      />
+                    </div>
+                  </div>
+                  <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
+                    Save Changes
+                  </button>
+                </div>
+              )}
+
+              {/* Password */}
+              {state === "Password" && (
+                <div className="flex flex-col gap-8">
+                  <p className="text-2xl font-bold">Password</p>
+                  <div className="flex flex-col gap-4">
+                    <p>Current Password</p>
+                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
+                      <input
+                        id="current-password"
+                        type="password"
+                        placeholder="Input your current password here"
+                        className="w-full focus:outline-none"
+                      />
+                    </div>
+                    <p>New Password</p>
+                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
+                      <input
+                        id="new-password"
+                        type="password"
+                        placeholder="Input your new password here"
+                        className="w-full focus:outline-none"
+                      />
+                    </div>
+                    <p>Confirm Password</p>
+                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
+                      <input
+                        id="confirm-password"
+                        type="password"
+                        placeholder="Input your new password here"
+                        className="w-full focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
+                    Save Changes
+                  </button>
+                </div>
+              )}
+
+              {/* Categories */}
+              {state === "Categories" && (
+                <div className="flex flex-col gap-8">
+                  <div className="flex flex-row justify-between">
+                    <p className="text-2xl font-bold">Categories</p>
+                    <a href="#" onClick={() => setForm(true)}>
+                      <div className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 w-fit">
+                        <p>Add category</p>
                       </div>
                     </a>
                   </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p>Name</p>
-                  <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                    <img src={person} className="w-8 h-8" alt="" />
-                    <input
-                      type="text"
-                      placeholder="Input your text name here"
-                    />
-                  </div>
-                </div>
-                <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-                  Save Changes
-                </button>
-              </div>
-            )}
-
-            {/* Password */}
-            {state === "Password" && (
-              <div className="flex flex-col gap-8">
-                <p className="text-2xl font-bold">Password</p>
-                <div className="flex flex-col gap-4">
-                  <p>Current Password</p>
-                  <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                    <input
-                      id="current-password"
-                      type="password"
-                      placeholder="Input your current password here"
-                      className="w-full focus:outline-none"
-                    />
-                  </div>
-                  <p>New Password</p>
-                  <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                    <input
-                      id="new-password"
-                      type="password"
-                      placeholder="Input your new password here"
-                      className="w-full focus:outline-none"
-                    />
-                  </div>
-                  <p>Confirm Password</p>
-                  <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                    <input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="Input your new password here"
-                      className="w-full focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-                  Save Changes
-                </button>
-              </div>
-            )}
-
-            {/* Categories */}
-            {state === "Categories" && (
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-row justify-between">
-                  <p className="text-2xl font-bold">Categories</p>
-                  <a onClick={() => setForm(true)}>
-                    <div className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 w-fit">
-                      <p>Add category</p>
-                    </div>
-                  </a>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <p>List of categories</p>
-                  <hr className="border-t-2 border-[#ECECEC]" />
                   <div className="flex flex-col gap-4">
-                    {categories?.map((category) => (
-                      <ListOfCategories
-                        key={category.id}
-                        id={category.id}
-                        title={category.name}
-                        values={{
-                          minSystolic: category.min_systolic,
-                          maxSystolic: category.max_systolic,
-                          minDiastolic: category.min_diastolic,
-                          maxDiastolic: category.max_diastolic,
-                        }}
-                        deleteCategory={deleteCategory}
-                        categoryOpen={openCategory}
-                        isOpen={categoryOpen === category.id}
-                      />
-                    ))}
+                    <p>List of categories</p>
+                    <hr className="border-t-2 border-[#ECECEC]" />
+                    <div className="flex flex-col gap-4">
+                      {categories?.map((category) => (
+                        <ListOfCategories
+                          key={category.id}
+                          id={category.id}
+                          title={category.name}
+                          values={{
+                            minSystolic: category.min_systolic,
+                            maxSystolic: category.max_systolic,
+                            minDiastolic: category.min_diastolic,
+                            maxDiastolic: category.max_diastolic,
+                          }}
+                          deleteCategory={deleteCategory}
+                          categoryOpen={toggleCategory}
+                          isOpen={categoryOpen.includes(category.id)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="">
-                  <NewCategory
-                    closeModal={closeModal}
-                    form={form}
-                    fetchCategories={fetchCategories}
-                  />
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
+      <NewCategory
+        closeModal={closeModal}
+        form={form}
+        fetchCategories={fetchCategories}
+      />
     </MainLayout>
   );
 }
