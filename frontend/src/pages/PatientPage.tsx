@@ -34,25 +34,17 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
 import { Component } from "@/components/ui/ChartArea";
-
-type PatientProps = {
-  id: number;
-  name: string;
-  gender: string;
-  phone: string;
-  work: string;
-  last_education: string;
-  place_of_birth: string;
-  date_of_birth: string;
-};
+import { HiOutlineFilter } from "react-icons/hi";
+import { Patients } from "@/models/Patients";
+import FormExport from "@/components/FormExport";
 
 export const PatientPage = () => {
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
 
-  const [patients, setPatients] = useState<PatientProps[]>();
+  const [patients, setPatients] = useState<Patients[]>();
   const [patientId, setPatientId] = useState(0);
-  const [patient, setPatient] = useState<PatientProps[]>();
+  const [patient, setPatient] = useState<Patients[]>();
   const selectedPatient = patients?.find((item) => item.id === patientId);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +57,8 @@ export const PatientPage = () => {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const [exportOpen, setExportOpen] = useState(false);
 
   const chartData = Array.from({ length: 6 }, (_, i) => ({
     month: ["January", "February", "March", "April", "May", "June"][i],
@@ -125,31 +119,6 @@ export const PatientPage = () => {
       console.error("Error fetching patients:", error);
     }
   }, 500);
-
-  const exportXML = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/api/export-patients",
-        { patients },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          responseType: "blob",
-        }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "patients.xml");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error fetching patients:", error);
-    }
-  };
 
   useEffect(() => {
     if (form) {
@@ -269,22 +238,27 @@ export const PatientPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            <a
-              href="#"
-              className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]"
-              onClick={exportXML}
-            >
-              <img src={exportIcon} alt="" className="w-6 h-6" />
-              <p>Export</p>
-            </a>
-            <a
-              href="#"
+            {/* <div className="flex cursor-pointer bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
+              <HiOutlineFilter className="w-6 h-6" />
+              <p>Filter</p>
+            </div> */}
+            <div className="relative">
+              <div
+                className="flex bg-white items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] cursor-pointer"
+                onClick={() => setExportOpen((prev) => !prev)}
+              >
+                <img src={exportIcon} alt="" className="w-6 h-6" />
+                <p>Export</p>
+              </div>
+            </div>
+
+            <div
               onClick={openForm}
-              className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] "
+              className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] cursor-pointer"
             >
               <img src={addPatientIcon} alt="" className="w-6 h-6" />
               <p className="text-white">Add Patient</p>
-            </a>
+            </div>
             <div className=" bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
               <label
                 htmlFor="search"
@@ -364,6 +338,7 @@ export const PatientPage = () => {
                             href=""
                             onClick={(e) => {
                               e.preventDefault();
+                              e.stopPropagation();
                               buttonAction(item.id);
                             }}
                           >
@@ -389,14 +364,14 @@ export const PatientPage = () => {
                             <PaginationPrevious
                               onClick={goToPreviousPage}
                               isActive={currentPage === 1}
-                              href="#"
+                              className="cursor-pointer"
                             />
                           </PaginationItem>
                           <PaginationItem className="flex flex-row gap-2">
                             {[...Array(totalPage)].map((_, index) => (
                               <PaginationLink
                                 key={index}
-                                href="#"
+                                className="cursor-pointer"
                                 isActive={currentPage === index + 1}
                                 onClick={() => goToPage(index + 1)}
                               >
@@ -408,7 +383,7 @@ export const PatientPage = () => {
                             <PaginationNext
                               onClick={goToNextPage}
                               isActive={currentPage === totalPage}
-                              href="#"
+                              className="cursor-pointer"
                             />
                           </PaginationItem>
                         </PaginationContent>
@@ -463,6 +438,7 @@ export const PatientPage = () => {
           )}
         </div>
       </div>
+      {exportOpen && patients && <FormExport patients={patients} />}
       <CreateNewPatient
         form={form}
         closeModal={closeForm}

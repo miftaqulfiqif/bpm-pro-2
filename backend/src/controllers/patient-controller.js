@@ -96,8 +96,10 @@ const pagination = async (req, res, next) => {
   const skip = (page - 1) * limit;
   const query = req.query.query || "";
 
+  const gender = req.query.gender || "";
+
   try {
-    const result = await paginationService(page, limit, skip, query);
+    const result = await paginationService(page, limit, skip, query, gender);
 
     res.status(200).json({
       current_page: page,

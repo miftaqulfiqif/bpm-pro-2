@@ -72,13 +72,19 @@ export const SelectPatient = ({
   return (
     <div
       onClick={closeModal}
-      className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 flex justify-center items-center ${
-        formSelectPatient ? "" : "hidden"
+      className={`fixed top-0 left-0 w-full h-full bg-transparent bg-opacity-50 z-40 transition-opacity duration-300 ${
+        formSelectPatient ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{ backdropFilter: "blur(5px)", background: "rgba(0, 0, 0, 0.2)" }}
     >
       <div
-        className="bg-white rounded-xl p-8 z-50 w-4xl h-[600px] shadow-lg"
+        className={`fixed top-1/2 left-1/2 transform bg-white rounded-xl p-8 z-50 w-4xl h-[600px] transition-all duration-300 ease-in-out
+          ${
+            formSelectPatient
+              ? "opacity-100 scale-100 translate-x-[-50%] translate-y-[-50%]"
+              : "opacity-0 scale-95 translate-x-[-50%] translate-y-[-40%]"
+          }
+        `}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-8">

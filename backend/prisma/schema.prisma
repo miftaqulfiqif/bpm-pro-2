@@ -49,7 +49,7 @@ model Patient {
   user_id String @db.VarChar(100)
   name String @db.VarChar(255)
   gender Gender
-  phone Int
+  phone String @db.VarChar(13)
   work String @db.VarChar(50)
   last_education String @db.VarChar(50)
   place_of_birth String @db.VarChar(50)

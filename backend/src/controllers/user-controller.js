@@ -6,6 +6,7 @@ import {
   getIdService,
   logOutService,
   deleteService,
+  updateService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -83,4 +84,16 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export default { register, login, get, getId, logout, deleteUser };
+const update = async (req, res, next) => {
+  try {
+    const result = await updateService(req.user, req.body);
+    res.status(200).json({
+      message: "Update user is successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, get, getId, logout, deleteUser, update };
