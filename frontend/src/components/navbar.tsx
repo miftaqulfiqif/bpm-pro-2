@@ -35,12 +35,10 @@ export const Navbar = ({ className, title }: NavbarProps) => {
   useEffect(() => {
     if (isOpen) {
       setIsMounted(true);
-      // biar transition jalan setelah elemen ter-mount
       setTimeout(() => setIsVisible(true), 10);
     } else {
       setIsVisible(false);
-      // delay unmount setelah animasi keluar selesai
-      setTimeout(() => setIsMounted(false), 300); // harus sama dgn transition duration
+      setTimeout(() => setIsMounted(false), 300);
     }
   }, [isOpen]);
 
@@ -101,7 +99,7 @@ export const Navbar = ({ className, title }: NavbarProps) => {
           </div>
           {isMounted && (
             <div
-              className={`absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl transition-all duration-300 ease-out transform ${
+              className={`absolute bg-white right-20 top-28 px-4 py-4 rounded-2xl transition-all duration-300 ease-out transform z-50 ${
                 isVisible
                   ? "translate-y-0 scale-100 opacity-100"
                   : "-translate-y-2 scale-95 opacity-0"

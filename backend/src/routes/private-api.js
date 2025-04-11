@@ -13,6 +13,7 @@ privateRouter.use(authMiddleware);
 privateRouter.get("/api/user/current", userController.get);
 privateRouter.delete("/api/user/logout", userController.logout);
 privateRouter.post("/api/user/delete", userController.deleteUser);
+privateRouter.patch("/api/user/update", userController.update);
 
 //Measurement
 privateRouter.post("/api/measurements", measurementController.create);

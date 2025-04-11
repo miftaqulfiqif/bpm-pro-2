@@ -54,6 +54,7 @@ type PatientMeasurementsProps = {
   mean: number;
   heart_rate: number;
   category_result: string;
+  timestamp: string;
 };
 
 export const PatientMeasurements = () => {
@@ -310,6 +311,7 @@ export const PatientMeasurements = () => {
                     <TableHead className="text-center">
                       Category Result
                     </TableHead>
+                    <TableHead className="text-center">Date</TableHead>
                     <TableHead className="text-center pl-10">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -355,11 +357,17 @@ export const PatientMeasurements = () => {
                             </div>
                           )}
                         </TableCell>
+                        <TableCell className="text-center">
+                          {new Date(item.timestamp).toLocaleString("en-US", {
+                            timeZone: "Asia/Jakarta",
+                          })}
+                        </TableCell>
                         <TableCell className="text-center pl-10 text-xl">
                           <a
                             href=""
                             onClick={(e) => {
                               e.preventDefault();
+                              e.stopPropagation();
                               buttonAction(item.id);
                             }}
                           >
@@ -378,7 +386,7 @@ export const PatientMeasurements = () => {
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={8} className="p-4 text-center">
+                    <TableCell colSpan={9} className="p-4 text-center">
                       <Pagination>
                         <PaginationContent className="flex w-full justify-between">
                           <PaginationItem>

@@ -166,7 +166,7 @@ const deletePatientService = async (userId, patientId) => {
   }
 };
 
-const paginationService = async (page, limit, skip, query) => {
+const paginationService = async (page, limit, skip, query, gender) => {
   try {
     const searchConditions = query
       ? {
@@ -179,16 +179,34 @@ const paginationService = async (page, limit, skip, query) => {
         }
       : {};
 
+    const filterGender = gender ? { gender: gender } : {};
+
     const total = await prismaClient.patient.count({
-      where: searchConditions,
+      where: {
+        ...searchConditions,
+        ...filterGender,
+      },
     });
 
     const patient = await prismaClient.patient.findMany({
-      where: searchConditions,
+      where: {
+        ...searchConditions,
+        ...filterGender,
+      },
       skip: skip,
       take: limit,
       orderBy: {
         id: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+        phone: true,
+        work: true,
+        last_education: true,
+        place_of_birth: true,
+        date_of_birth: true,
       },
     });
 

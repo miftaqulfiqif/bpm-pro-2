@@ -53,6 +53,16 @@ export default function MeasurementPage() {
   const [form, setForm] = useState(false);
   const [formSelectPatient, setFormSelectPatient] = useState(false);
 
+  const [animatePage, setAnimatePage] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAnimatePage(true);
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   const openForm = () => {
     setForm(true);
     setFormSelectPatient(false);
@@ -139,7 +149,13 @@ export default function MeasurementPage() {
   return (
     <MainLayout title="Measurement">
       <div className="flex flex-col lg:flex-row gap-10">
-        <div className="flex flex-col text-4xl lg:w-1/2 justify-between">
+        <div
+          className={`flex flex-col text-4xl lg:w-1/2 justify-between transform transition-all duration-700 ease-out ${
+            animatePage
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
           <div className="flex flex-col gap-2 bg-[#0767E2] p-6 pb-20 rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
             <p className="text-white font-bold">Have a good day</p>
             <p className="text-white text-2xl ">
@@ -203,33 +219,15 @@ export default function MeasurementPage() {
                 </button>
               </div>
             )}
-
-            {/* {buttonLoading ? (
-              <button
-                onClick={buttonStop}
-                className="px-8 py-4 bg-red-500 text-white rounded-full w-xs shadow-xl"
-              >
-                STOP
-              </button>
-            ) : result.diastolic === 0 ? (
-              <button
-                disabled={buttonLoading}
-                onClick={openForm}
-                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-              >
-                START
-              </button>
-            ) : (
-              <button
-                onClick={handleSaveResult}
-                className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-              >
-                SAVE
-              </button>
-            )} */}
           </div>
         </div>
-        <div className="flex flex-col gap-6 lg:w-1/2 bg-slate-100 p-6 rounded-3xl">
+        <div
+          className={`flex flex-col gap-6 lg:w-1/2 bg-slate-100 p-6 rounded-3xl transform transition-all duration-700 ease-out delay-200 ${
+            animatePage
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
           <div className="flex flex-col bg-white rounded-3xl p-6 gap-2 shadow-xl">
             <div className="flex justify-between h-14">
               <p className="text-2xl">Measurement Result</p>
@@ -272,7 +270,13 @@ export default function MeasurementPage() {
           </div>
           <div className="bg-white rounded-3xl p-2 shadow-xl ">
             <div className="w-fit mx-auto">
-              <ChartHeartRate items={items} />
+              <div
+                className={`transition-all duration-700 delay-300 ${
+                  animatePage ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <ChartHeartRate items={items} />
+              </div>
             </div>
           </div>
 

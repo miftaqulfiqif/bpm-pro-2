@@ -194,6 +194,7 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
         mean: true,
         heart_rate: true,
         category_result: true,
+        timestamp: true,
       },
     });
 

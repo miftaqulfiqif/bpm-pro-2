@@ -3,11 +3,13 @@ import * as yup from "yup";
 import axios from "axios";
 
 export const useRegisterForm = () => {
-  const registerUser = () => {
-    axios
+  const registerUser = async () => {
+    const response = await axios
       .post("http://localhost:3000/api/users", formik.values)
       .then(function (response) {
-        console.log(response);
+        if (response.status === 200) {
+          window.location.href = "/login";
+        }
       });
   };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MainLayout from "@/components/layouts/main-layout.tsx";
 
 import profileIcon from "@/assets/icons/profile-icon.png";
@@ -7,36 +7,18 @@ import languageIcon from "@/assets/icons/language-icon.png";
 import categoryIcon from "@/assets/icons/category-icon.png";
 import deleteUserIcon from "@/assets/icons/delete-user-icon.png";
 
-import person from "@/assets/icons/profile-icon.png";
-
 import { MenuSettings } from "@/components/ui/MenuSettings";
-import { ListOfCategories } from "@/components/ui/list-of-categories";
-import { NewCategory } from "@/components/new-category";
-import axios from "axios";
+import { MenuItems } from "@/components/MenuItems";
 
-type Category = {
-  id: number;
-  user_id: string;
-  name: string;
-  min_systolic: number;
-  max_systolic: number;
-  min_diastolic: number;
-  max_diastolic: number;
-  description: string;
-};
+import { NewCategory } from "../components/new-category.tsx";
+import axios from "axios";
+import { Category } from "@/models/Categories.tsx";
+
 export default function SettingsPage() {
   const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryOpen, setCategoryOpen] = useState<number[]>([]);
 
-  const toggleCategory = (id: number) => {
-    setCategoryOpen((prevOpen) =>
-      prevOpen.includes(id)
-        ? prevOpen.filter((openId) => openId !== id)
-        : [...prevOpen, id]
-    );
-  };
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [animationKey, setAnimationKey] = useState(0);
 
@@ -55,26 +37,15 @@ export default function SettingsPage() {
         },
       })
       .then((response) => {
-        setCategories(response.data.data);
+        if (response.status === 200) {
+          setCategories(response.data.data);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  const deleteCategory = (id: number) => {
-    axios
-      .delete(`http://localhost:3000/api/category-results/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(response.data);
-          fetchCategories();
-        }
-      });
-  };
+
   const closeModal = () => {
     setForm(false);
   };
@@ -123,134 +94,17 @@ export default function SettingsPage() {
             />
           </div>
           <div className="w-4xl p-2">
-            <div
-              key={animationKey}
-              className="transition-all duration-500 ease-in-out animate-fade-slide"
-            >
-              {/* Edit Profile */}
-              {state === "Edit Profile" && (
-                <div className="flex flex-col gap-8">
-                  <p className="text-2xl font-bold">Edit Profile</p>
-                  <div className="flex flex-col gap-2">
-                    <p>Avatar</p>
-                    <div className="flex flex-row gap-6">
-                      <img
-                        src="https://i.pravatar.cc/150?img=1"
-                        className="w-26 h-26 rounded-full"
-                        alt=""
-                      />
-                      <a href="">
-                        <div className="flex flex-col gap-2">
-                          <div className="border-2 border-[#ECECEC] rounded-xl px-6 py-2 w-fit">
-                            <p>Change new image</p>
-                          </div>
-                          <p className="text-gray-400">
-                            At least 800 x 800 px recomended <br /> JPG, JPEG or
-                            PNG
-                          </p>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <p>Name</p>
-                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                      <img src={person} className="w-8 h-8" alt="" />
-                      <input
-                        type="text"
-                        placeholder="Input your text name here"
-                      />
-                    </div>
-                  </div>
-                  <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-                    Save Changes
-                  </button>
-                </div>
-              )}
-
-              {/* Password */}
-              {state === "Password" && (
-                <div className="flex flex-col gap-8">
-                  <p className="text-2xl font-bold">Password</p>
-                  <div className="flex flex-col gap-4">
-                    <p>Current Password</p>
-                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                      <input
-                        id="current-password"
-                        type="password"
-                        placeholder="Input your current password here"
-                        className="w-full focus:outline-none"
-                      />
-                    </div>
-                    <p>New Password</p>
-                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                      <input
-                        id="new-password"
-                        type="password"
-                        placeholder="Input your new password here"
-                        className="w-full focus:outline-none"
-                      />
-                    </div>
-                    <p>Confirm Password</p>
-                    <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                      <input
-                        id="confirm-password"
-                        type="password"
-                        placeholder="Input your new password here"
-                        className="w-full focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-                    Save Changes
-                  </button>
-                </div>
-              )}
-
-              {/* Categories */}
-              {state === "Categories" && (
-                <div className="flex flex-col gap-8">
-                  <div className="flex flex-row justify-between">
-                    <p className="text-2xl font-bold">Categories</p>
-                    <a href="#" onClick={() => setForm(true)}>
-                      <div className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 w-fit">
-                        <p>Add category</p>
-                      </div>
-                    </a>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <p>List of categories</p>
-                    <hr className="border-t-2 border-[#ECECEC]" />
-                    <div className="flex flex-col gap-4">
-                      {categories?.map((category) => (
-                        <ListOfCategories
-                          key={category.id}
-                          id={category.id}
-                          title={category.name}
-                          values={{
-                            minSystolic: category.min_systolic,
-                            maxSystolic: category.max_systolic,
-                            minDiastolic: category.min_diastolic,
-                            maxDiastolic: category.max_diastolic,
-                          }}
-                          deleteCategory={deleteCategory}
-                          categoryOpen={toggleCategory}
-                          isOpen={categoryOpen.includes(category.id)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <MenuItems
+              fetchCategories={fetchCategories}
+              state={state}
+              animationKey={animationKey}
+              setForm={setForm}
+              categories={categories}
+            />
           </div>
         </div>
       </div>
-      <NewCategory
-        closeModal={closeModal}
-        form={form}
-        fetchCategories={fetchCategories}
-      />
+      <NewCategory closeModal={closeModal} form={form} />
     </MainLayout>
   );
 }
