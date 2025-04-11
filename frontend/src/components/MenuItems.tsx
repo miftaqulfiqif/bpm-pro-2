@@ -104,27 +104,26 @@ export const MenuItems = ({
               </div>
             </div>
           </div>
-          <form className="flex flex-col" onClick={handleSaveChanges}>
-            <div className="flex flex-col gap-2">
-              <p>Name</p>
-              <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
-                <img src={person} className="w-8 h-8" alt="" />
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Input your text name here"
-                  className="w-full outline-none"
-                  value={name}
-                />
-              </div>
+          <div className="flex flex-col gap-2">
+            <p>Name</p>
+            <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
+              <img src={person} className="w-8 h-8" alt="" />
+              <input
+                type="text"
+                name="name"
+                placeholder="Input your text name here"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full outline-none"
+              />
             </div>
-            <button
-              type="submit"
-              className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10"
-            >
-              Save Changes
-            </button>
-          </form>
+          </div>
+          <button
+            type="submit"
+            className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10"
+          >
+            Save Changes
+          </button>
         </div>
       )}
 
