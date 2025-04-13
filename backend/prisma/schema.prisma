@@ -75,7 +75,7 @@ model PatientMeasurement {
 
   @@map("patient_measurements")
 
-  patient Patient @relation(fields: [patient_id], references: [id])
+  patient Patient @relation(fields: [patient_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 

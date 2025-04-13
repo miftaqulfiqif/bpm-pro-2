@@ -10,4 +10,11 @@ const createValidation = Joi.object({
   category_result: Joi.string().required(),
 });
 
-export { createValidation };
+const classificationValidation = Joi.object({
+  systolic: Joi.number().required(),
+  diastolic: Joi.number().required(),
+  patient_date_of_birth: Joi.date().required(),
+  patient_gender: Joi.string().required(),
+});
+
+export { createValidation, classificationValidation };

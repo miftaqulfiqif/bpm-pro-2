@@ -8,6 +8,7 @@ import patients from "@/assets/icons/patients-icon.png";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { Patients } from "@/models/Patients";
 
 type CreateNewPatientProps = {
   form: boolean;
@@ -17,6 +18,7 @@ type CreateNewPatientProps = {
   openFormSelectPatient?: () => void;
   buttonLoading?: boolean;
   start?: boolean;
+  patient?: Patients;
 };
 
 export const CreateNewPatient = (props: CreateNewPatientProps) => {
@@ -28,7 +30,42 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     openFormSelectPatient,
     buttonLoading,
     start,
+    patient,
   } = props;
+
+  const updatePatient = async (patient: Patients) => {
+    try {
+      await axios
+        .patch(
+          `http://localhost:3000/api/patient/${patient.id}`,
+          {
+            name: patient.name,
+            gender: patient.gender,
+            phone: patient.phone,
+            last_education: patient.last_education,
+            place_of_birth: patient.place_of_birth,
+            date_of_birth: patient.date_of_birth,
+            work: patient.work,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            console.log("Patient updated successfully : ", response.data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating patient:", error);
+        });
+      fetchPatients?.();
+    } catch (error) {
+      console.error("Error updating patient:", error);
+    }
+  };
 
   const savePatient = async (values: any) => {
     try {
@@ -60,15 +97,18 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
   };
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      name: "",
-      gender: "",
-      phone: "",
-      last_education: "",
-      place_of_birth: "",
-      date_of_birth: "",
-      address: "",
-      work: "",
+      name: patient?.name || "",
+      gender: patient?.gender || "",
+      phone: patient?.phone || "",
+      last_education: patient?.last_education || "",
+      place_of_birth: patient?.place_of_birth || "",
+      date_of_birth: patient?.date_of_birth
+        ? patient.date_of_birth.split("T")[0]
+        : "",
+      address: patient?.address || "",
+      work: patient?.work || "",
     },
     validationSchema: yup.object().shape({
       name: yup.string().required("Name is required"),
@@ -92,10 +132,27 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
     // },
     onSubmit: (values) => {
       if (openFormSelectPatient) {
-        setPatient(values);
+        if (!patient) {
+          setPatient(values);
+        }
       } else {
         console.log("CREATED PATIENT");
-        savePatient(values);
+        if (patient) {
+          console.log("UPDATE PATIENT");
+          const updatedPatient = {
+            ...patient,
+            name: values.name,
+            gender: values.gender,
+            phone: values.phone,
+            last_education: values.last_education,
+            place_of_birth: values.place_of_birth,
+            date_of_birth: values.date_of_birth,
+            work: values.work,
+          };
+          updatePatient(updatedPatient);
+        } else {
+          savePatient(values);
+        }
       }
       closeModal();
     },
@@ -120,7 +177,9 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
   `}
       >
         <div className="flex flex-row justify-between mb-8">
-          <p className="text-2xl font-semibold">Create new patient</p>
+          <p className="text-2xl font-semibold">
+            {patient ? "Edit patient" : "Create new patient"}
+          </p>
           {!openFormSelectPatient ? (
             <button onClick={closeModal}>
               <img src={closeIcon} alt="" className="w-5 h-5" />

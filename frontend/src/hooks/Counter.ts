@@ -1,5 +1,7 @@
+import { Patients } from "@/models/Patients";
 import axios from "axios";
 import { useState, useRef, useEffect } from "react";
+import { NumberDomain } from "recharts/types/util/types";
 import { io, Socket } from "socket.io-client";
 
 export const useCounter = () => {
@@ -40,7 +42,9 @@ export const useCounter = () => {
 
   const calculationgCategoryResult = async (
     systolic: number,
-    diastolic: number
+    diastolic: number,
+    patient_date_of_birth: string,
+    patient_gender: string
   ) => {
     await axios
       .post(
@@ -48,6 +52,8 @@ export const useCounter = () => {
         {
           systolic: systolic,
           diastolic: diastolic,
+          patient_date_of_birth: patient_date_of_birth,
+          patient_gender: patient_gender,
         },
         {
           headers: {
@@ -72,13 +78,15 @@ export const useCounter = () => {
     setButtonLoading(false);
   };
 
-  const buttonStart = () => {
+  const buttonStart = (patient: Patients) => {
     setTimeout(() => {
       setButtonLoading(false);
       const data = {
+        patient_date_of_birth: patient.date_of_birth,
+        patient_gender: patient.gender,
         data_measure: {
-          systolic: 120,
-          diastolic: 80,
+          systolic: 140,
+          diastolic: 90,
           mean: 23,
           heart_rate: 20,
         },
@@ -98,7 +106,9 @@ export const useCounter = () => {
       ]);
       calculationgCategoryResult(
         data.data_measure.systolic,
-        data.data_measure.diastolic
+        data.data_measure.diastolic,
+        data.patient_date_of_birth,
+        data.patient_gender
       );
       setResult(data.data_measure);
     }, 5000);
@@ -161,7 +171,9 @@ export const useCounter = () => {
         setResult(data.data_measure);
         calculationgCategoryResult(
           data.data_measure.systolic,
-          data.data_measure.diastolic
+          data.data_measure.diastolic,
+          data.patient_date_of_birth,
+          data.patient_gender
         );
         stopProcess();
       });
@@ -176,6 +188,7 @@ export const useCounter = () => {
   };
 
   const buttonStop = () => {
+    console.log("Program berakhir");
     stopProcess();
   };
 
