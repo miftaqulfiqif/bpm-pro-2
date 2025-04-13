@@ -1,4 +1,3 @@
-import Page from "@/components/layouts/main-layout.tsx";
 import { useEffect, useState } from "react";
 import { ItemsResult } from "../components/ItemsResult";
 import ChartHeartRate from "../components/ChartHeartRate";
@@ -11,24 +10,10 @@ import hyperTensionIcon from "../assets/icons/hypertension.png";
 import bloodPressureIcon from "../assets/icons/blood-pressure.png";
 import bloodPressure2Icon from "../assets/icons/blood-pressure-icon.png";
 import { CreateNewPatient } from "../components/Forms/CreateNewPatient";
-import { PressButtonModal } from "@/components/PressButtonModal";
 import axios from "axios";
-import { paginationClasses } from "@mui/material";
 import MainLayout from "@/components/layouts/main-layout.tsx";
 import { SelectPatient } from "@/components/SelectPatient";
-import { set } from "date-fns";
-
-type PatientProps = {
-  id?: number;
-  user_id?: string;
-  name: string;
-  gender: string;
-  phone: string;
-  work: string;
-  last_education: string;
-  place_of_birth: string;
-  date_of_birth: string;
-};
+import { Patients } from "@/models/Patients";
 
 export default function MeasurementPage() {
   const {
@@ -43,10 +28,11 @@ export default function MeasurementPage() {
     token,
   } = useCounter();
 
-  const [patient, setPatient] = useState<PatientProps | null>();
+  const [patient, setPatient] = useState<Patients | null>();
   const [isScaled, setIsScaled] = useState(false);
   const [systolic, setSystolic] = useState<number>(0);
   const [diastolic, setDiastolic] = useState<number>(0);
+
   const [mean, setMean] = useState<number>(0);
   const [heartRate, setHeartRate] = useState<number>(0);
 
@@ -182,7 +168,7 @@ export default function MeasurementPage() {
               !buttonLoading ? (
                 <button
                   disabled={buttonLoading}
-                  onClick={patient ? buttonStart : openForm}
+                  onClick={patient ? () => buttonStart(patient) : openForm}
                   className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:bg-slate-200 hover:bg-slate-200"
                 >
                   START
@@ -193,8 +179,7 @@ export default function MeasurementPage() {
                     Measuring ...
                   </p>
                   <button
-                    disabled={buttonLoading}
-                    onClick={patient ? buttonStart : openForm}
+                    onClick={() => buttonStop()}
                     className="px-8 py-4 bg-white text-red-700 border-red-700 border-2 rounded-full w-xs shadow-xl disabled:bg-slate-200 hover:bg-slate-200"
                   >
                     STOP

@@ -1,4 +1,7 @@
-import { createValidation } from "../validation/patient-measurement-validation.js";
+import {
+  createValidation,
+  classificationValidation,
+} from "../validation/patient-measurement-validation.js";
 import { validate } from "../validation/validation.js";
 import { prismaClient } from "../applications/database.js";
 import { classifyBloodPressure } from "../applications/classification.js";
@@ -29,9 +32,13 @@ const createService = async (user, body) => {
 
 const measurementResultService = async (body) => {
   try {
+    const data = validate(classificationValidation, body);
+
     const categoryResult = await classifyBloodPressure(
       body.systolic,
-      body.diastolic
+      body.diastolic,
+      new Date(body.patient_date_of_birth),
+      body.patient_gender
     );
     return categoryResult;
   } catch (error) {
