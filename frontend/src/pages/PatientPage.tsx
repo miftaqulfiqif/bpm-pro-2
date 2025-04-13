@@ -41,10 +41,12 @@ import FormExport from "@/components/FormExport";
 export const PatientPage = () => {
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
+  const [isAction, setIsAction] = useState(false);
 
   const [patients, setPatients] = useState<Patients[]>();
   const [patientId, setPatientId] = useState(0);
   const [patient, setPatient] = useState<Patients[]>();
+  const [patientEdit, setPatientEdit] = useState<Patients>();
   const selectedPatient = patients?.find((item) => item.id === patientId);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +67,35 @@ export const PatientPage = () => {
     systolic: Math.floor(Math.random() * 200) + 80,
     diastolic: Math.floor(Math.random() * 120) + 60,
   }));
+
+  const updatePatient = async (id: number) => {
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/patient/${id}`,
+        { patientId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      fetchPatients();
+    } catch (error) {
+      console.error("Error updating patient:", error);
+    }
+  };
+  const deletePatient = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/patient/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      fetchPatients();
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+    }
+  };
 
   const fetchPatients = async () => {
     try {
@@ -201,8 +232,18 @@ export const PatientPage = () => {
     setPatient(patients?.filter((patient) => patient.id === id));
   };
 
-  const buttonAction = (id: number) => {
-    alert("Button Clicked " + id);
+  const buttonAction = (action: string, patient: Patients) => {
+    if (action === "edit") {
+      setPatientEdit(patient);
+      openForm();
+    } else if (action === "delete") {
+      const confirmDelete = window.confirm(
+        "Are you sure to delete this patient?"
+      );
+      if (confirmDelete) {
+        deletePatient(patient.id);
+      }
+    }
   };
   return (
     <MainLayout title="Patient">
@@ -253,7 +294,10 @@ export const PatientPage = () => {
             </div>
 
             <div
-              onClick={openForm}
+              onClick={() => {
+                setPatientEdit(undefined);
+                openForm();
+              }}
               className="flex bg-[#3885FD] items-center gap-2 px-4 py-2 rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.3)] cursor-pointer"
             >
               <img src={addPatientIcon} alt="" className="w-6 h-6" />
@@ -334,16 +378,39 @@ export const PatientPage = () => {
                           }).format(new Date(item.date_of_birth))}
                         </TableCell>
                         <TableCell className="text-center pl-10 text-xl">
-                          <a
+                          <div className="flex flex-row justify-center gap-2 text-base text-white">
+                            <p
+                              className="bg-blue-400 px-3 py-1 rounded-xl cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                buttonAction("edit", item);
+                              }}
+                            >
+                              Edit
+                            </p>
+                            <p
+                              className="bg-red-400 px-3 py-1  rounded-xl cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                buttonAction("delete", item);
+                              }}
+                            >
+                              Delete
+                            </p>
+                          </div>
+                          {/* <a
                             href=""
                             onClick={(e) => {
+                              setIsAction((prev) => !prev);
                               e.preventDefault();
                               e.stopPropagation();
-                              buttonAction(item.id);
+                              // buttonAction(item.id);
                             }}
                           >
                             <p>...</p>
-                          </a>
+                          </a> */}
                         </TableCell>
                       </TableRow>
                     ))
@@ -444,6 +511,7 @@ export const PatientPage = () => {
         closeModal={closeForm}
         setPatient={setPatients}
         fetchPatients={fetchPatients}
+        patient={patientEdit}
       />
     </MainLayout>
   );
