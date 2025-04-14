@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   createContext,
   useContext,
@@ -26,17 +27,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (token && storedUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(storedUser));
-    }
-
-    setIsLoading(false);
-  }, []);
+  const clearAllLocalStorage = () => {
+    localStorage.clear();
+  };
 
   const login = (token: string, user: User) => {
     localStorage.setItem("token", token);
@@ -46,12 +39,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAllLocalStorage();
     setUser(null);
     setIsAuthenticated(false);
     window.location.href = "/login";
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (token && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+
+        axios
+          .get("http://localhost:3000/api/user/current", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            if (response.status !== 200) {
+              console.warn("Token invalid, logout ... ");
+              setIsAuthenticated(false);
+              setUser(null);
+              clearAllLocalStorage();
+              window.location.href = "/login";
+            }
+          })
+          .catch((error) => {
+            console.error("Auth validation error:", error);
+            setIsAuthenticated(false);
+            setUser(null);
+            clearAllLocalStorage();
+            window.location.href = "/login";
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+        clearAllLocalStorage();
+        setIsAuthenticated(false);
+        setUser(null);
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider

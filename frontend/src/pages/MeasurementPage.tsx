@@ -14,6 +14,8 @@ import axios from "axios";
 import MainLayout from "@/components/layouts/main-layout.tsx";
 import { SelectPatient } from "@/components/SelectPatient";
 import { Patients } from "@/models/Patients";
+import { toast } from "sonner";
+import { duration } from "@mui/material";
 
 export default function MeasurementPage() {
   const {
@@ -33,6 +35,8 @@ export default function MeasurementPage() {
   const [systolic, setSystolic] = useState<number>(0);
   const [diastolic, setDiastolic] = useState<number>(0);
 
+  const [isToast, setIsToast] = useState(false);
+
   const [mean, setMean] = useState<number>(0);
   const [heartRate, setHeartRate] = useState<number>(0);
 
@@ -40,6 +44,8 @@ export default function MeasurementPage() {
   const [formSelectPatient, setFormSelectPatient] = useState(false);
 
   const [animatePage, setAnimatePage] = useState(false);
+
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -67,29 +73,32 @@ export default function MeasurementPage() {
 
   const handleSaveResult = async () => {
     try {
-      const patientResponse = await axios.post(
-        "http://localhost:3000/api/patients",
-        {
-          name: patient?.name,
-          gender: patient?.gender,
-          phone: patient?.phone,
-          work: patient?.work,
-          last_education: patient?.last_education,
-          place_of_birth: patient?.place_of_birth,
-          date_of_birth: patient?.date_of_birth,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      let patientResponse = null;
+      if (!patient?.id) {
+        patientResponse = await axios.post(
+          "http://localhost:3000/api/patients",
+          {
+            name: patient?.name,
+            gender: patient?.gender,
+            phone: patient?.phone,
+            work: patient?.work,
+            last_education: patient?.last_education,
+            place_of_birth: patient?.place_of_birth,
+            date_of_birth: patient?.date_of_birth,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       await axios
         .post(
           "http://localhost:3000/api/patient-measurements",
           {
-            patient_id: patientResponse.data.data.id,
+            patient_id: patientResponse?.data.data.id || patient?.id,
             weight: 95,
             systolic: result.systolic,
             diastolic: result.diastolic,
@@ -105,7 +114,14 @@ export default function MeasurementPage() {
         )
         .then((response) => {
           if (response.status == 200) {
-            console.log("Data saved successfully");
+            toast.success("Patient measurement saved successfully", {
+              duration: 2000,
+            });
+            setIsSaved(true);
+          } else {
+            toast.error("Error saving patient measurement, please try again", {
+              duration: 2000,
+            });
           }
           console.log(response);
         });
@@ -154,12 +170,14 @@ export default function MeasurementPage() {
                   <p className="font-bold">Patient selected</p>
                   <p>{patient?.name}</p>
                 </div>
-                <button
-                  className="text-white text-lg hover:underline"
-                  onClick={openForm}
-                >
-                  Change patient
-                </button>
+                {result.diastolic === 0 && (
+                  <button
+                    className="text-white text-lg hover:underline"
+                    onClick={openForm}
+                  >
+                    Change patient
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -188,14 +206,17 @@ export default function MeasurementPage() {
               )
             ) : (
               <div className="">
-                <button
-                  onClick={handleSaveResult}
-                  className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
-                >
-                  SAVE
-                </button>
+                {!isSaved && (
+                  <button
+                    onClick={handleSaveResult}
+                    className="px-8 py-4 bg-white text-blue-700 border-blue-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"
+                  >
+                    SAVE
+                  </button>
+                )}
                 <button
                   onClick={() => {
+                    setIsSaved(false);
                     clearResult();
                   }}
                   className="px-8 py-4 bg-white text-red-700 border-red-700 border-2 rounded-full w-xs shadow-xl disabled:opacity-50 hover:bg-slate-100"

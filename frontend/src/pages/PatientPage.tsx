@@ -14,6 +14,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import exportIcon from "@/assets/icons/export-svgrepo-com.png";
 import addPatientIcon from "@/assets/icons/add-patient-white.png";
@@ -37,11 +48,13 @@ import { Component } from "@/components/ui/ChartArea";
 import { HiOutlineFilter } from "react-icons/hi";
 import { Patients } from "@/models/Patients";
 import FormExport from "@/components/FormExport";
+import { MdDeleteOutline } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
+import { toast } from "sonner";
 
 export const PatientPage = () => {
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
-  const [isAction, setIsAction] = useState(false);
 
   const [patients, setPatients] = useState<Patients[]>();
   const [patientId, setPatientId] = useState(0);
@@ -54,7 +67,6 @@ export const PatientPage = () => {
   const [totalPage, setTotalPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const isFirstRender = useRef(true);
 
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
@@ -68,30 +80,30 @@ export const PatientPage = () => {
     diastolic: Math.floor(Math.random() * 120) + 60,
   }));
 
-  const updatePatient = async (id: number) => {
+  const deletePatient = async (id: number) => {
     try {
-      await axios.patch(
-        `http://localhost:3000/api/patient/${id}`,
-        { patientId: id },
-        {
+      await axios
+        .delete(`http://localhost:3000/api/patient/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
-      );
-      fetchPatients();
-    } catch (error) {
-      console.error("Error updating patient:", error);
-    }
-  };
-  const deletePatient = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/patient/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      fetchPatients();
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            toast.success("Patient deleted successfully", {
+              duration: 2000,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting patient:", error);
+          toast.error("Error deleting patient", {
+            duration: 2000,
+          });
+        })
+        .finally(() => {
+          fetchPatients();
+        });
     } catch (error) {
       console.error("Error deleting patient:", error);
     }
@@ -237,12 +249,7 @@ export const PatientPage = () => {
       setPatientEdit(patient);
       openForm();
     } else if (action === "delete") {
-      const confirmDelete = window.confirm(
-        "Are you sure to delete this patient?"
-      );
-      if (confirmDelete) {
-        deletePatient(patient.id);
-      }
+      deletePatient(patient.id);
     }
   };
   return (
@@ -332,8 +339,10 @@ export const PatientPage = () => {
                     <TableHead className="text-center pl-10">Name</TableHead>
                     <TableHead className="text-center pl-10">Work</TableHead>
                     <TableHead className="text-center pl-10">Phone</TableHead>
-                    <TableHead className="text-center pl-10">Address</TableHead>
                     <TableHead className="text-center pl-10">Gender</TableHead>
+                    <TableHead className="text-center pl-10">
+                      Place of birth
+                    </TableHead>
                     <TableHead className="text-center pl-10">
                       Date of Birth
                     </TableHead>
@@ -342,18 +351,26 @@ export const PatientPage = () => {
                 </TableHeader>
                 <TableBody>
                   {patients && patients.length > 0 ? (
-                    patients?.map((item, index) => (
+                    patients.map((item, index) => (
                       <TableRow
                         key={item.id}
+                        onClick={(e) => {
+                          const target = e.target as HTMLElement;
+                          if (
+                            target.closest("button") ||
+                            target.closest("[data-stop-click]")
+                          ) {
+                            return;
+                          }
+
+                          openDetail(item.id);
+                        }}
                         className={`border-gray-300 transition-all duration-500 ease-in-out ${
                           animateRows
                             ? "opacity-100 translate-y-0"
                             : "opacity-0 translate-y-2"
                         }`}
                         style={{ transitionDelay: `${index * 50}ms` }}
-                        onClick={() => {
-                          openDetail(item.id);
-                        }}
                       >
                         <TableCell className="text-left pl-10">
                           {item.name}
@@ -365,10 +382,10 @@ export const PatientPage = () => {
                           {item.phone}
                         </TableCell>
                         <TableCell className="text-left pl-10">
-                          {item.place_of_birth}
+                          {item.gender}
                         </TableCell>
                         <TableCell className="text-left pl-10">
-                          {item.gender}
+                          {item.place_of_birth}
                         </TableCell>
                         <TableCell className="text-left pl-10">
                           {new Intl.DateTimeFormat("id-ID", {
@@ -377,40 +394,57 @@ export const PatientPage = () => {
                             day: "numeric",
                           }).format(new Date(item.date_of_birth))}
                         </TableCell>
+
                         <TableCell className="text-center pl-10 text-xl">
-                          <div className="flex flex-row justify-center gap-2 text-base text-white">
-                            <p
-                              className="bg-blue-400 px-3 py-1 rounded-xl cursor-pointer"
+                          <div className="flex flex-row justify-center gap-5 text-base text-white items-center">
+                            {/* Edit */}
+                            <button
+                              className="flex flex-row items-center gap-2 bg-blue-500 px-5 py-1 rounded-full cursor-pointer "
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 buttonAction("edit", item);
                               }}
                             >
+                              <FaRegEdit className="w-5 h-5" />
                               Edit
-                            </p>
-                            <p
-                              className="bg-red-400 px-3 py-1  rounded-xl cursor-pointer"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                buttonAction("delete", item);
-                              }}
-                            >
-                              Delete
-                            </p>
+                            </button>
+
+                            {/* Delete */}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <MdDeleteOutline
+                                  className="w-7 h-7 cursor-pointer"
+                                  color="red"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                />
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-white border-0">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete this item and remove it
+                                    from our system.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-red-500 border-0 text-white">
+                                    Cancel
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => buttonAction("delete", item)}
+                                  >
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
-                          {/* <a
-                            href=""
-                            onClick={(e) => {
-                              setIsAction((prev) => !prev);
-                              e.preventDefault();
-                              e.stopPropagation();
-                              // buttonAction(item.id);
-                            }}
-                          >
-                            <p>...</p>
-                          </a> */}
                         </TableCell>
                       </TableRow>
                     ))

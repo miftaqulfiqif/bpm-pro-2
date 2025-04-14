@@ -4,7 +4,6 @@ export type Patients = {
   gender: string;
   phone: string;
   work: string;
-  address: string;
   last_education: string;
   place_of_birth: string;
   date_of_birth: string;

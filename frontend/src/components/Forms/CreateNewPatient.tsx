@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 import { Patients } from "@/models/Patients";
+import { toast } from "sonner";
 
 type CreateNewPatientProps = {
   form: boolean;
@@ -56,9 +57,13 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
         .then((response) => {
           if (response.status === 200) {
             console.log("Patient updated successfully : ", response.data);
+            toast.success("Patient updated successfully", {
+              duration: 2000,
+            });
           }
         })
         .catch((error) => {
+          toast.error("Error updating patient", { duration: 2000 });
           console.error("Error updating patient:", error);
         });
       fetchPatients?.();
@@ -88,8 +93,11 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       );
 
       if (response.status === 200) {
+        toast.success("Patient saved successfully", { duration: 2000 });
         closeModal();
         fetchPatients?.();
+      } else {
+        toast.error("Error saving patient", { duration: 2000 });
       }
     } catch (error) {
       throw error;
@@ -107,7 +115,6 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       date_of_birth: patient?.date_of_birth
         ? patient.date_of_birth.split("T")[0]
         : "",
-      address: patient?.address || "",
       work: patient?.work || "",
     },
     validationSchema: yup.object().shape({
@@ -120,7 +127,6 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
       last_education: yup.string().required("Last education is required"),
       place_of_birth: yup.string().required("Place of birth is required"),
       date_of_birth: yup.string().required("Date of birth is required"),
-      address: yup.string().required("Address is required"),
       work: yup.string().required("Work is required"),
     }),
     // validate: (values) => {
@@ -261,15 +267,6 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
               />
             </div>
             <div className="flex flex-row gap-4 justify-between w-full">
-              <InputText
-                name="address"
-                label="Address"
-                placeholder="Input address"
-                onChange={formik.handleChange}
-                value={formik.values.address}
-                onTouch={formik.touched.address}
-                onError={formik.errors.address}
-              />
               <InputText
                 name="work"
                 label="Work"
