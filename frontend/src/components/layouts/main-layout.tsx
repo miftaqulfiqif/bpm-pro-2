@@ -1,8 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
 import { Navbar } from "../navbar";
+import { Toaster } from "../ui/sonner";
 
 interface Props {
   children: React.ReactNode;
@@ -14,6 +11,7 @@ export default function MainLayout({ children, title }: Props) {
     <>
       <Navbar title={title} />
       <div className="bg-[#ECECEC] h-full px-10 py-3 ">{children}</div>
+      <Toaster />
     </>
   );
 }

@@ -37,7 +37,6 @@ export const SelectPatient = ({
       setPatients([]);
       return;
     }
-
     try {
       const response = await axios.get(
         `http://localhost:3000/api/patients/search?query=${query}`,
