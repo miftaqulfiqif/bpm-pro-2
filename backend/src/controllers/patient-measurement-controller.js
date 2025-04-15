@@ -9,6 +9,7 @@ import {
   paginationService,
   paginationByUserService,
   exportXMLService,
+  historyMeasurementService,
 } from "../services/patient-measurement-service.js";
 
 const create = async (req, res, next) => {
@@ -156,6 +157,18 @@ const exportXML = async (req, res, next) => {
   }
 };
 
+const historyMeasurement = async (req, res, next) => {
+  try {
+    const patientId = req.params.id;
+    const result = await historyMeasurementService(patientId);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   create,
   measurementResult,
@@ -166,4 +179,5 @@ export default {
   pagination,
   paginationByUser,
   exportXML,
+  historyMeasurement,
 };

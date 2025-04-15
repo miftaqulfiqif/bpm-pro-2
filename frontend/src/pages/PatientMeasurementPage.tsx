@@ -33,6 +33,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
 import { Component } from "@/components/ui/ChartArea";
+import { useHistoryMeasurement } from "@/hooks/UseHistoryMeasurement";
 
 type Patient = {
   name: string;
@@ -58,6 +59,7 @@ type PatientMeasurementsProps = {
 };
 
 export const PatientMeasurements = () => {
+  const { fetchAndFormatData, chartData } = useHistoryMeasurement();
   const [patientMeasurements, setPatientMeasurements] = useState<
     PatientMeasurementsProps[]
   >([]);
@@ -80,12 +82,6 @@ export const PatientMeasurements = () => {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  const chartData = Array.from({ length: 6 }, (_, i) => ({
-    month: ["January", "February", "March", "April", "May", "June"][i],
-    systolic: Math.floor(Math.random() * 200) + 80,
-    diastolic: Math.floor(Math.random() * 120) + 60,
-  }));
 
   const fetchPatientMeasurements = async () => {
     try {
@@ -213,21 +209,24 @@ export const PatientMeasurements = () => {
     }
   };
 
-  const openDetail = (id: number) => {
-    if (detail && patientId === id) {
+  const openDetail = (patientMeasurement: PatientMeasurementsProps) => {
+    fetchAndFormatData(patientMeasurement.patient_id.toString());
+    if (detail && patientId === patientMeasurement.id) {
       setIsDetailVisible(false);
       setTimeout(() => {
         setDetail(false);
       }, 300);
     } else {
-      setPatientId(id);
+      setPatientId(patientMeasurement.id);
       setDetail(true);
       setTimeout(() => {
         setIsDetailVisible(true);
       }, 10);
     }
     setPatientMeasurement(
-      patientMeasurements?.filter((patient) => patient.id === id)
+      patientMeasurements?.filter(
+        (patient) => patient.id === patientMeasurement.id
+      )
     );
   };
 
@@ -326,7 +325,7 @@ export const PatientMeasurements = () => {
                             : "opacity-0 translate-y-2"
                         }`}
                         style={{ transitionDelay: `${index * 50}ms` }}
-                        onClick={() => openDetail(item.id)}
+                        onClick={() => openDetail(item)}
                       >
                         <TableCell className="text-left pl-10">
                           {item.patient.name}

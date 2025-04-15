@@ -70,6 +70,10 @@ privateRouter.post(
   "/api/export-patient-measurements",
   patientMeasurementController.exportXML
 );
+privateRouter.get(
+  "/api/history-measurement/:id",
+  patientMeasurementController.historyMeasurement
+);
 
 //Category Result
 privateRouter.post("/api/category-results", categoryResultController.create);

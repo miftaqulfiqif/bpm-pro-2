@@ -255,6 +255,28 @@ const exportXMLService = async (patient_measurements) => {
   }
 };
 
+const historyMeasurementService = async (patientId) => {
+  try {
+    return await prismaClient.patientMeasurement.findMany({
+      where: {
+        patient_id: parseInt(patientId),
+      },
+      orderBy: {
+        id: "asc",
+      },
+      take: 10,
+      select: {
+        id: true,
+        systolic: true,
+        diastolic: true,
+        timestamp: true,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   createService,
   measurementResultService,
@@ -265,4 +287,5 @@ export {
   paginationService,
   paginationByUserService,
   exportXMLService,
+  historyMeasurementService,
 };

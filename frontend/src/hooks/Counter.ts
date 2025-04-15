@@ -33,7 +33,7 @@ export const useCounter = () => {
         console.log(message);
         setMessage(message);
       } else {
-        // console.log("Program berakhir");
+        console.log("Program berakhir");
         setMessage("Program berakhir");
       }
     }
@@ -85,8 +85,8 @@ export const useCounter = () => {
         patient_date_of_birth: patient.date_of_birth,
         patient_gender: patient.gender,
         data_measure: {
-          systolic: 140,
-          diastolic: 90,
+          systolic: 120,
+          diastolic: 80,
           mean: 23,
           heart_rate: 20,
         },
