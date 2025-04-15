@@ -29,6 +29,7 @@ import {
 import exportIcon from "@/assets/icons/export-svgrepo-com.png";
 import addPatientIcon from "@/assets/icons/add-patient-white.png";
 import searchIcon from "@/assets/icons/search-icon.png";
+import deleteIcon from "@/assets/icons/delete-red-icon.png";
 
 import MainLayout from "@/components/layouts/main-layout";
 import {
@@ -51,8 +52,12 @@ import FormExport from "@/components/FormExport";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "sonner";
+import { useHistoryMeasurement } from "@/hooks/UseHistoryMeasurement";
+import { parse } from "path";
 
 export const PatientPage = () => {
+  const { fetchAndFormatData, chartData } = useHistoryMeasurement();
+
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
 
@@ -73,12 +78,6 @@ export const PatientPage = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [exportOpen, setExportOpen] = useState(false);
-
-  const chartData = Array.from({ length: 6 }, (_, i) => ({
-    month: ["January", "February", "March", "April", "May", "June"][i],
-    systolic: Math.floor(Math.random() * 200) + 80,
-    diastolic: Math.floor(Math.random() * 120) + 60,
-  }));
 
   const deletePatient = async (id: number) => {
     try {
@@ -228,6 +227,7 @@ export const PatientPage = () => {
     setForm(false);
   };
   const openDetail = (id: number) => {
+    fetchAndFormatData(id.toString());
     if (detail && patientId === id) {
       setIsDetailVisible(false);
       setTimeout(() => {
@@ -413,13 +413,21 @@ export const PatientPage = () => {
                             {/* Delete */}
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <MdDeleteOutline
+                                <img
+                                  src={deleteIcon}
+                                  alt="Delete"
+                                  className="w-7 h-7 cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                />
+                                {/* <MdDeleteOutline
                                   className="w-7 h-7 cursor-pointer"
                                   color="red"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                   }}
-                                />
+                                /> */}
                               </AlertDialogTrigger>
                               <AlertDialogContent className="bg-white border-0">
                                 <AlertDialogHeader>
