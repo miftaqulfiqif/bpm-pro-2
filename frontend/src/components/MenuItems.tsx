@@ -4,27 +4,67 @@ import axios from "axios";
 import { Category } from "@/models/Categories";
 import { ListOfCategories } from "@/components/ui/list-of-categories";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 type MenuItemsProps = {
   state: string;
   animationKey: number;
   setForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setFormDelete: React.Dispatch<React.SetStateAction<boolean>>;
   fetchCategories: () => void;
   categories: Category[];
+  closeModal: () => void;
+
+  name: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  changeProfil: (id: string, values: any) => void;
+
+  changePassword: (values: any) => void;
+  currentPassword: string;
+  setCurrentPassword: React.Dispatch<React.SetStateAction<string>>;
+  newPassword: string;
+  setNewPassword: React.Dispatch<React.SetStateAction<string>>;
 };
 export const MenuItems = ({
   state,
   animationKey,
   setForm,
+  setFormDelete,
   fetchCategories,
   categories,
-}: MenuItemsProps) => {
-  const { user, login } = useAuth();
+  closeModal,
 
+  name,
+  setName,
+  changeProfil,
+
+  changePassword,
+  currentPassword,
+  setCurrentPassword,
+  newPassword,
+  setNewPassword,
+}: MenuItemsProps) => {
   const [categoryOpen, setCategoryOpen] = useState<number[]>([]);
 
-  const [name, setName] = useState(user?.name || "");
-
+  const formik = useFormik({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+    validationSchema: yup.object().shape({
+      currentPassword: yup.string().required("Current password is required"),
+      newPassword: yup.string().required("New password is required"),
+      confirmPassword: yup
+        .string()
+        .required("Confirm new password is required")
+        .oneOf([yup.ref("newPassword")], "Passwords must match"),
+    }),
+    onSubmit: (values) => {
+      changePassword(values);
+    },
+  });
   const deleteCategory = (id: number) => {
     axios
       .delete(`http://localhost:3000/api/category-results/${id}`, {
@@ -47,34 +87,6 @@ export const MenuItems = ({
         ? prevOpen.filter((openId) => openId !== id)
         : [...prevOpen, id]
     );
-  };
-
-  const handleSaveChanges = async () => {
-    if (state == "Edit Profile") {
-      const newName = "John Doe";
-      try {
-        const response = await axios.patch(
-          "/api/user/update",
-          {
-            name: newName,
-          },
-          {
-            headers: {},
-          }
-        );
-
-        if (response.status === 200) {
-          console.log(response.data);
-
-          const { token, name, username } = response.data.data;
-
-          const updatedUser = { name, username };
-          login(token, updatedUser);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
   };
 
   return (
@@ -118,12 +130,12 @@ export const MenuItems = ({
               />
             </div>
           </div>
-          <button
-            type="submit"
-            className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10"
+          <div
+            onClick={() => setFormDelete(true)}
+            className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10 cursor-pointer"
           >
-            Save Changes
-          </button>
+            <p className="text-center"> Save Changes</p>
+          </div>
         </div>
       )}
 
@@ -131,38 +143,55 @@ export const MenuItems = ({
       {state === "Password" && (
         <div className="flex flex-col gap-8">
           <p className="text-2xl font-bold">Password</p>
-          <div className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
             <p>Current Password</p>
             <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
               <input
-                id="current-password"
                 type="password"
                 placeholder="Input your current password here"
+                name="currentPassword"
+                onChange={formik.handleChange}
+                value={formik.values.currentPassword}
                 className="w-full focus:outline-none"
               />
             </div>
+            <p className="text-red-500 text-sm">
+              {formik.errors.currentPassword}
+            </p>
             <p>New Password</p>
             <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
               <input
-                id="new-password"
                 type="password"
                 placeholder="Input your new password here"
+                name="newPassword"
+                value={formik.values.newPassword}
+                onChange={formik.handleChange}
                 className="w-full focus:outline-none"
               />
             </div>
+            <p className="text-red-500 text-sm">{formik.errors.newPassword}</p>
             <p>Confirm Password</p>
             <div className="flex bg-[#ECECEC] rounded-xl px-6 py-4 gap-4">
               <input
                 id="confirm-password"
                 type="password"
                 placeholder="Input your new password here"
+                name="confirmPassword"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
                 className="w-full focus:outline-none"
               />
             </div>
-          </div>
-          <button className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10">
-            Save Changes
-          </button>
+            <p className="text-red-500 text-sm">
+              {formik.errors.confirmPassword}
+            </p>
+            <button
+              className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 mt-10 cursor-pointer"
+              type="submit"
+            >
+              Save Changes
+            </button>
+          </form>
         </div>
       )}
 
@@ -171,7 +200,7 @@ export const MenuItems = ({
         <div className="flex flex-col gap-8">
           <div className="flex flex-row justify-between">
             <p className="text-2xl font-bold">Categories</p>
-            <a href="#" onClick={() => setForm(true)}>
+            <a className="cursor-pointer" onClick={() => setForm(true)}>
               <div className="border-2 bg-[#35AAFF] text-white rounded-xl px-6 py-2 w-fit">
                 <p>Add category</p>
               </div>

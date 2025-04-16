@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MainLayout from "@/components/layouts/main-layout.tsx";
 
 import profileIcon from "@/assets/icons/profile-icon.png";
@@ -13,20 +13,91 @@ import { MenuItems } from "@/components/MenuItems";
 import { NewCategory } from "../components/new-category.tsx";
 import axios from "axios";
 import { Category } from "@/models/Categories.tsx";
+import { ConfirmDelete } from "@/components/ConfirmDelete.tsx";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 export default function SettingsPage() {
+  const { user, login } = useAuth();
+
   const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
+  const [formDelete, setFormDelete] = useState(false);
+
+  const [name, setName] = useState("");
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [animationKey, setAnimationKey] = useState(0);
 
+  useEffect(() => {
+    user && setName(user.name);
+  }, []);
   const handleMenuChange = (menu: string, callback?: () => void) => {
     setAnimationKey((prev) => prev + 1);
     setState(menu);
     if (menu === "Categories") fetchCategories();
     if (callback) callback();
+  };
+
+  const changePassword = (values: any) => {
+    axios
+      .patch(
+        "http://localhost:3000/api/user/update-password",
+        {
+          password: values.currentPassword,
+          new_password: values.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response.data.errors);
+      });
+  };
+
+  const changeProfil = (id: string, values: any) => {
+    try {
+      axios
+        .patch(
+          "http://localhost:3000/api/user/update",
+          {
+            name: values.name,
+            username: values.username,
+            password: values.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            console.log(response.data);
+
+            const { token, name, username } = response.data.data;
+            const updatedUser = { id, name, username };
+            login(token, updatedUser);
+          } else if (response.status === 401) {
+            console.log(response.data);
+          }
+          setFormDelete(false);
+        })
+        .catch((error) => {
+          console.log(error.response.data.errors);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchCategories = () => {
@@ -44,10 +115,6 @@ export default function SettingsPage() {
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const closeModal = () => {
-    setForm(false);
   };
 
   return (
@@ -99,12 +166,29 @@ export default function SettingsPage() {
               state={state}
               animationKey={animationKey}
               setForm={setForm}
+              setFormDelete={setFormDelete}
               categories={categories}
+              closeModal={() => setFormDelete(false)}
+              name={name}
+              setName={setName}
+              changeProfil={changeProfil}
+              changePassword={changePassword}
+              currentPassword={currentPassword}
+              setCurrentPassword={setCurrentPassword}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
             />
           </div>
         </div>
       </div>
-      <NewCategory closeModal={closeModal} form={form} />
+      <NewCategory closeModal={() => setForm(false)} form={form} fetchCategories={fetchCategories} />
+      <ConfirmDelete
+        closeModal={() => setFormDelete(false)}
+        form={formDelete}
+        state={state}
+        name={name}
+        changeProfil={changeProfil}
+      />
     </MainLayout>
   );
 }

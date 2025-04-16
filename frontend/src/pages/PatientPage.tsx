@@ -365,7 +365,7 @@ export const PatientPage = () => {
 
                           openDetail(item.id);
                         }}
-                        className={`border-gray-300 transition-all duration-500 ease-in-out ${
+                        className={`border-gray-300 transition-all duration-500 ease-in-out cursor-pointer ${
                           animateRows
                             ? "opacity-100 translate-y-0"
                             : "opacity-0 translate-y-2"
@@ -441,13 +441,14 @@ export const PatientPage = () => {
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                  <AlertDialogCancel className="bg-red-500 border-0 text-white">
+                                  <AlertDialogCancel className="border-0 text-black cursor-pointer">
                                     Cancel
                                   </AlertDialogCancel>
                                   <AlertDialogAction
                                     onClick={() => buttonAction("delete", item)}
+                                    className="bg-red-500 text-white cursor-pointer"
                                   >
-                                    Continue
+                                    Delete
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>

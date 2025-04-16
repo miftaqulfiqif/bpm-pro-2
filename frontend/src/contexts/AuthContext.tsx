@@ -8,6 +8,7 @@ import {
 } from "react";
 
 interface User {
+  id: string;
   name: string;
   username: string;
 }

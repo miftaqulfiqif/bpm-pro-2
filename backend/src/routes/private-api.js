@@ -14,6 +14,7 @@ privateRouter.get("/api/user/current", userController.get);
 privateRouter.delete("/api/user/logout", userController.logout);
 privateRouter.post("/api/user/delete", userController.deleteUser);
 privateRouter.patch("/api/user/update", userController.update);
+privateRouter.patch("/api/user/update-password", userController.updatePassword);
 
 //Measurement
 privateRouter.post("/api/measurements", measurementController.create);
