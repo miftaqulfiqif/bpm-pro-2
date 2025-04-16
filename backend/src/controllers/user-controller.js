@@ -7,6 +7,7 @@ import {
   logOutService,
   deleteService,
   updateService,
+  updatePasswordService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -26,6 +27,7 @@ const login = async (req, res, next) => {
       data: {
         token: result.token,
         user: {
+          id: result.id,
           name: result.name,
           username: result.username,
         },
@@ -96,4 +98,25 @@ const update = async (req, res, next) => {
   }
 };
 
-export default { register, login, get, getId, logout, deleteUser, update };
+const updatePassword = async (req, res, next) => {
+  try {
+    const result = await updatePasswordService(req.user, req.body);
+    res.status(200).json({
+      message: "Update password is successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  register,
+  login,
+  get,
+  getId,
+  logout,
+  deleteUser,
+  update,
+  updatePassword,
+};

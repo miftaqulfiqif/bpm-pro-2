@@ -5,6 +5,7 @@ import {
   registerValidation,
   deleteUserValidation,
   updateUserValidation,
+  updatePasswordValidation,
 } from "../validation/user-validation.js";
 import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
@@ -82,6 +83,7 @@ const loginService = async (request) => {
       },
       select: {
         token: true,
+        id: true,
         name: true,
         username: true,
       },
@@ -191,13 +193,13 @@ const updateService = async (user, body) => {
 
     const isValidPassword = await bcrypt.compare(body.password, user.password);
 
-    const usernameFound = await prismaClient.user.findUnique({
+    const usernameFound = await prismaClient.user.findMany({
       where: {
         username: body.username,
       },
     });
 
-    if (usernameFound) {
+    if (usernameFound.length > 1) {
       throw new ResponseError(400, "Username already exists");
     }
 
@@ -238,6 +240,32 @@ const updateService = async (user, body) => {
   }
 };
 
+const updatePasswordService = async (user, body) => {
+  try {
+    body = validate(updatePasswordValidation, body);
+
+    const isValidPassword = await bcrypt.compare(body.password, user.password);
+
+    if (!isValidPassword) {
+      throw new ResponseError(401, "Password wrong");
+    }
+
+    return prismaClient.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: await bcrypt.hash(body.new_password, 10),
+      },
+      select: {
+        token: true,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   registerService,
   loginService,
@@ -246,4 +274,5 @@ export {
   logOutService,
   deleteService,
   updateService,
+  updatePasswordService,
 };

@@ -8,11 +8,13 @@ import closeIcon from "@/assets/icons/close.png";
 type NewCategoryProps = {
   form: boolean;
   closeModal: () => void;
+  fetchCategories: () => void;
 };
 
 export const NewCategory = ({
   form,
   closeModal,
+  fetchCategories,
 }: NewCategoryProps) => {
   const formik = useFormik({
     initialValues: {
@@ -69,6 +71,7 @@ export const NewCategory = ({
 
       if (response.status === 200) {
         closeModal();
+        fetchCategories();
       }
     } catch (error) {
       console.error(error);

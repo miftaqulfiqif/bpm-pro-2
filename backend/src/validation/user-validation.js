@@ -23,10 +23,16 @@ const updateUserValidation = Joi.object({
   new_password: Joi.string().max(20),
 });
 
+const updatePasswordValidation = Joi.object({
+  password: Joi.string().max(20).required(),
+  new_password: Joi.string().max(20).required(),
+});
+
 export {
   registerValidation,
   loginValidation,
   getUserValidation,
   deleteUserValidation,
   updateUserValidation,
+  updatePasswordValidation,
 };
