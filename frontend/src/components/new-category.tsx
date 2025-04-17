@@ -105,7 +105,7 @@ export const NewCategory = ({
 
   useEffect(() => {
     if (!formik.values.gender_required) {
-      formik.setFieldValue("gender", "any", true);
+      formik.setFieldValue("gender", "any");
     }
     if (!formik.values.age_required) {
       formik.setFieldValue("min_age", "");
@@ -123,7 +123,7 @@ export const NewCategory = ({
           category_color: values.category_color,
           min_age: values.min_age,
           max_age: values.max_age,
-          gender: genderChecked ? values.gender : "any",
+          gender: values.gender,
           min_systolic: values.min_systolic,
           max_systolic: values.max_systolic,
           min_diastolic: values.min_diastolic,
