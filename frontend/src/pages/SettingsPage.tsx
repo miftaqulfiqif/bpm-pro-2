@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext.tsx";
 export default function SettingsPage() {
   const { user, login } = useAuth();
 
-  const [state, setState] = useState("Edit Profile");
+  const [state, setState] = useState("Categories");
   const [form, setForm] = useState(false);
   const [formDelete, setFormDelete] = useState(false);
 
@@ -181,7 +181,11 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-      <NewCategory closeModal={() => setForm(false)} form={form} fetchCategories={fetchCategories} />
+      <NewCategory
+        closeModal={() => setForm(false)}
+        form={form}
+        fetchCategories={fetchCategories}
+      />
       <ConfirmDelete
         closeModal={() => setFormDelete(false)}
         form={formDelete}
