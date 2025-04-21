@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext.tsx";
 export default function SettingsPage() {
   const { user, login } = useAuth();
 
-  const [state, setState] = useState("Categories");
+  const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
   const [formDelete, setFormDelete] = useState(false);
 

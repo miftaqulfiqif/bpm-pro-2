@@ -10,37 +10,52 @@ const createService = async (userId, body) => {
   try {
     const data = validate(createValidation, body);
 
+    const whereClause = {
+      user_id: userId,
+      gender: data.gender,
+      OR: [
+        {
+          min_systolic: { lte: data.max_systolic },
+          max_systolic: { gte: data.min_systolic },
+        },
+        {
+          min_diastolic: { lte: data.max_diastolic },
+          max_diastolic: { gte: data.min_diastolic },
+        },
+      ],
+    };
+
+    // Tambahkan filter usia hanya jika is_age_required aktif
+    if (data.is_age_required) {
+      whereClause.min_age = { lte: data.max_age };
+      whereClause.max_age = { gte: data.min_age };
+      whereClause.is_age_required = true;
+    } else {
+      // Untuk mencocokkan data yang tidak punya syarat usia
+      whereClause.is_age_required = false;
+    }
+
     const existingCategory = await prismaClient.categoryResult.findMany({
-      where: {
-        OR: [
-          {
-            min_systolic: {
-              lte: data.max_systolic,
-            },
-            max_systolic: {
-              gte: data.min_systolic,
-            },
-          },
-          {
-            min_diastolic: {
-              lte: data.max_diastolic,
-            },
-            max_diastolic: {
-              gte: data.min_diastolic,
-            },
-          },
-        ],
-      },
+      where: whereClause,
     });
 
     if (existingCategory.length > 0) {
-      throw new ResponseError(400, "Category already exists");
+      throw new ResponseError(
+        400,
+        "Category with overlapping range already exists"
+      );
     }
 
+    // Simpan data baru
     return await prismaClient.categoryResult.create({
       data: {
         user_id: userId,
         name: data.name,
+        gender: data.gender,
+        color: data.color,
+        is_age_required: data.is_age_required,
+        min_age: data.min_age,
+        max_age: data.max_age,
         min_systolic: data.min_systolic,
         max_systolic: data.max_systolic,
         min_diastolic: data.min_diastolic,

@@ -5,6 +5,7 @@ import patientController from "../controllers/patient-controller.js";
 import patientMeasurementController from "../controllers/patient-measurement-controller.js";
 import categoryResultController from "../controllers/category-result-controller.js";
 import { authMiddleware } from "../middleware/auth-middleware.js";
+import { upload } from "../middleware/upload.js";
 
 const privateRouter = new express.Router();
 privateRouter.use(authMiddleware);
@@ -15,6 +16,11 @@ privateRouter.delete("/api/user/logout", userController.logout);
 privateRouter.post("/api/user/delete", userController.deleteUser);
 privateRouter.patch("/api/user/update", userController.update);
 privateRouter.patch("/api/user/update-password", userController.updatePassword);
+privateRouter.post(
+  "/api/user/update-profile-picture",
+  upload.single("profile_picture"),
+  userController.updateProfilePicture
+);
 
 //Measurement
 privateRouter.post("/api/measurements", measurementController.create);

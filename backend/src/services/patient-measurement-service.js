@@ -23,6 +23,7 @@ const createService = async (user, body) => {
         mean: data.mean,
         heart_rate: data.heart_rate,
         category_result: data.category_result,
+        category_color: data.category_color,
       },
     });
   } catch (error) {
@@ -201,6 +202,7 @@ const paginationByUserService = async (userId, page, limit, skip, query) => {
         mean: true,
         heart_rate: true,
         category_result: true,
+        category_color: true,
         timestamp: true,
       },
     });

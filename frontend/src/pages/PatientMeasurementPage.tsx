@@ -55,6 +55,7 @@ type PatientMeasurementsProps = {
   mean: number;
   heart_rate: number;
   category_result: string;
+  category_color: string;
   timestamp: string;
 };
 
@@ -346,15 +347,11 @@ export const PatientMeasurements = () => {
                           {item.heart_rate}
                         </TableCell>
                         <TableCell className="pl-10 px-10 text-center">
-                          {item.category_result === "Unknown" ? (
-                            <div className="bg-gray-300 rounded-full py-2">
-                              {item.category_result}
-                            </div>
-                          ) : (
-                            <div className="bg-[#1EFE0A] rounded-full py-2">
-                              {item.category_result}
-                            </div>
-                          )}
+                          <div
+                            className={`bg-[${item.category_color}] rounded-full py-2`}
+                          >
+                            {item.category_result}
+                          </div>
                         </TableCell>
                         <TableCell className="text-center">
                           {new Date(item.timestamp).toLocaleString("en-US", {

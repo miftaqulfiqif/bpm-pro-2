@@ -6,6 +6,7 @@ import patientsIcon from "@/assets/icons/patients-icon.png";
 import patientsIconActive from "@/assets/icons/patients-icon-white.png";
 import patientMeasurementIcon from "@/assets/icons/patient-measurements.png";
 import patientMeasurementIconActive from "@/assets/icons/patient-measurement-white.png";
+import avatarIcon from "@/assets/icons/avatar.png";
 
 import { LayoutDashboardIcon, HeartPulse } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -82,11 +83,12 @@ export const Navbar = ({ className, title }: NavbarProps) => {
             onClick={handleOption}
             className="flex flex-row gap-4 bg-white px-6 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] items-center"
           >
+            {}
             <img
-              src="https://i.pravatar.cc/150?img=1"
+              src={user?.profile_picture?.path || avatarIcon}
               className="w-14 h-14 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)]"
               alt=""
-            />{" "}
+            />
             <div className="mr-4">
               <div className="flex flex-col gap-1">
                 <p className="font-semibold">{user?.name}</p>

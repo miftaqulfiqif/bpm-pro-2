@@ -7,10 +7,16 @@ import {
   ReactNode,
 } from "react";
 
+interface ProfilePicture {
+  id: number;
+  user_id: string;
+  path: string;
+}
 interface User {
   id: string;
   name: string;
   username: string;
+  profile_picture?: ProfilePicture;
 }
 
 interface AuthContextProps {
