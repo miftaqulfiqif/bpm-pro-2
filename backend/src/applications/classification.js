@@ -1,13 +1,19 @@
 import { prismaClient } from "./database.js";
 
+/**
+ *
+ * @param {number} systolic - Tekanan darah sistolik
+ * @param {number} diastolic - Tekanan darah diastolik
+ * @param {string} patient_date_of_birth - Format: YYYY-MM-DD
+ * @param {string} patient_gender - 'male' atau 'female'
+ * @returns {Promise<{ name: string, color: string } | null>}
+ */
 export async function classifyBloodPressure(
   systolic,
   diastolic,
   patient_date_of_birth,
   patient_gender
 ) {
-  let classification = "Unknown";
-
   const today = new Date();
   const birthDate = new Date(patient_date_of_birth);
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -16,80 +22,40 @@ export async function classifyBloodPressure(
     age--;
   }
 
-  let categoryResults = await prismaClient.categoryResult.findMany();
+  let categoryResults = await prismaClient.categoryResult.findMany({
+    where: {
+      OR: [{ gender: patient_gender }, { gender: "any" }],
+    },
+    orderBy: { id: "asc" },
+  });
 
   if (categoryResults.length === 0) {
-    categoryResults = [
-      {
-        name: "Normal",
-        min_systolic: 90,
-        max_systolic: 120,
-        min_diastolic: 60,
-        max_diastolic: 80,
-        age_min: 18,
-        age_max: 40,
-        gender: "male",
+    categoryResults = await prismaClient.defaultCategoryResult.findMany({
+      where: {
+        OR: [{ gender: patient_gender }, { gender: "any" }],
       },
-      {
-        name: "Normal",
-        min_systolic: 90,
-        max_systolic: 125,
-        min_diastolic: 60,
-        max_diastolic: 80,
-        age_min: 18,
-        age_max: 40,
-        gender: "female",
-      },
-      {
-        name: "Elevated",
-        min_systolic: 121,
-        max_systolic: 129,
-        min_diastolic: 60,
-        max_diastolic: 80,
-        age_min: 18,
-        age_max: 60,
-        gender: "male",
-      },
-      {
-        name: "Hypertension Stage 1",
-        min_systolic: 130,
-        max_systolic: 139,
-        min_diastolic: 80,
-        max_diastolic: 89,
-        age_min: 18,
-        age_max: 60,
-        gender: "any",
-      },
-      {
-        name: "Hypertension Stage 2",
-        min_systolic: 140,
-        max_systolic: 180,
-        min_diastolic: 90,
-        max_diastolic: 120,
-        age_min: 18,
-        age_max: 100,
-        gender: "any",
-      },
-    ];
+      orderBy: { id: "asc" },
+    });
   }
 
   for (const result of categoryResults) {
-    const ageMatch = age >= result.age_min && age <= result.age_max;
-    const genderMatch =
-      result.gender === "any" || result.gender === patient_gender;
+    const systolicInRange =
+      systolic >= result.min_systolic && systolic <= result.max_systolic;
+    const diastolicInRange =
+      diastolic >= result.min_diastolic && diastolic <= result.max_diastolic;
 
-    if (
-      systolic >= result.min_systolic &&
-      systolic <= result.max_systolic &&
-      diastolic >= result.min_diastolic &&
-      diastolic <= result.max_diastolic &&
-      ageMatch &&
-      genderMatch
-    ) {
-      classification = result.name;
-      break;
+    const ageRequired = result.is_age_required ?? false;
+    const ageMatch = ageRequired
+      ? age >= (result.min_age ?? 0) && age <= (result.max_age ?? 0)
+      : true;
+
+    if (systolicInRange && diastolicInRange && ageMatch) {
+      return {
+        name: result.name,
+        color: result.color,
+      };
     }
   }
 
-  return classification;
+  return null;
 }

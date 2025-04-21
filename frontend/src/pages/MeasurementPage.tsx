@@ -27,6 +27,7 @@ export default function MeasurementPage() {
     result,
     clearResult,
     categoryResult,
+    categoryColor,
     token,
   } = useCounter();
 
@@ -105,6 +106,7 @@ export default function MeasurementPage() {
             mean: result.mean,
             heart_rate: result.heart_rate,
             category_result: categoryResult,
+            category_color: categoryColor,
           },
           {
             headers: {
@@ -241,7 +243,9 @@ export default function MeasurementPage() {
                 className={`px-8 py-2 rounded-full h-fit transition-opacity ${
                   categoryResult ? "opacity-100" : "opacitiy-0 invisible"
                 } ${
-                  categoryResult === "Unknown" ? "bg-gray-300" : "bg-[#1EFE0A]"
+                  categoryResult === "Unknown"
+                    ? "bg-gray-300"
+                    : `bg-[${categoryColor}]`
                 }`}
               >
                 <p className="text-2xl">{categoryResult}</p>

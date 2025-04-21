@@ -11,6 +11,8 @@ import { prismaClient } from "../applications/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import { validate } from "../validation/validation.js";
 import { v4 as uuid } from "uuid";
+import path from "path";
+import fs from "fs";
 
 const registerService = async (request) => {
   try {
@@ -266,6 +268,41 @@ const updatePasswordService = async (user, body) => {
   }
 };
 
+const updateProfilePictureService = async (userId, file) => {
+  if (!file) {
+    throw new ResponseError(401, "No file uploaded");
+  }
+
+  const filePath = `/uploads/profile_pictures/${file.filename}`;
+
+  const oldPicture = await prismaClient.profilePicture.findFirst({
+    where: { user_id: userId },
+    orderBy: { id: "desc" },
+  });
+
+  // Hapus file lama dari filesystem kalau ada
+  if (oldPicture) {
+    const absolutePath = path.resolve(`.${oldPicture.path}`);
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
+    }
+
+    await prismaClient.profilePicture.delete({
+      where: { id: oldPicture.id },
+    });
+  }
+
+  // Simpan file baru ke DB
+  await prismaClient.profilePicture.create({
+    data: {
+      user_id: userId,
+      path: filePath,
+    },
+  });
+
+  return filePath;
+};
+
 export {
   registerService,
   loginService,
@@ -275,4 +312,5 @@ export {
   deleteService,
   updateService,
   updatePasswordService,
+  updateProfilePictureService,
 };

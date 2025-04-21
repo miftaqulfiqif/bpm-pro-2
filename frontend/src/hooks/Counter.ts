@@ -15,6 +15,7 @@ export const useCounter = () => {
     heart_rate: 0,
   });
   const [categoryResult, setCategoryResult] = useState("");
+  const [categoryColor, setCategoryColor] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const token = localStorage.getItem("token");
@@ -62,7 +63,9 @@ export const useCounter = () => {
         }
       )
       .then((res) => {
-        setCategoryResult(res.data.data);
+        console.log(res);
+        setCategoryResult(res.data.data.name);
+        setCategoryColor(res.data.data.color);
         return res;
       });
   };
@@ -85,7 +88,7 @@ export const useCounter = () => {
         patient_date_of_birth: patient.date_of_birth,
         patient_gender: patient.gender,
         data_measure: {
-          systolic: 120,
+          systolic: 129,
           diastolic: 80,
           mean: 23,
           heart_rate: 20,
@@ -220,6 +223,7 @@ export const useCounter = () => {
     result,
     setResult,
     categoryResult,
+    categoryColor,
     clearResult,
     items,
     token,

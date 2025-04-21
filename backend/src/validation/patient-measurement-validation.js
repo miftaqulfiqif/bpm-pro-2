@@ -8,6 +8,7 @@ const createValidation = Joi.object({
   mean: Joi.number().required(),
   heart_rate: Joi.number().required(),
   category_result: Joi.string().required(),
+  category_color: Joi.string().required(),
 });
 
 const classificationValidation = Joi.object({

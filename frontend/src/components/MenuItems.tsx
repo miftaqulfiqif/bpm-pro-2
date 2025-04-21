@@ -1,5 +1,7 @@
 import person from "@/assets/icons/profile-icon.png";
-import { useState } from "react";
+import avatarIcon from "@/assets/icons/avatar.png";
+
+import { ChangeEvent, ChangeEventHandler, useRef, useState } from "react";
 import axios from "axios";
 import { Category } from "@/models/Categories";
 import { ListOfCategories } from "@/components/ui/list-of-categories";
@@ -46,6 +48,16 @@ export const MenuItems = ({
   setNewPassword,
 }: MenuItemsProps) => {
   const [categoryOpen, setCategoryOpen] = useState<number[]>([]);
+  const [image, setImage] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -102,12 +114,22 @@ export const MenuItems = ({
             <p>Avatar</p>
             <div className="flex flex-row gap-6">
               <img
-                src="https://i.pravatar.cc/150?img=1"
-                className="w-26 h-26 rounded-full"
-                alt=""
+                src={image || avatarIcon}
+                className="w-26 h-26 rounded-full object-cover"
+                alt="Avatar"
               />
-              <div className="flex flex-col gap-2 cursor-pointer">
-                <div className="border-2 border-[#ECECEC] rounded-xl px-6 py-2 w-fit">
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef as React.RefObject<HTMLInputElement>}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+              <div className="flex flex-col gap-2 ">
+                <div
+                  className="border-2 border-[#ECECEC] rounded-xl px-6 py-2 w-fit cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <p>Change new image</p>
                 </div>
                 <p className="text-gray-400">

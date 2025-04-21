@@ -8,6 +8,7 @@ import {
   deleteService,
   updateService,
   updatePasswordService,
+  updateProfilePictureService,
 } from "../services/user-service.js";
 const register = async (req, res, next) => {
   try {
@@ -110,6 +111,21 @@ const updatePassword = async (req, res, next) => {
   }
 };
 
+const updateProfilePicture = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const file = req.file;
+    const path = await updateProfilePictureService(userId, file);
+    res.status(200).json({
+      message: "Profile picture updated successfully",
+      data: path,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to upload profile picture" });
+  }
+};
+
 export default {
   register,
   login,
@@ -119,4 +135,5 @@ export default {
   deleteUser,
   update,
   updatePassword,
+  updateProfilePicture,
 };

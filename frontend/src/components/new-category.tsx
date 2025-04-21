@@ -28,16 +28,17 @@ export const NewCategory = ({
 }: NewCategoryProps) => {
   const [genderChecked, setGenderChecked] = useState(false);
   const [ageChecked, setAgeChecked] = useState(false);
+  const [categoryColor, setCategoryColor] = useState("blue-200");
 
   const formik = useFormik({
     initialValues: {
       name: "",
       description: "",
-      category_color: "#0D00FF",
-      age_required: false,
+      color: "#0D00FF",
+      is_age_required: false,
       gender_required: false,
-      min_age: "",
-      max_age: "",
+      min_age: 0,
+      max_age: 0,
       gender: "any",
       min_systolic: "",
       max_systolic: "",
@@ -47,11 +48,11 @@ export const NewCategory = ({
     validationSchema: yup.object().shape({
       name: yup.string().required("Category name is required"),
       description: yup.string().required("Description is required"),
-      category_color: yup.string().required("Category color is required"),
+      color: yup.string().required("Category color is required"),
       min_age: yup
         .number()
         .typeError("Min age must be a number")
-        .when("age_required", {
+        .when("is_age_required", {
           is: true,
           then: (schema) =>
             schema
@@ -62,7 +63,7 @@ export const NewCategory = ({
       max_age: yup
         .number()
         .typeError("Max age must be a number")
-        .when("age_required", {
+        .when("is_age_required", {
           is: true,
           then: (schema) =>
             schema
@@ -99,7 +100,7 @@ export const NewCategory = ({
     }),
     onSubmit: (values) => {
       console.log(values);
-      // handleSave(values);
+      handleSave(values);
     },
   });
 
@@ -107,11 +108,11 @@ export const NewCategory = ({
     if (!formik.values.gender_required) {
       formik.setFieldValue("gender", "any");
     }
-    if (!formik.values.age_required) {
+    if (!formik.values.is_age_required) {
       formik.setFieldValue("min_age", "");
       formik.setFieldValue("max_age", "");
     }
-  }, [formik.values.gender_required]);
+  }, [formik.values.gender_required, categoryColor]);
 
   const handleSave = async (values: any) => {
     try {
@@ -120,7 +121,8 @@ export const NewCategory = ({
         {
           name: values.name,
           description: values.description,
-          category_color: values.category_color,
+          is_age_required: values.is_age_required,
+          color: values.color,
           min_age: values.min_age,
           max_age: values.max_age,
           gender: values.gender,
@@ -185,20 +187,41 @@ export const NewCategory = ({
             </div>
             <div className="flex flex-col mb-4 gap-2 w-1/3">
               <p className="font-semibold">Category color</p>
-              <input
-                type="color"
-                name="category_color"
-                value={formik.values.category_color}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full h-full rounded-lg"
-              />
-              {formik.touched.category_color &&
-                formik.errors.category_color && (
-                  <p className="text-red-500 text-sm">
-                    {formik.errors.category_color}
-                  </p>
-                )}
+              <Select
+                value={formik.values.color}
+                onValueChange={(value) => {
+                  formik.setFieldValue("color", value);
+                  setCategoryColor(value);
+                }}
+              >
+                <SelectTrigger
+                  className={`w-[180px] bg-[${categoryColor}] border-0`}
+                >
+                  <SelectValue placeholder="Select a Color" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="#0040FF" className="hover:bg-[#0040FF]">
+                      Blue
+                    </SelectItem>
+                    <SelectItem value="#00FF6F" className="hover:bg-[#00FF6F]">
+                      Green
+                    </SelectItem>
+                    <SelectItem value="#FFE500" className="hover:bg-[#FFE500]">
+                      Yellow
+                    </SelectItem>
+                    <SelectItem value="#FF6600" className="hover:bg-[#FF6600]">
+                      Orange
+                    </SelectItem>
+                    <SelectItem value="#FF0000" className="hover:bg-[#FF0000]">
+                      Red
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {formik.touched.color && formik.errors.color && (
+                <p className="text-red-500 text-sm">{formik.errors.color}</p>
+              )}
             </div>
           </div>
           <div className="flex flex-col mb-6 ">
@@ -221,13 +244,13 @@ export const NewCategory = ({
               <div className="flex gap-2 items-center">
                 <input
                   type="checkbox"
-                  id="age_required"
-                  name="age_required"
-                  checked={formik.values.age_required}
+                  id="is_age_required"
+                  name="is_age_required"
+                  checked={formik.values.is_age_required}
                   onChange={() => {
                     formik.setValues({
                       ...formik.values,
-                      age_required: !formik.values.age_required,
+                      is_age_required: !formik.values.is_age_required,
                     });
                     setAgeChecked(!ageChecked);
                   }}
@@ -240,7 +263,7 @@ export const NewCategory = ({
                   onClick={() => {
                     formik.setValues({
                       ...formik.values,
-                      age_required: !formik.values.age_required,
+                      is_age_required: !formik.values.is_age_required,
                     });
                     setAgeChecked(!ageChecked);
                   }}
@@ -255,7 +278,7 @@ export const NewCategory = ({
                 </div>
 
                 <label
-                  htmlFor="age_required"
+                  htmlFor="is_age_required"
                   className="font-semibold cursor-pointer"
                 >
                   Require Age
