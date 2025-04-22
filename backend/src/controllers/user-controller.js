@@ -1,3 +1,7 @@
+import path from "path";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import { logger } from "../applications/logging.js";
 import {
   registerService,
@@ -10,6 +14,10 @@ import {
   updatePasswordService,
   updateProfilePictureService,
 } from "../services/user-service.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const register = async (req, res, next) => {
   try {
     const result = await registerService(req.body);
@@ -31,6 +39,7 @@ const login = async (req, res, next) => {
           id: result.id,
           name: result.name,
           username: result.username,
+          profile_picture: result.profile_picture,
         },
       },
     });
@@ -126,6 +135,26 @@ const updateProfilePicture = async (req, res, next) => {
   }
 };
 
+const showProfilePicture = async (req, res, next) => {
+  try {
+    const filename = req.params.filename;
+    const filePath = path.join(
+      __dirname,
+      "../../uploads/profile_pictures",
+      filename
+    );
+
+    console.log("File path :", filePath);
+
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: "File not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   register,
   login,
@@ -136,4 +165,5 @@ export default {
   update,
   updatePassword,
   updateProfilePicture,
+  showProfilePicture,
 };

@@ -17,18 +17,20 @@ import { ConfirmDelete } from "@/components/ConfirmDelete.tsx";
 import { useAuth } from "@/contexts/AuthContext.tsx";
 
 export default function SettingsPage() {
-  const { user, login } = useAuth();
+  const { user, login, setUser } = useAuth();
 
   const [state, setState] = useState("Edit Profile");
   const [form, setForm] = useState(false);
   const [formDelete, setFormDelete] = useState(false);
 
   const [name, setName] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isDefaultCategory, setIsDefaultCategory] = useState(true);
 
   const [animationKey, setAnimationKey] = useState(0);
 
@@ -64,57 +66,83 @@ export default function SettingsPage() {
       });
   };
 
-  const changeProfil = (id: string, values: any) => {
+  const changeProfil = async (id: string, values: any) => {
     try {
-      axios
-        .patch(
-          "http://localhost:3000/api/user/update",
-          {
-            name: values.name,
-            username: values.username,
-            password: values.password,
+      // Update Profile
+      const profileRes = await axios.patch(
+        "http://localhost:3000/api/user/update",
+        {
+          name: values.name,
+          username: values.username,
+          password: values.password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+        }
+      );
+
+      if (profileRes.status === 200) {
+        const { token, name, username } = profileRes.data.data;
+        const updatedUser = { id, name, username };
+        login(token, updatedUser);
+        setFormDelete(false);
+      }
+
+      // Update Profile Picture
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("profile_picture", selectedFile);
+
+        const photoRes = await axios.post(
+          "http://localhost:3000/api/user/update-profile-picture",
+          formData,
           {
             headers: {
+              "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            console.log(response.data);
+        );
 
-            const { token, name, username } = response.data.data;
-            const updatedUser = { id, name, username };
-            login(token, updatedUser);
-          } else if (response.status === 401) {
-            console.log(response.data);
-          }
-          setFormDelete(false);
-        })
-        .catch((error) => {
-          console.log(error.response.data.errors);
-        });
-    } catch (error) {
-      console.error(error);
+        if (photoRes.status === 200) {
+          console.log("Profile picture updated:", photoRes.data);
+          const updatedPath = photoRes.data.data;
+          console.log(updatedPath);
+        }
+      }
+    } catch (error: any) {
+      console.error(error?.response?.data?.errors || error);
     }
   };
 
-  const fetchCategories = () => {
-    axios
-      .get("http://localhost:3000/api/category-results", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          setCategories(response.data.data);
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const res = await axios.get(
+        "http://localhost:3000/api/all-category-results",
+        { headers }
+      );
+
+      if (res.status === 200 && res.data.data.length > 0) {
+        setIsDefaultCategory(false);
+        setCategories(res.data.data);
+      } else {
+        setIsDefaultCategory(true);
+        const defaultRes = await axios.get(
+          "http://localhost:3000/api/default-category-results",
+          { headers }
+        );
+        if (defaultRes.status === 200) {
+          setCategories(defaultRes.data.data);
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
   };
 
   return (
@@ -168,9 +196,11 @@ export default function SettingsPage() {
               setForm={setForm}
               setFormDelete={setFormDelete}
               categories={categories}
+              isDefaultCategory={isDefaultCategory}
               closeModal={() => setFormDelete(false)}
               name={name}
               setName={setName}
+              setSelectedFile={setSelectedFile}
               changeProfil={changeProfil}
               changePassword={changePassword}
               currentPassword={currentPassword}

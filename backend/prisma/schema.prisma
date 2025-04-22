@@ -29,7 +29,7 @@ model User {
   category_result CategoryResult[]
   default_category_result DefaultCategoryResult[]
   patient_measurement PatientMeasurement[]
-  profile_picture ProfilePicture[]
+  profile_picture ProfilePicture?
 
   @@map("users")
 }
@@ -126,10 +126,10 @@ model DefaultCategoryResult {
 
 model ProfilePicture {
   id Int @id @default(autoincrement())
-  user_id String
+  user_id String @unique
   path String
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("profile_pictures")
 }

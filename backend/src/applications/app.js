@@ -23,5 +23,6 @@ app.use(cors());
 app.use(publicRouter);
 app.use(privateRouter);
 app.use(errorMiddleware);
+app.use("/uploads", express.static("uploads"));
 
 export { app, server, io, port };

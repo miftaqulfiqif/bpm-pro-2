@@ -17,7 +17,8 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ className, title }: NavbarProps) => {
-  const { user, logout } = useAuth();
+  const { user, profilePicture, logout } = useAuth();
+
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState("");
   const [isActive, setIsActive] = useState(false);
@@ -83,9 +84,8 @@ export const Navbar = ({ className, title }: NavbarProps) => {
             onClick={handleOption}
             className="flex flex-row gap-4 bg-white px-6 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] items-center"
           >
-            {}
             <img
-              src={user?.profile_picture?.path || avatarIcon}
+              src={profilePicture || avatarIcon}
               className="w-14 h-14 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)]"
               alt=""
             />
