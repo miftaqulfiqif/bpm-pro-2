@@ -22,6 +22,8 @@ interface User {
 interface AuthContextProps {
   isAuthenticated: boolean;
   user: User | null;
+  profilePicture: string;
+  setUser?: React.Dispatch<React.SetStateAction<User | null>>;
   login: (token: string, user: User) => void;
   logout: () => void;
   isLoading: boolean;
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [profilePicture, setProfilePicture] = useState("");
 
   const clearAllLocalStorage = () => {
     localStorage.clear();
@@ -53,6 +56,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    if (user?.profile_picture) {
+      const path = user?.profile_picture.path;
+      const imageUrl = `http://localhost:3000/uploads/profile-pictures/${path}`;
+      setProfilePicture(imageUrl);
+    }
+  }, [user]);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
@@ -69,6 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             },
           })
           .then((response) => {
+            const updatedUser = response.data.data;
+            setUser(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
             if (response.status !== 200) {
               console.warn("Token invalid, logout ... ");
               setIsAuthenticated(false);
@@ -101,7 +116,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, isLoading }}
+      value={{
+        isAuthenticated,
+        user,
+        profilePicture,
+        setUser,
+        login,
+        logout,
+        isLoading,
+      }}
     >
       {!isLoading && children}
     </AuthContext.Provider>

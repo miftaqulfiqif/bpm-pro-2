@@ -4,6 +4,7 @@ import {
   getAllByUserIdService,
   updateService,
   deleteService,
+  getDefaultCategoryService,
 } from "../services/category-result-service.js";
 
 const create = async (req, res, next) => {
@@ -39,6 +40,17 @@ const getAllByUserId = async (req, res, next) => {
   }
 };
 
+const getDefaultCategory = async (req, res, next) => {
+  try {
+    const result = await getDefaultCategoryService();
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const update = async (req, res, next) => {
   try {
     const result = await updateService(req.user.id, req.params.id, req.body);
@@ -63,4 +75,11 @@ const deleteCategoryResult = async (req, res, next) => {
   }
 };
 
-export default { create, getAll, getAllByUserId, update, deleteCategoryResult };
+export default {
+  create,
+  getAll,
+  getDefaultCategory,
+  getAllByUserId,
+  update,
+  deleteCategoryResult,
+};

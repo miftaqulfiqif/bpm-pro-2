@@ -20,7 +20,6 @@ export const ConfirmDelete = ({
   closeModal,
   state,
   changeProfil,
-
   name,
 }: Props) => {
   const { user, login } = useAuth();

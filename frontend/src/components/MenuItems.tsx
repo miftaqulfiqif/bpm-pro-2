@@ -1,7 +1,13 @@
 import person from "@/assets/icons/profile-icon.png";
 import avatarIcon from "@/assets/icons/avatar.png";
 
-import { ChangeEvent, ChangeEventHandler, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 import { Category } from "@/models/Categories";
 import { ListOfCategories } from "@/components/ui/list-of-categories";
@@ -16,10 +22,12 @@ type MenuItemsProps = {
   setFormDelete: React.Dispatch<React.SetStateAction<boolean>>;
   fetchCategories: () => void;
   categories: Category[];
+  isDefaultCategory: boolean;
   closeModal: () => void;
 
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
   changeProfil: (id: string, values: any) => void;
 
   changePassword: (values: any) => void;
@@ -35,10 +43,12 @@ export const MenuItems = ({
   setFormDelete,
   fetchCategories,
   categories,
+  isDefaultCategory,
   closeModal,
 
   name,
   setName,
+  setSelectedFile,
   changeProfil,
 
   changePassword,
@@ -47,6 +57,7 @@ export const MenuItems = ({
   newPassword,
   setNewPassword,
 }: MenuItemsProps) => {
+  const { profilePicture } = useAuth();
   const [categoryOpen, setCategoryOpen] = useState<number[]>([]);
   const [image, setImage] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -54,6 +65,7 @@ export const MenuItems = ({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
     }
@@ -114,7 +126,7 @@ export const MenuItems = ({
             <p>Avatar</p>
             <div className="flex flex-row gap-6">
               <img
-                src={image || avatarIcon}
+                src={image || profilePicture || avatarIcon}
                 className="w-26 h-26 rounded-full object-cover"
                 alt="Avatar"
               />
@@ -229,7 +241,7 @@ export const MenuItems = ({
             </a>
           </div>
           <div className="flex flex-col gap-4">
-            <p>List of categories</p>
+            <p>{`List of categories ${isDefaultCategory ? "default" : ""}`}</p>
             <hr className="border-t-2 border-[#ECECEC]" />
             <div className="flex flex-col gap-4">
               {categories?.map((category) => (
@@ -242,7 +254,12 @@ export const MenuItems = ({
                     maxSystolic: category.max_systolic,
                     minDiastolic: category.min_diastolic,
                     maxDiastolic: category.max_diastolic,
+                    minAge: category.min_age,
+                    maxAge: category.max_age,
+                    color: category.color,
+                    gender: category.gender,
                   }}
+                  isDefaultCategory={isDefaultCategory}
                   deleteCategory={deleteCategory}
                   categoryOpen={toggleCategory}
                   isOpen={categoryOpen.includes(category.id)}

@@ -99,7 +99,6 @@ export const NewCategory = ({
         .required("Max diastolic is required"),
     }),
     onSubmit: (values) => {
-      console.log(values);
       handleSave(values);
     },
   });
@@ -109,8 +108,8 @@ export const NewCategory = ({
       formik.setFieldValue("gender", "any");
     }
     if (!formik.values.is_age_required) {
-      formik.setFieldValue("min_age", "");
-      formik.setFieldValue("max_age", "");
+      formik.setFieldValue("min_age", 0);
+      formik.setFieldValue("max_age", 0);
     }
   }, [formik.values.gender_required, categoryColor]);
 

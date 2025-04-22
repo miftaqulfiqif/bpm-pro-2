@@ -88,6 +88,11 @@ const loginService = async (request) => {
         id: true,
         name: true,
         username: true,
+        profile_picture: {
+          select: {
+            path: true,
+          },
+        },
       },
     });
   } catch (e) {
@@ -107,6 +112,11 @@ const getCurrentUserService = async (username) => {
         id: true,
         name: true,
         username: true,
+        profile_picture: {
+          select: {
+            path: true,
+          },
+        },
       },
     });
 
@@ -201,10 +211,6 @@ const updateService = async (user, body) => {
       },
     });
 
-    if (usernameFound.length > 1) {
-      throw new ResponseError(400, "Username already exists");
-    }
-
     if (!isValidPassword) {
       throw new ResponseError(401, "Password wrong");
     }
@@ -273,14 +279,13 @@ const updateProfilePictureService = async (userId, file) => {
     throw new ResponseError(401, "No file uploaded");
   }
 
-  const filePath = `/uploads/profile_pictures/${file.filename}`;
+  const filePath = `/uploads/profile-pictures/${file.filename}`;
 
   const oldPicture = await prismaClient.profilePicture.findFirst({
     where: { user_id: userId },
     orderBy: { id: "desc" },
   });
 
-  // Hapus file lama dari filesystem kalau ada
   if (oldPicture) {
     const absolutePath = path.resolve(`.${oldPicture.path}`);
     if (fs.existsSync(absolutePath)) {
@@ -296,7 +301,7 @@ const updateProfilePictureService = async (userId, file) => {
   await prismaClient.profilePicture.create({
     data: {
       user_id: userId,
-      path: filePath,
+      path: file.filename,
     },
   });
 

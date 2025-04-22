@@ -86,6 +86,10 @@ privateRouter.get(
 privateRouter.post("/api/category-results", categoryResultController.create);
 privateRouter.get("/api/all-category-results", categoryResultController.getAll);
 privateRouter.get(
+  "/api/default-category-results",
+  categoryResultController.getDefaultCategory
+);
+privateRouter.get(
   "/api/category-results",
   categoryResultController.getAllByUserId
 );

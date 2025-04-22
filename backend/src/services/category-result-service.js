@@ -25,13 +25,11 @@ const createService = async (userId, body) => {
       ],
     };
 
-    // Tambahkan filter usia hanya jika is_age_required aktif
     if (data.is_age_required) {
       whereClause.min_age = { lte: data.max_age };
       whereClause.max_age = { gte: data.min_age };
       whereClause.is_age_required = true;
     } else {
-      // Untuk mencocokkan data yang tidak punya syarat usia
       whereClause.is_age_required = false;
     }
 
@@ -46,7 +44,6 @@ const createService = async (userId, body) => {
       );
     }
 
-    // Simpan data baru
     return await prismaClient.categoryResult.create({
       data: {
         user_id: userId,
@@ -83,6 +80,14 @@ const getAllByUserIdService = async (userId) => {
         user_id: userId,
       },
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getDefaultCategoryService = async () => {
+  try {
+    return await prismaClient.defaultCategoryResult.findMany({});
   } catch (error) {
     throw error;
   }
@@ -185,6 +190,7 @@ const deleteService = async (userId, categoryId) => {
 export {
   createService,
   getAllService,
+  getDefaultCategoryService,
   getAllByUserIdService,
   updateService,
   deleteService,
