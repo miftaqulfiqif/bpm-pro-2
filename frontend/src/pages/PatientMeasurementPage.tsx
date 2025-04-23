@@ -89,9 +89,7 @@ export const PatientMeasurements = () => {
       const response = await axios.get(
         "http://localhost:3000/api/patient-measurements-pagination-by-user",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           params: {
             page: currentPage,
             limit: limit,
@@ -113,9 +111,7 @@ export const PatientMeasurements = () => {
       const response = await axios.get(
         "http://localhost:3000/api/patient-measurements-pagination-by-user",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           params: {
             page: currentPage,
             limit: limit,
@@ -141,9 +137,7 @@ export const PatientMeasurements = () => {
           patientMeasurements,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           responseType: "blob",
         }
       );

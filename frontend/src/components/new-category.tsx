@@ -131,9 +131,7 @@ export const NewCategory = ({
           max_diastolic: values.max_diastolic,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         }
       );
 

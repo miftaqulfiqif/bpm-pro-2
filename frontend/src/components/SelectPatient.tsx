@@ -41,9 +41,7 @@ export const SelectPatient = ({
       const response = await axios.get(
         `http://localhost:3000/api/patients/search?query=${query}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       );
       setPatients(response.data?.data || []);

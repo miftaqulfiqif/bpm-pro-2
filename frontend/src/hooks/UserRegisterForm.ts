@@ -4,13 +4,26 @@ import axios from "axios";
 
 export const useRegisterForm = () => {
   const registerUser = async () => {
-    const response = await axios
-      .post("http://localhost:3000/api/users", formik.values)
-      .then(function (response) {
-        if (response.status === 200) {
-          window.location.href = "/login";
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users",
+        formik.values
+      );
+
+      if (response.status === 200) {
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          formik.setStatus(error.response.data.errors);
+        } else {
+          formik.setStatus("An error occurred, please try again.");
         }
-      });
+      } else {
+        formik.setStatus("Unexpected error occurred.");
+      }
+    }
   };
 
   const formik = useFormik({

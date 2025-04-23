@@ -4,6 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { NumberDomain } from "recharts/types/util/types";
 import { io, Socket } from "socket.io-client";
 
+type CategoryResult = {
+  name: string;
+  color: string;
+};
+
 export const useCounter = () => {
   const [userId, setUserId] = useState("default_user_id");
   const [message, setMessage] = useState("Waiting for data...");
@@ -14,7 +19,7 @@ export const useCounter = () => {
     mean: 0,
     heart_rate: 0,
   });
-  const [categoryResult, setCategoryResult] = useState("");
+  const [categoryResult, setCategoryResult] = useState<CategoryResult>();
   const [categoryColor, setCategoryColor] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
@@ -57,15 +62,12 @@ export const useCounter = () => {
           patient_gender: patient_gender,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       )
       .then((res) => {
-        console.log(res);
-        setCategoryResult(res.data.data.name);
-        setCategoryColor(res.data.data.color);
+        console.log(res.data.data);
+        setCategoryResult(res.data.data);
         return res;
       });
   };
@@ -77,7 +79,10 @@ export const useCounter = () => {
       mean: 0,
       heart_rate: 0,
     });
-    setCategoryResult("");
+    setCategoryResult({
+      color: "",
+      name: "",
+    });
     setButtonLoading(false);
   };
 
@@ -122,9 +127,7 @@ export const useCounter = () => {
     setStart(true);
     const userId = await axios
       .get("http://localhost:3000/api/user/current", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true,
       })
       .then((response) => {
         return response.data.data.username;

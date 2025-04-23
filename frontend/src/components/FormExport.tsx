@@ -17,9 +17,7 @@ const FormExport: React.FC<FormExportProps> = ({ patients }) => {
         "http://localhost:3000/api/export-patients",
         { patients: patientsToExport },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           responseType: "blob",
         }
       );

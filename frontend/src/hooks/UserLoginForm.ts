@@ -8,21 +8,36 @@ export const useLoginForm = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const loginUser = () => {
-    axios
-      .post("http://localhost:3000/api/users/login", formik.values)
-      .then((response) => {
-        if (response.status === 200) {
-          const token = response.data.data.token;
-          const user = response.data.data.user;
-          login(token, user);
-          navigate("/dashboard");
+  const loginUser = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users/login",
+        formik.values,
+        {
+          withCredentials: true,
         }
-      })
-      .catch((error) => {
-        console.log(error.response.data.errors);
-        formik.setStatus(error.response.data.errors);
-      });
+      );
+
+      if (response.status === 200) {
+        const user = response.data;
+        login(user);
+        navigate("/measurement");
+      } else {
+        formik.setStatus(response.data.errors || "Login failed.");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          formik.setStatus(
+            error.response.data.message || "Invalid credentials"
+          );
+        } else {
+          formik.setStatus("Network error, please try again.");
+        }
+      } else {
+        formik.setStatus("Unexpected error occurred.");
+      }
+    }
   };
 
   const formik = useFormik({

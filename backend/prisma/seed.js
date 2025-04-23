@@ -94,10 +94,10 @@ const bloodPressureCategories = [
 
 async function main() {
   const defaultUser = await prisma.user.upsert({
-    where: { id: "admin" },
+    where: { id: "ADM001" },
     update: {},
     create: {
-      id: "admin",
+      id: "ADM001",
       name: "Admin",
       username: "admin",
       password: "password",
