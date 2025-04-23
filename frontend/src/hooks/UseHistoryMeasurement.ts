@@ -25,9 +25,7 @@ export const useHistoryMeasurement = () => {
       const response = await axios.get<{ data: Measurement[] }>(
         `http://localhost:3000/api/history-measurement/${idPatient}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         }
       );
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { log } from "console";
 import {
   createContext,
   useContext,
@@ -24,7 +25,7 @@ interface AuthContextProps {
   user: User | null;
   profilePicture: string;
   setUser?: React.Dispatch<React.SetStateAction<User | null>>;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -41,8 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.clear();
   };
 
-  const login = (token: string, user: User) => {
-    localStorage.setItem("token", token);
+  const login = (user: User) => {
+    console.log(user);
     localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
     setIsAuthenticated(true);
@@ -64,33 +65,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (token && storedUser) {
+    if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+        setUser(parsedUser.data);
         setIsAuthenticated(true);
 
         axios
           .get("http://localhost:3000/api/user/current", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
           })
           .then((response) => {
             const updatedUser = response.data.data;
             setUser(updatedUser);
             localStorage.setItem("user", JSON.stringify(updatedUser));
-
-            if (response.status !== 200) {
-              console.warn("Token invalid, logout ... ");
-              setIsAuthenticated(false);
-              setUser(null);
-              clearAllLocalStorage();
-              window.location.href = "/login";
-            }
           })
           .catch((error) => {
             console.error("Auth validation error:", error);

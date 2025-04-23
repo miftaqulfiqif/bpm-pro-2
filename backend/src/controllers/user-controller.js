@@ -32,17 +32,15 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const result = await loginService(req.body);
-    res.status(200).json({
-      data: {
-        token: result.token,
-        user: {
-          id: result.id,
-          name: result.name,
-          username: result.username,
-          profile_picture: result.profile_picture,
-        },
-      },
+
+    res.cookie("token", result.token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
     });
+
+    const { token, ...userWithoutToken } = result;
+    res.status(200).json(userWithoutToken);
   } catch (e) {
     next(e);
   }
@@ -52,6 +50,7 @@ const get = async (req, res, next) => {
   try {
     const username = req.user.username;
     const result = await getCurrentUserService(username);
+
     res.status(200).json({
       data: result,
     });
@@ -76,12 +75,18 @@ const getId = async (req, res, next) => {
 const logout = async (req, res, next) => {
   try {
     const username = req.user.username;
+
     await logOutService(username);
-    res.status(200).json({
-      data: "OK",
-    });
+
+    res.clearCookie("token");
+
+    if (!res.headersSent) {
+      return res.status(200).json({ data: "OK" });
+    }
   } catch (error) {
-    next(error);
+    if (!res.headersSent) {
+      return next(error);
+    }
   }
 };
 

@@ -92,9 +92,7 @@ export const MenuItems = ({
   const deleteCategory = (id: number) => {
     axios
       .delete(`http://localhost:3000/api/category-results/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        withCredentials: true,
       })
       .then((response) => {
         console.log(response);

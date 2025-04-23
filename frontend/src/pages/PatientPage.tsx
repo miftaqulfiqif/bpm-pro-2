@@ -83,9 +83,7 @@ export const PatientPage = () => {
     try {
       await axios
         .delete(`http://localhost:3000/api/patient/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         })
         .then((response) => {
           if (response.status === 200) {
@@ -113,9 +111,7 @@ export const PatientPage = () => {
       const response = await axios.get(
         "http://localhost:3000/api/patients-pagination",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           params: {
             page: currentPage,
             limit: limit,
@@ -138,9 +134,7 @@ export const PatientPage = () => {
       const response = await axios.get(
         "http://localhost:3000/api/patients-pagination",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
           params: {
             page: currentPage,
             limit: limit,

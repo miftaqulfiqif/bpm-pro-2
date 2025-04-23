@@ -62,7 +62,7 @@ const loginService = async (request) => {
     });
 
     if (!userFound) {
-      throw new ResponseError(400, "Username or password wrong");
+      throw new ResponseError(401, "Username or password wrong");
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -104,7 +104,7 @@ const getCurrentUserService = async (username) => {
   try {
     username = validate(getUserValidation, username);
 
-    const userFound = prismaClient.user.findFirst({
+    const userFound = await prismaClient.user.findFirst({
       where: {
         username: username,
       },
@@ -153,19 +153,16 @@ const getIdService = async (token) => {
 
 const logOutService = async (username) => {
   try {
-    return prismaClient.user.update({
+    return await prismaClient.user.update({
+      where: {
+        username,
+      },
       data: {
         token: null,
       },
-      where: {
-        username: username,
-      },
-      select: {
-        token: true,
-      },
     });
   } catch (e) {
-    throw e;
+    throw new Error(`Failed to log out user ${username}: ${e.message}`);
   }
 };
 
@@ -203,16 +200,35 @@ const updateService = async (user, body) => {
   try {
     body = validate(updateUserValidation, body);
 
-    const isValidPassword = await bcrypt.compare(body.password, user.password);
+    const userFound = await prismaClient.user.findUnique({
+      where: {
+        username: user.username,
+      },
+      select: {
+        id: true,
+        password: true,
+      },
+    });
 
-    const usernameFound = await prismaClient.user.findMany({
+    const isValidPassword = await bcrypt.compare(
+      body.password,
+      userFound.password
+    );
+
+    if (!isValidPassword) {
+      throw new ResponseError(401, "Password wrong");
+    }
+
+    const checkUsername = await prismaClient.user.findMany({
       where: {
         username: body.username,
       },
     });
 
-    if (!isValidPassword) {
-      throw new ResponseError(401, "Password wrong");
+    console.log(checkUsername.length);
+
+    if (checkUsername.length > 2) {
+      throw new ResponseError(400, "Username already exists");
     }
 
     const data = {};
@@ -227,20 +243,16 @@ const updateService = async (user, body) => {
       data.new_password = await bcrypt.hash(body.new_password, 10);
     }
 
-    const token = uuid().toString();
-
     return prismaClient.user.update({
       where: {
         id: user.id,
       },
       data: {
         ...data,
-        token: token,
       },
       select: {
         name: true,
         username: true,
-        token: true,
       },
     });
   } catch (error) {

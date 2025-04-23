@@ -53,9 +53,7 @@ export default function SettingsPage() {
           new_password: values.newPassword,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         }
       )
       .then((response) => {
@@ -77,16 +75,14 @@ export default function SettingsPage() {
           password: values.password,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         }
       );
 
       if (profileRes.status === 200) {
-        const { token, name, username } = profileRes.data.data;
+        const { name, username } = profileRes.data.data;
         const updatedUser = { id, name, username };
-        login(token, updatedUser);
+        login(updatedUser);
         setFormDelete(false);
       }
 
@@ -99,10 +95,7 @@ export default function SettingsPage() {
           "http://localhost:3000/api/user/update-profile-picture",
           formData,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true,
           }
         );
 
@@ -119,12 +112,9 @@ export default function SettingsPage() {
 
   const fetchCategories = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
-
       const res = await axios.get(
         "http://localhost:3000/api/all-category-results",
-        { headers }
+        { withCredentials: true }
       );
 
       if (res.status === 200 && res.data.data.length > 0) {
@@ -134,7 +124,7 @@ export default function SettingsPage() {
         setIsDefaultCategory(true);
         const defaultRes = await axios.get(
           "http://localhost:3000/api/default-category-results",
-          { headers }
+          { withCredentials: true }
         );
         if (defaultRes.status === 200) {
           setCategories(defaultRes.data.data);

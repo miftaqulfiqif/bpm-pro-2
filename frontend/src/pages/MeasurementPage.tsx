@@ -88,9 +88,7 @@ export default function MeasurementPage() {
             date_of_birth: patient?.date_of_birth,
           },
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
           }
         );
       }
@@ -109,9 +107,7 @@ export default function MeasurementPage() {
             category_color: categoryColor,
           },
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
           }
         )
         .then((response) => {
@@ -241,14 +237,12 @@ export default function MeasurementPage() {
               <p className="text-2xl">Measurement Result</p>
               <div
                 className={`px-8 py-2 rounded-full h-fit transition-opacity ${
-                  categoryResult ? "opacity-100" : "opacitiy-0 invisible"
-                } ${
-                  categoryResult === "Unknown"
-                    ? "bg-gray-300"
-                    : `bg-[${categoryColor}]`
+                  categoryResult?.name
+                    ? "opacity-100 bg-[#FFE500]"
+                    : "opacitiy-0 invisible"
                 }`}
               >
-                <p className="text-2xl">{categoryResult}</p>
+                <p className="text-2xl">{categoryResult?.name}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

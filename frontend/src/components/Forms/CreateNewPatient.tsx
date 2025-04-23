@@ -49,9 +49,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
             work: patient.work,
           },
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true,
           }
         )
         .then((response) => {
@@ -86,9 +84,7 @@ export const CreateNewPatient = (props: CreateNewPatientProps) => {
           work: values.work,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true,
         }
       );
 
