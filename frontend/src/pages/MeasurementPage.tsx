@@ -103,8 +103,8 @@ export default function MeasurementPage() {
             diastolic: result.diastolic,
             mean: result.mean,
             heart_rate: result.heart_rate,
-            category_result: categoryResult,
-            category_color: categoryColor,
+            category_result: categoryResult?.name,
+            category_color: categoryResult?.color,
           },
           {
             withCredentials: true,
