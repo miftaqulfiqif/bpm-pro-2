@@ -4,6 +4,7 @@ import ChartHeartRate from "../components/ChartHeartRate";
 import { useCounter } from "../hooks/Counter";
 
 import bloodPressureImg from "../assets/images/blood_pressure.png";
+import bpmPro2Img from "../assets/images/bpmpro2.jpeg";
 
 import bloodIcon from "../assets/icons/blood-icon.png";
 import hyperTensionIcon from "../assets/icons/hypertension.png";
@@ -179,6 +180,7 @@ export default function MeasurementPage() {
               </div>
             )}
           </div>
+          <img src={bpmPro2Img} alt="" className="w-90 h-90 mx-auto" />
           <div className="flex gap-4 font-bold tracking-wider justify-around">
             {result.diastolic === 0 ? (
               !buttonLoading ? (
