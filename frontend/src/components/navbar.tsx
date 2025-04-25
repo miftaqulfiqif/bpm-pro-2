@@ -47,7 +47,15 @@ export const Navbar = ({ className, title }: NavbarProps) => {
   return (
     <nav className={`bg-[#ECECEC] h-30 flex items-center px-10 ${className}`}>
       <div className="flex flex-row justify-between w-full items-center">
-        <div className="flex gap-4 ml-20">
+        <div className="flex flex-row items-center gap-4">
+          <img
+            src="https://images.seeklogo.com/logo-png/37/1/rs-pku-muhammadiyah-logo-png_seeklogo-372325.png"
+            alt=""
+            className="w-20 h-20"
+          />
+          <p className="font-bold text-2xl w-[300px]">RS PKU MUHAMMADIYAH</p>
+        </div>
+        <div className="flex gap-3">
           <AppNavbar
             title="Dashboard"
             url="/dashboard"
@@ -59,19 +67,19 @@ export const Navbar = ({ className, title }: NavbarProps) => {
             url="/patient"
             icon={patientsIcon}
             iconActive={patientsIconActive}
-            isActive={state === "Patient"}
+            isActive={state === "Patient" || state === "Patient Measurement"}
           />
           <AppNavbar
             title="Patient Measurement"
-            url="/patient-measurement"
+            url="/measurement"
             icon={patientMeasurementIcon}
             iconActive={patientMeasurementIconActive}
-            isActive={state === "Patient Measurement"}
+            isActive={state === "Measurement"}
           />
         </div>
 
         <div className="flex flex-row items-center gap-10">
-          <div className="">
+          {/* <div className="">
             <a
               className="flex gap-2 items-center bg-[#0767E2] px-10 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] text-white hover:underline"
               href="/measurement"
@@ -79,14 +87,14 @@ export const Navbar = ({ className, title }: NavbarProps) => {
               <HeartPulse className="w-8 h-8" />
               Measurement
             </a>
-          </div>
+          </div> */}
           <div
             onClick={handleOption}
             className="flex flex-row gap-4 bg-white px-6 py-3 w-fit rounded-4xl shadow-[4px_4px_15px_rgba(0,0,0,0.3)] items-center"
           >
             <img
               src={profilePicture || avatarIcon}
-              className="w-14 h-14 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)]"
+              className="w-14 h-14 rounded-full shadow-[4px_4px_15px_rgba(0,0,0,0.2)] object-cover"
               alt=""
             />
             <div className="mr-4">

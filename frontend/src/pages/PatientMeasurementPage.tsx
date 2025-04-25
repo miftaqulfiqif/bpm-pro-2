@@ -232,8 +232,14 @@ export const PatientMeasurements = () => {
     <MainLayout title="Patient Measurement">
       <div className="flex flex-col gap-8">
         <div className="flex justify-between mx-8">
-          <div className="">
-            <p className="text-3xl font-bold">Patient Measurement</p>
+          <div className="flex flex-row gap-6 items-center">
+            <p className="text-3xl font-bold">History Measurements</p>
+            <p
+              className="text-2xl bg-white px-4 py-1 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)] cursor-pointer"
+              onClick={() => window.location.replace("/patient")}
+            >
+              Patients
+            </p>
           </div>
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
