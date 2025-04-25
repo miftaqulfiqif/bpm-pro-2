@@ -157,7 +157,7 @@ export default function MeasurementPage() {
               : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="flex flex-col gap-2 bg-[#0767E2] p-6 pb-20 rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
+          <div className="flex flex-col gap-2 bg-[#0767E2] p-6 pb-10 rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
             <p className="text-white font-bold">Have a good day</p>
             <p className="text-white text-2xl ">
               {localStorage.getItem("user") &&
