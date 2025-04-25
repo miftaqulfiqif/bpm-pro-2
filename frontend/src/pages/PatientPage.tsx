@@ -54,9 +54,11 @@ import { FaRegEdit } from "react-icons/fa";
 import { toast } from "sonner";
 import { useHistoryMeasurement } from "@/hooks/UseHistoryMeasurement";
 import { parse } from "path";
+import { useNavigate } from "react-router-dom";
 
 export const PatientPage = () => {
   const { fetchAndFormatData, chartData } = useHistoryMeasurement();
+  const {} = useNavigate();
 
   const [form, setForm] = useState(false);
   const [detail, setDetail] = useState(false);
@@ -250,8 +252,14 @@ export const PatientPage = () => {
     <MainLayout title="Patient">
       <div className="flex flex-col gap-8">
         <div className="flex justify-between mx-8">
-          <div className="">
+          <div className="flex flex-row gap-6 items-center">
             <p className="text-3xl font-bold">Patients</p>
+            <p
+              className="text-2xl bg-white px-4 py-1 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)] cursor-pointer"
+              onClick={() => window.location.replace("/patient-measurement")}
+            >
+              History measurement
+            </p>
           </div>
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
